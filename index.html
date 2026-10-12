@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marea Grande - Planificador Deportivo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle, #2d6a4f, #081c15);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .app-card {
+      background-color: #111b15;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 24px;
+      padding: 22px;
+      border: 2px solid #2d6a4f;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+      color: #ffffff;
+      position: relative;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .app-title {
+      color: #0077b6;
+      font-size: 22px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-bypass {
+      background: #0077b6;
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 119, 182, 0.4);
+    }
+
+    .btn-bypass:hover {
+      background: #0096c7;
+      transform: scale(1.05);
+    }
+
+    .quiz-box {
+      background-color: #d8f3dc;
+      border-radius: 18px;
+      padding: 20px;
+      color: #081c15;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .question-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: #081c15;
+    }
+
+    .input-text, .input-select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1.5px solid #2d6a4f;
+      font-size: 14px;
+      margin-bottom: 14px;
+      outline: none;
+      background: #ffffff;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .opt-label {
+      background-color: #ffffff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #081c15;
+      border: 1px solid #b7e4c7;
+    }
+
+    .btn-next {
+      width: 100%;
+      padding: 12px;
+      background-color: #1d3557;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: auto;
+      box-shadow: 0 4px 10px rgba(29, 53, 87, 0.3);
+    }
+
+    .btn-next:hover {
+      background-color: #457b9d;
+    }
+
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      color: #081c15;
+      font-weight: bold;
+    }
+
+    .agenda-container {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-right: 5px;
+    }
+
+    .hour-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      padding: 8px 10px;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .hour-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #1d3557;
+      min-width: 45px;
+    }
+
+    .hour-input {
+      flex: 1;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .alert-select {
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 11px;
+      background: #f8f9fa;
+      cursor: pointer;
+    }
+
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-top: 15px;
+      background: #081c15;
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid #2d6a4f;
+    }
+
+    .nav-btn {
+      background-color: #1d3557;
+      color: white;
+      border: none;
+      padding: 10px 4px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .nav-btn.active {
+      background-color: #2b9348;
+    }
+
+    .nav-btn:hover {
+      background-color: #457b9d;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .cal-day-name {
+      font-size: 11px;
+      font-weight: bold;
+      color: #1d3557;
+    }
+
+    .cal-day {
+      padding: 6px 0;
+      font-size: 11px;
+      font-weight: bold;
+      background-color: #ffffff;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #081c15;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .dot-container {
+      display: flex;
+      gap: 2px;
+      margin-top: 3px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .dot-green { background-color: #2b9348; }
+    .dot-red { background-color: #d90429; }
+    .dot-blue { background-color: #0077b6; }
+
+    .legend-box {
+      margin-top: 10px;
+      background-color: #ffffff;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      color: #081c15;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .days-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .day-pill {
+      background: #ffffff;
+      color: #081c15;
+      border: 1px solid #b7e4c7;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .day-pill.active {
+      background: #1d3557;
+      color: white;
+      border-color: #1d3557;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="app-card">
+    <div class="app-header">
+      <h1 class="app-title">Marea Grande</h1>
+      <button type="button" class="btn-bypass" onclick="irDirectoAApp()">App Solution ➔</button>
+    </div>
+
+    <div id="step-1" class="quiz-box">
+      <div class="question-title">1. ¿Cómo te llamás?</div>
+      <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
+      <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
+    </div>
+
+    <div id="step-2" class="quiz-box hidden">
+      <div class="question-title">2. ¿Hacés deporte?</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+        <label class="opt-label"><input type="radio" name="deporte" value="si" checked> Sí</label>
+        <label class="opt-label"><input type="radio" name="deporte" value="no"> No</label>
+      </div>
+      <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
+    </div>
+
+    <div id="step-2-si" class="quiz-box hidden">
+      <div class="question-title">¿Qué días entrenás?</div>
+      <div class="options-grid">
+        <label class="opt-label"><input type="checkbox" value="1" class="cb-entreno"> Lunes</label>
+        <label class="opt-label"><input type="checkbox" value="2" class="cb-entreno"> Martes</label>
+        <label class="opt-label"><input type="checkbox" value="3" class="cb-entreno"> Miércoles</label>
+        <label class="opt-label"><input type="checkbox" value="4" class="cb-entreno"> Jueves</label>
+        <label class="opt-label"><input type="checkbox" value="5" class="cb-entreno"> Viernes</label>
+        <label class="opt-label"><input type="checkbox" value="6" class="cb-entreno"> Sábado</label>
+        <label class="opt-label"><input type="checkbox" value="0" class="cb-entreno"> Domingo</label>
+      </div>
+      <button type="button" class="btn-next" onclick="nextStep('2-si')">Siguiente</button>
+    </div>
+
+    <div id="step-3-si" class="quiz-box hidden">
+      <div class="question-title">¿Qué días NO entrenás?</div>
+      <div class="options-grid">
+        <label class="opt-label"><input type="checkbox" value="1" class="cb-noentreno"> Lunes</label>
+        <label class="opt-label"><input type="checkbox" value="2" class="cb-noentreno"> Martes</label>
+        <label class="opt-label"><input type="checkbox" value="3" class="cb-noentreno"> Miércoles</label>
+        <label class="opt-label"><input type="checkbox" value="4" class="cb-noentreno"> Jueves</label>
+        <label class="opt-label"><input type="checkbox" value="5" class="cb-noentreno"> Viernes</label>
+        <label class="opt-label"><input type="checkbox" value="6" class="cb-noentreno"> Sábado</label>
+        <label class="opt-label"><input type="checkbox" value="0" class="cb-noentreno"> Domingo</label>
+      </div>
+      <button type="button" class="btn-next" onclick="nextStep('3-si')">Siguiente</button>
+    </div>
+
+    <div id="step-carga" class="quiz-box hidden">
+      <div class="question-title" id="title-carga">¿Qué días tenés más carga horaria?</div>
+      <div class="options-grid">
+        <label class="opt-label"><input type="checkbox" value="1" class="cb-carga"> Lunes</label>
+        <label class="opt-label"><input type="checkbox" value="2" class="cb-carga"> Martes</label>
+        <label class="opt-label"><input type="checkbox" value="3" class="cb-carga"> Miércoles</label>
+        <label class="opt-label"><input type="checkbox" value="4" class="cb-carga"> Jueves</label>
+        <label class="opt-label"><input type="checkbox" value="5" class="cb-carga"> Viernes</label>
+        <label class="opt-label"><input type="checkbox" value="6" class="cb-carga"> Sábado</label>
+        <label class="opt-label"><input type="checkbox" value="0" class="cb-carga"> Domingo</label>
+      </div>
+      <button type="button" class="btn-next" onclick="nextStep('carga')">Ir a Planificación Horaria</button>
+    </div>
+
+    <div id="step-agenda" class="quiz-box hidden">
+      <div class="day-header">
+        <span id="agenda-day-title" style="font-size: 15px;">Lunes</span>
+        <span id="agenda-counter" style="font-size: 11px; color: #555;">1 de 7 días</span>
+      </div>
+      <div class="agenda-container" id="agenda-rows"></div>
+      <button type="button" class="btn-next" id="btn-next-day" onclick="nextDayAgenda()">Siguiente ➔</button>
+    </div>
+
+    <div id="app-calendar" class="quiz-box hidden">
+      <div class="question-title" id="txt-saludo" style="font-size: 16px; color: #0077b6;">Hola 👋</div>
+      <div style="font-size: 11px; color: #555; margin-bottom: 6px; font-weight: bold;">Octubre 2026 - Calendario</div>
+
+      <div class="cal-grid">
+        <div class="cal-day-name">Lu</div>
+        <div class="cal-day-name">Ma</div>
+        <div class="cal-day-name">Mi</div>
+        <div class="cal-day-name">Ju</div>
+        <div class="cal-day-name">Vi</div>
+        <div class="cal-day-name">Sá</div>
+        <div class="cal-day-name">Do</div>
+
+        <div></div><div></div><div></div>
+
+        <div id="cal-days" style="display: contents;"></div>
+      </div>
+
+      <div class="legend-box">
+        <strong>REFERENCIAS:</strong>
+        <div class="legend-item"><div class="dot dot-green"></div> Días que entrenás</div>
+        <div class="legend-item"><div class="dot dot-red"></div> Días que no entrenás</div>
+        <div class="legend-item"><div class="dot dot-blue"></div> Días con más carga horaria</div>
+        <div class="legend-item">
+          <div class="dot-container"><div class="dot dot-green"></div><div class="dot dot-blue"></div></div> 
+          Entrenamiento + Alta carga horaria
+        </div>
+      </div>
+    </div>
+
+    <div id="app-notes" class="quiz-box hidden">
+      <div class="question-title" style="font-size: 15px; color: #0077b6;">📝 Notas: Días y Actividades</div>
+      <div class="days-pills" id="notes-day-pills"></div>
+      <div class="agenda-container" id="notes-rows" style="max-height: 240px;"></div>
+    </div>
+
+    <div id="app-events" class="quiz-box hidden">
+      <div class="question-title" id="txt-eventos-saludo" style="font-size: 15px; color: #0077b6;">¡Hola! Acá podés agendar tu evento</div>
+      <div style="font-size: 11px; color: #555; margin-bottom: 8px; font-weight: bold;">Octubre 2026 - Seleccioná un día del mes:</div>
+      
+      <div style="margin-bottom: 8px;">
+        <select id="event-day-select" class="input-select" style="margin-bottom: 8px;"></select>
+        <input type="text" id="event-desc-input" class="input-text" placeholder="Ej. Casamiento, partido, examen..." style="margin-bottom: 8px;">
+        <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 10px; margin-top:0;">Guardar Evento</button>
+      </div>
+
+      <div style="font-size: 12px; font-weight: bold; margin-top: 6px; color: #081c15;">Eventos agendados:</div>
+      <div class="agenda-container" id="events-list" style="max-height: 120px; background: white; padding: 6px; border-radius: 8px;">
+        <span style="font-size: 11px; color: #777;">No hay eventos aún.</span>
+      </div>
+    </div>
+
+    <div id="bottom-nav-bar" class="bottom-nav hidden">
+      <button class="nav-btn active" onclick="switchTab('calendar')">Calendario</button>
+      <button class="nav-btn" onclick="switchTab('notes')">Notas</button>
+      <button class="nav-btn" onclick="switchTab('events')">Eventos</button>
+    </div>
+
+  </div>
+
+  <script>
+    var user = {
+      nombre: "",
+      haceDeporte: true,
+      entreno: [1, 3, 5],
+      noEntreno: [0],
+      menosCarga: [2, 4],
+      agenda: {},
+      eventos: {}
+    };
+
+    var diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; 
+    var currentDayIndex = 0;
+    var currentNotesDay = 1;
+
+    var datosGuardados = localStorage.getItem("mareaGrandeData");
+    if (datosGuardados) {
+      user = JSON.parse(datosGuardados);
+    } else {
+      for (var i = 0; i < 7; i++) {
+        user.agenda[diasMapeo[i]] = {};
+        for (var h = 0; h < 24; h++) {
+          var horaStr = (h < 10 ? "0" : "") + h + ":00";
+          if (h >= 1 && h <= 6) {
+            user.agenda[diasMapeo[i]][horaStr] = { actividad: "Horas de sueño", alerta: "0" };
+          } else {
+            user.agenda[diasMapeo[i]][horaStr] = { actividad: "", alerta: "0" };
+          }
+        }
+      }
+    }
+
+    function guardarTodo() {
+      localStorage.setItem("mareaGrandeData", JSON.stringify(user));
+    }
+
+    function irDirectoAApp() {
+      document.getElementById("step-1").classList.add("hidden");
+      document.getElementById("step-2").classList.add("hidden");
+      document.getElementById("step-2-si").classList.add("hidden");
+      document.getElementById("step-3-si").classList.add("hidden");
+      document.getElementById("step-carga").classList.add("hidden");
+      document.getElementById("step-agenda").classList.add("hidden");
+      
+      if (!user.nombre) {
+        user.nombre = "Usuario";
+      }
+      guardarTodo();
+      initMainAppLink();
+    }
+
+    function nextStep(step) {
+      if (step === 1) {
+        var nom = document.getElementById("input-nombre").value.trim();
+        if (!nom) {
+          alert("Por favor, escribí tu nombre");
+          return;
+        }
+        user.nombre = nom;
+        guardarTodo();
+        document.getElementById("step-1").classList.add("hidden");
+        document.getElementById("step-2").classList.remove("hidden");
+      } 
+      else if (step === 2) {
+        var dep = document.querySelector('input[name="deporte"]:checked').value === "si";
+        user.haceDeporte = dep;
+        guardarTodo();
+        document.getElementById("step-2").classList.add("hidden");
+        if (dep) {
+          document.getElementById("step-2-si").classList.remove("hidden");
+        } else {
+          document.getElementById("step-carga").classList.remove("hidden");
+          document.getElementById("title-carga").innerText = "¿Qué días tenés más carga horaria?";
+        }
+      } 
+      else if (step === "2-si") {
+        var checkboxesEntreno = document.querySelectorAll(".cb-entreno:checked");
+        user.entreno = [];
+        for (var i = 0; i < checkboxesEntreno.length; i++) {
+          user.entreno.push(parseInt(checkboxesEntreno[i].value));
+        }
+        guardarTodo();
+        document.getElementById("step-2-si").classList.add("hidden");
+        document.getElementById("step-3-si").classList.remove("hidden");
+      } 
+      else if (step === "3-si") {
+        var checkboxesNoEntreno = document.querySelectorAll(".cb-noentreno:checked");
+        user.noEntreno = [];
+        for (var k = 0; k < checkboxesNoEntreno.length; k++) {
+          user.noEntreno.push(parseInt(checkboxesNoEntreno[k].value));
+        }
+        guardarTodo();
+        document.getElementById("step-3-si").classList.add("hidden");
+        document.getElementById("step-carga").classList.remove("hidden");
+        document.getElementById("title-carga").innerText = "¿Qué días tenés más carga horaria?";
+      }
+      else if (step === "carga") {
+        var checkboxesCarga = document.querySelectorAll(".cb-carga:checked");
+        user.menosCarga = [];
+        for (var j = 0; j < checkboxesCarga.length; j++) {
+          user.menosCarga.push(parseInt(checkboxesCarga[j].value));
+        }
+        guardarTodo();
+        document.getElementById("step-carga").classList.add("hidden");
+        startAgenda();
+      }
+    }
+
+    function startAgenda() {
+      currentDayIndex = 0;
+      document.getElementById("step-agenda").classList.remove("hidden");
+      renderAgendaDay();
+    }
+
+    function renderAgendaDay() {
+      var numDia = diasMapeo[currentDayIndex];
+      var nombreDia = diasSemana[currentDayIndex];
+      
+      document.getElementById("agenda-day-title").innerText = nombreDia;
+      document.getElementById("agenda-counter").innerText = (currentDayIndex + 1) + " de 7 días";
+      
+      if (currentDayIndex === 6) {
+        document.getElementById("btn-next-day").innerText = "Finalizar planificación ➔";
+      } else {
+        document.getElementById("btn-next-day").innerText = "Siguiente ➔";
+      }
+
+      var container = document.getElementById("agenda-rows");
+      container.innerHTML = "";
+
+      for (var h = 0; h < 24; h++) {
+        var horaStr = (h < 10 ? "0" : "") + h + ":00";
+        var datosHora = user.agenda[numDia][horaStr];
+
+        var rowDiv = document.createElement("div");
+        rowDiv.className = "hour-row";
+
+        var labelDiv = document.createElement("div");
+        labelDiv.className = "hour-label";
+        labelDiv.innerText = horaStr;
+
+        var inputAct = document.createElement("input");
+        inputAct.type = "text";
+        inputAct.className = "hour-input";
+        inputAct.placeholder = "Escribí una actividad...";
+        inputAct.value = datosHora.actividad;
+        inputAct.setAttribute("data-dia", numDia);
+        inputAct.setAttribute("data-hora", horaStr);
+        inputAct.oninput = function() {
+          var d = this.getAttribute("data-dia");
+          var hr = this.getAttribute("data-hora");
+          user.agenda[d][hr].actividad = this.value;
+          guardarTodo();
+        };
+
+        var selectAlert = document.createElement("select");
+        selectAlert.className = "alert-select";
+        selectAlert.setAttribute("data-dia", numDia);
+        selectAlert.setAttribute("data-hora", horaStr);
+        
+        var opcionesAlerta = [
+          {val: "0", text: "Sin aviso"},
+          {val: "30", text: "30 min antes"},
+          {val: "60", text: "1 hora antes"},
+          {val: "120", text: "2 horas antes"},
+          {val: "180", text: "3 horas antes"}
+        ];
+
+        for (var op = 0; op < opcionesAlerta.length; op++) {
+          var opt = document.createElement("option");
+          opt.value = opcionesAlerta[op].val;
+          opt.text = opcionesAlerta[op].text;
+          if (datosHora.alerta === opcionesAlerta[op].val) {
+            opt.selected = true;
+          }
+          selectAlert.appendChild(opt);
+        }
+
+        selectAlert.onchange = function() {
+          var d = this.getAttribute("data-dia");
+          var hr = this.getAttribute("data-hora");
+          user.agenda[d][hr].alerta = this.value;
+          guardarTodo();
+        };
+
+        rowDiv.appendChild(labelDiv);
+        rowDiv.appendChild(inputAct);
+        rowDiv.appendChild(selectAlert);
+        container.appendChild(rowDiv);
+      }
+    }
+
+    function nextDayAgenda() {
+      if (currentDayIndex < 6) {
+        currentDayIndex++;
+        renderAgendaDay();
+      } else {
+        document.getElementById("step-agenda").classList.add("hidden");
+        guardarTodo();
+        initMainAppLink();
+      }
+    }
+
+    function initMainAppLink() {
+      document.getElementById("bottom-nav-bar").classList.remove("hidden");
+      showCalendar();
+      setupNotesPills();
+      setupEventDays();
+      renderEventsList();
+    }
+
+    function switchTab(tabName) {
+      document.getElementById("app-calendar").classList.add("hidden");
+      document.getElementById("app-notes").classList.add("hidden");
+      document.getElementById("app-events").classList.add("hidden");
+
+      var btns = document.querySelectorAll(".nav-btn");
+      for(var i=0; i<btns.length; i++) { btns[i].classList.remove("active"); }
+
+      if (tabName === 'calendar') {
+        document.getElementById("app-calendar").classList.remove("hidden");
+        btns[0].classList.add("active");
+        showCalendar();
+      } else if (tabName === 'notes') {
+        document.getElementById("app-notes").classList.remove("hidden");
+        btns[1].classList.add("active");
+        renderNotesDay(currentNotesDay);
+      } else if (tabName === 'events') {
+        document.getElementById("app-events").classList.remove("hidden");
+        btns[2].classList.add("active");
+        document.getElementById("txt-eventos-saludo").innerText = "¡Hola, " + user.nombre + "! Acá podés agendar tu evento";
+        renderEventsList();
+      }
+    }
+
+    function showCalendar() {
+      document.getElementById("txt-saludo").innerText = "Hola, " + user.nombre + " 👋";
+      var container = document.getElementById("cal-days");
+      container.innerHTML = "";
+
+      for (var day = 1; day <= 31; day++) {
+        var dayOfWeek = (day + 3) % 7;
+        var isEntreno = user.entreno.indexOf(dayOfWeek) !== -1;
+        var isNoEntreno = user.noEntreno.indexOf(dayOfWeek) !== -1;
+        var isCarga = user.menosCarga.indexOf(dayOfWeek) !== -1;
+
+        var dotsHTML = "";
+        if (isEntreno && isCarga) {
+          dotsHTML = '<div class="dot dot-green"></div><div class="dot dot-blue"></div>';
+        } else if (isEntreno) {
+          dotsHTML = '<div class="dot dot-green"></div>';
+        } else if (isNoEntreno && isCarga) {
+          dotsHTML = '<div class="dot dot-red"></div><div class="dot dot-blue"></div>';
+        } else if (isNoEntreno) {
+          dotsHTML = '<div class="dot dot-red"></div>';
+        } else if (isCarga) {
+          dotsHTML = '<div class="dot dot-blue"></div>';
+        }
+
+        if (user.eventos[day]) {
+          dotsHTML += '<div class="dot" style="background-color: #ff9f1c;"></div>';
+        }
+
+        var dayDiv = document.createElement("div");
+        dayDiv.className = "cal-day";
+        dayDiv.innerHTML = day + '<div class="dot-container">' + dotsHTML + '</div>';
+        container.appendChild(dayDiv);
+      }
+
+      document.getElementById("app-calendar").classList.remove("hidden");
+    }
+
+    function setupNotesPills() {
+      var pillsContainer = document.getElementById("notes-day-pills");
+      pillsContainer.innerHTML = "";
+      
+      var ordenDias = [
+        {num: 1, name: "Lunes"},
+        {num: 2, name: "Martes"},
+        {num: 3, name: "Miércoles"},
+        {num: 4, name: "Jueves"},
+        {num: 5, name: "Viernes"},
+        {num: 6, name: "Sábado"},
+        {num: 0, name: "Domingo"}
+      ];
+
+      for(var i=0; i<ordenDias.length; i++) {
+        var btn = document.createElement("button");
+        btn.className = "day-pill " + (ordenDias[i].num === currentNotesDay ? "active" : "");
+        btn.innerText = ordenDias[i].name;
+        btn.setAttribute("data-num", ordenDias[i].num);
+        btn.onclick = function() {
+          currentNotesDay = parseInt(this.getAttribute("data-num"));
+          var allPills = document.querySelectorAll(".day-pill");
+          for(var p=0; p<allPills.length; p++) { allPills[p].classList.remove("active"); }
+          this.classList.add("active");
+          renderNotesDay(currentNotesDay);
+        };
+        pillsContainer.appendChild(btn);
+      }
+    }
+
+    function renderNotesDay(numDia) {
+      var container = document.getElementById("notes-rows");
+      container.innerHTML = "";
+
+      for (var h = 0; h < 24; h++) {
+        var horaStr = (h < 10 ? "0" : "") + h + ":00";
+        var datosHora = user.agenda[numDia][horaStr];
+
+        var rowDiv = document.createElement("div");
+        rowDiv.className = "hour-row";
+
+        var labelDiv = document.createElement("div");
+        labelDiv.className = "hour-label";
+        labelDiv.innerText = horaStr;
+
+        var textAct = document.createElement("div");
+        textAct.style.flex = "1";
+        textAct.style.fontSize = "12px";
+        textAct.style.color = datosHora.actividad ? "#081c15" : "#999";
+        textAct.innerText = datosHora.actividad || "(Sin actividad)";
+
+        rowDiv.appendChild(labelDiv);
+        rowDiv.appendChild(textAct);
+        container.appendChild(rowDiv);
+      }
+    }
+
+    function setupEventDays() {
+      var select = document.getElementById("event-day-select");
+      select.innerHTML = "";
+      for(var d=1; d<=31; d++) {
+        var opt = document.createElement("option");
+        opt.value = d;
+        opt.text = d + " de Octubre";
+        select.appendChild(opt);
+      }
+    }
+
+    function saveEvent() {
+      var day = document.getElementById("event-day-select").value;
+      var desc = document.getElementById("event-desc-input").value.trim();
+      if(!desc) {
+        alert("Escribí una descripción para el evento");
+        return;
+      }
+      user.eventos[day] = desc;
+      guardarTodo();
+      document.getElementById("event-desc-input").value = "";
+      renderEventsList();
+      alert("¡Evento guardado con éxito!");
+    }
+
+    function renderEventsList() {
+      var listContainer = document.getElementById("events-list");
+      listContainer.innerHTML = "";
+
+      var keys = Object.keys(user.eventos);
+      if(keys.length === 0) {
+        listContainer.innerHTML = '<span style="font-size: 11px; color: #777;">No hay eventos aún.</span>';
+        return;
+      }
+
+      for(var i=0; i<keys.length; i++) {
+        var d = keys[i];
+        var item = document.createElement("div");
+        item.style.fontSize = "11px";
+        item.style.marginBottom = "4px";
+        item.style.borderBottom = "1px solid #eee";
+        item.style.paddingBottom = "2px";
+        item.innerHTML = "<strong>Día " + d + ":</strong> " + user.eventos[d];
+        listContainer.appendChild(item);
+      }
+    }
+  </script>
+</body>
+</html>
