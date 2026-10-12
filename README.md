@@ -1,0 +1,2 @@
+# MAREA-GRANDE
+Esta aplicacion, está destinada para la gente que poseea mucha carga horaria, es mas para deportistas. Esta app ordena tu mes en base a cinco preguntas. Tambien funciona como recirdatorio debido a que ka encuesta tambien incluye los dias de la semana, en los que, el usuario ingresa sus actividades.
