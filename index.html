@@ -44,35 +44,44 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 15px;
+      gap: 8px;
     }
 
     .app-title {
       color: #0077b6;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
-    /* Botón de descarga en el lugar de App Solution */
-    .btn-descargar-head {
+    .header-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-head {
       background: #2b9348;
       color: #ffffff;
       border: none;
-      padding: 8px 14px;
+      padding: 8px 10px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 2px 8px rgba(43, 147, 72, 0.4);
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
-    .btn-descargar-head:hover {
-      background: #40916c;
+    .btn-head-bell {
+      background: #0077b6;
+      box-shadow: 0 2px 8px rgba(0, 119, 182, 0.4);
+    }
+
+    .btn-head:hover {
       transform: scale(1.05);
     }
 
@@ -324,8 +333,10 @@
   <div class="app-card">
     <div class="app-header">
       <h1 class="app-title">Marea Grande</h1>
-      <!-- Botón de Descargar siempre visible arriba a la derecha -->
-      <button type="button" id="btnInstalar" class="btn-descargar-head" onclick="descargarApp()">📥 Descargar</button>
+      <div class="header-btns">
+        <button type="button" class="btn-head btn-head-bell" onclick="pedirPermisoNotificaciones()">🔔 Avisos</button>
+        <button type="button" id="btnInstalar" class="btn-head" onclick="descargarApp()">📥 Descargar</button>
+      </div>
     </div>
 
     <div id="step-1" class="quiz-box">
@@ -816,9 +827,43 @@
       }
     }
 
-    // Lógica inteligente para el botón SIEMPRE VISIBLE
-    let deferredPrompt;
+    // Registro del Service Worker y Botón de Notificaciones
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => {
+            console.log('Service Worker registrado:', reg);
+          })
+          .catch((err) => {
+            console.log('Error al registrar Service Worker:', err);
+          });
+      });
+    }
 
+    function pedirPermisoNotificaciones() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            alert('🔔 ¡Notificaciones activadas con éxito!');
+            if (navigator.serviceWorker.controller) {
+              navigator.serviceWorker.ready.then((reg) => {
+                reg.showNotification('Marea Grande', {
+                  body: '¡Genial! Las notificaciones quedaron activadas.',
+                  icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png'
+                });
+              });
+            }
+          } else {
+            alert('⚠️ Notificaciones bloqueadas. Podes activarlas desde el candado o ajustes del navegador.');
+          }
+        });
+      } else {
+        alert('Tu navegador no soporta notificaciones.');
+      }
+    }
+
+    // Botón de Descargar App
+    let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -834,8 +879,7 @@
           deferredPrompt = null;
         });
       } else {
-        // Mensaje directo si el celular no dispara el evento automático
-        alert("📱 Para descargar e instalar la App:\n\n1. Tocá los tres puntos (⋮) o el botón de compartir arriba en tu navegador.\n2. Elegí la opción 'Agregar a la pantalla principal' o 'Instalar aplicación'.");
+        alert("📱 Para descargar la App:\n\n1. Tocá los tres puntos (⋮) o el botón compartir del navegador.\n2. Seleccioná 'Agregar a la pantalla principal' o 'Instalar aplicación'.");
       }
     }
   </script>
