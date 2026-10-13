@@ -54,21 +54,25 @@
       letter-spacing: 1px;
     }
 
-    .btn-bypass {
-      background: #0077b6;
+    /* Botón de descarga en el lugar de App Solution */
+    .btn-descargar-head {
+      background: #2b9348;
       color: #ffffff;
       border: none;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: 20px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0, 119, 182, 0.4);
+      box-shadow: 0 2px 8px rgba(43, 147, 72, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    .btn-bypass:hover {
-      background: #0096c7;
+    .btn-descargar-head:hover {
+      background: #40916c;
       transform: scale(1.05);
     }
 
@@ -313,39 +317,15 @@
     }
 
     .hidden { display: none !important; }
-
-    /* Estilo para el Botón de Descarga Personalizado */
-    #btnInstalar {
-      display: none;
-      width: 100%;
-      background-color: #2b9348;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-      box-shadow: 0 4px 10px rgba(43, 147, 72, 0.4);
-      transition: background 0.2s;
-    }
-    #btnInstalar:hover {
-      background-color: #40916c;
-    }
   </style>
 </head>
 <body>
 
   <div class="app-card">
-    <div>
-      <div class="app-header">
-        <h1 class="app-title">Marea Grande</h1>
-        <button type="button" class="btn-bypass" onclick="irDirectoAApp()">App Solution ➔</button>
-      </div>
-
-      <!-- Botón de Descarga Personalizado para la App -->
-      <button id="btnInstalar">📥 Descargar App en el celular</button>
+    <div class="app-header">
+      <h1 class="app-title">Marea Grande</h1>
+      <!-- Botón de Descargar siempre visible arriba a la derecha -->
+      <button type="button" id="btnInstalar" class="btn-descargar-head" onclick="descargarApp()">📥 Descargar</button>
     </div>
 
     <div id="step-1" class="quiz-box">
@@ -509,21 +489,6 @@
 
     function guardarTodo() {
       localStorage.setItem("mareaGrandeData", JSON.stringify(user));
-    }
-
-    function irDirectoAApp() {
-      document.getElementById("step-1").classList.add("hidden");
-      document.getElementById("step-2").classList.add("hidden");
-      document.getElementById("step-2-si").classList.add("hidden");
-      document.getElementById("step-3-si").classList.add("hidden");
-      document.getElementById("step-carga").classList.add("hidden");
-      document.getElementById("step-agenda").classList.add("hidden");
-      
-      if (!user.nombre) {
-        user.nombre = "Usuario";
-      }
-      guardarTodo();
-      initMainAppLink();
     }
 
     function nextStep(step) {
@@ -851,28 +816,28 @@
       }
     }
 
-    // Lógica para hacer funcionar el Botón de Descarga PWA
+    // Lógica inteligente para el botón SIEMPRE VISIBLE
     let deferredPrompt;
-    const btnInstalar = document.getElementById('btnInstalar');
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      btnInstalar.style.display = 'block';
     });
 
-    btnInstalar.addEventListener('click', () => {
-      btnInstalar.style.display = 'none';
+    function descargarApp() {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
-            console.log('App instalada');
+            console.log('El usuario instaló la PWA');
           }
           deferredPrompt = null;
         });
+      } else {
+        // Mensaje directo si el celular no dispara el evento automático
+        alert("📱 Para descargar e instalar la App:\n\n1. Tocá los tres puntos (⋮) o el botón de compartir arriba en tu navegador.\n2. Elegí la opción 'Agregar a la pantalla principal' o 'Instalar aplicación'.");
       }
-    });
+    }
   </script>
 </body>
 </html>
