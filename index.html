@@ -334,7 +334,7 @@
     <div class="app-header">
       <h1 class="app-title">Marea Grande</h1>
       <div class="header-btns">
-        <button type="button" class="btn-head btn-head-bell" onclick="pedirPermisoNotificaciones()">🔔 Avisos</button>
+        <button type="button" id="btnAvisos" class="btn-head btn-head-bell" onclick="pedirPermisoNotificaciones()">🔔 Avisos</button>
         <button type="button" id="btnInstalar" class="btn-head" onclick="descargarApp()">📥 Descargar</button>
       </div>
     </div>
@@ -497,6 +497,20 @@
         }
       }
     }
+
+    // Verificar al iniciar si ya completó la configuración para ir directo a la app
+    window.addEventListener('load', () => {
+      if (user.nombre && user.nombre !== "Usuario") {
+        document.getElementById("step-1").classList.add("hidden");
+        initMainAppLink();
+      }
+      
+      // Ocultar botón de avisos si ya dio permiso
+      if (window.Notification && Notification.permission === 'granted') {
+        var btnAvisos = document.getElementById("btnAvisos");
+        if(btnAvisos) btnAvisos.style.display = 'none';
+      }
+    });
 
     function guardarTodo() {
       localStorage.setItem("mareaGrandeData", JSON.stringify(user));
@@ -827,16 +841,10 @@
       }
     }
 
-    // Registro del Service Worker y Botón de Notificaciones
+    // Registro del Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then((reg) => {
-            console.log('Service Worker registrado:', reg);
-          })
-          .catch((err) => {
-            console.log('Error al registrar Service Worker:', err);
-          });
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
       });
     }
 
@@ -845,6 +853,7 @@
         Notification.requestPermission().then((permission) => {
           if (permission === 'granted') {
             alert('🔔 ¡Notificaciones activadas con éxito!');
+            document.getElementById("btnAvisos").style.display = 'none';
             if (navigator.serviceWorker.controller) {
               navigator.serviceWorker.ready.then((reg) => {
                 reg.showNotification('Marea Grande', {
@@ -854,19 +863,30 @@
               });
             }
           } else {
-            alert('⚠️ Notificaciones bloqueadas. Podes activarlas desde el candado o ajustes del navegador.');
+            alert('⚠️ Notificaciones bloqueadas desde el navegador.');
           }
         });
-      } else {
-        alert('Tu navegador no soporta notificaciones.');
       }
     }
 
-    // Botón de Descargar App
+    // Lógica del Botón de Descarga y ocultarlo si ya está instalada
     let deferredPrompt;
+    const btnInstalar = document.getElementById('btnInstalar');
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
+    });
+
+    // Si la app ya corre como PWA instalada, ocultamos el botón de descargar de una
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      if(btnInstalar) btnInstalar.style.display = 'none';
+    }
+
+    window.addEventListener('appinstalled', () => {
+      if(btnInstalar) btnInstalar.style.display = 'none';
+      deferredPrompt = null;
+      console.log('PWA instalada correctamente');
     });
 
     function descargarApp() {
@@ -874,12 +894,12 @@
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
-            console.log('El usuario instaló la PWA');
+            btnInstalar.style.display = 'none';
           }
           deferredPrompt = null;
         });
       } else {
-        alert("📱 Para descargar la App:\n\n1. Tocá los tres puntos (⋮) o el botón compartir del navegador.\n2. Seleccioná 'Agregar a la pantalla principal' o 'Instalar aplicación'.");
+        alert("📱 Para instalar la App:\n\n1. Tocá los tres puntos (⋮) o el botón compartir del navegador.\n2. Seleccioná 'Agregar a la pantalla principal' o 'Instalar aplicación'.");
       }
     }
   </script>
