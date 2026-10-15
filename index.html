@@ -92,8 +92,8 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center; /* Centrado vertical */
-      align-items: center;     /* Centrado horizontal */
+      justify-content: center;
+      align-items: center;
       text-align: center;
       box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
       border: 1px solid #2d6a4f;
@@ -112,7 +112,7 @@
       border-radius: 10px;
       border: 1.5px solid #2d6a4f;
       font-size: 13px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       outline: none;
       background: #000000;
       color: #ffffff;
@@ -159,7 +159,6 @@
       background-color: #457b9d;
     }
 
-    /* Animación de la mano saludando */
     @keyframes pulseHand {
       0% { transform: scale(1); }
       50% { transform: scale(1.3); }
@@ -195,14 +194,34 @@
     }
 
     .agenda-container {
-      max-height: 240px;
+      max-height: 220px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       padding-right: 4px;
       width: 100%;
+    }
+
+    /* Eventos en formato tarjeta/grid prolijo en vez de una tira abajo de otra */
+    .events-grid-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      max-height: 100px;
+      overflow-y: auto;
+      width: 100%;
+      padding-right: 2px;
+    }
+
+    .event-mini-card {
+      background: #000000;
+      border: 1px solid #2d6a4f;
+      border-radius: 8px;
+      padding: 6px;
+      text-align: left;
+      font-size: 10px;
     }
 
     .bottom-nav {
@@ -248,7 +267,7 @@
     }
 
     .cal-day {
-      padding: 5px 0;
+      padding: 6px 0;
       font-size: 10px;
       font-weight: bold;
       background-color: #0b110e;
@@ -337,21 +356,21 @@
       ⚡ Sistema Activo - Monitoreando alertas
     </div>
 
-    <!-- PASO 1: Nombre (Centrado) -->
+    <!-- PASO 1: Nombre -->
     <div id="step-1" class="quiz-box hidden">
       <div class="question-title">1. ¿Cómo te llamás?</div>
       <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
       <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
     </div>
 
-    <!-- PASO 2: Deporte / Actividad Física (Centrado) -->
+    <!-- PASO 2: Deporte -->
     <div id="step-2" class="quiz-box hidden">
       <div class="question-title">2. ¿Qué deporte o actividad física hacés?</div>
       <input type="text" id="input-deporte" class="input-text" placeholder="Ej. Rugby, gimnasio, correr...">
       <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
     </div>
 
-    <!-- PASO 3: Días que entrenás (Centrado) -->
+    <!-- PASO 3: Días de entreno -->
     <div id="step-3" class="quiz-box hidden">
       <div class="question-title">3. ¿Qué días entrenás?</div>
       <div class="options-grid">
@@ -366,10 +385,14 @@
       <button type="button" class="btn-next" onclick="nextStep(3)">Entrar a la App ➔</button>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Calendario -->
+    <!-- PANTALLA PRINCIPAL: Calendario con Navegación de Meses -->
     <div id="app-calendar" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" id="txt-saludo" style="font-size: 15px; color: #90e0ef; margin-bottom: 4px;">Hola 👋</div>
-      <div style="font-size: 10px; color: #adb5bd; margin-bottom: 8px; font-weight: bold;">Octubre 2026 - Tocá un día para ver detalles</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
+        <button onclick="cambiarMes(-1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">◀</button>
+        <div class="question-title" id="txt-mes-anio" style="font-size: 14px; color: #90e0ef; margin-bottom: 0;">Octubre 2026</div>
+        <button onclick="cambiarMes(1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">▶</button>
+      </div>
+      <div class="question-title" id="txt-saludo" style="font-size: 13px; color: #95d5b2; margin-bottom: 6px;">Hola 👋</div>
 
       <div class="cal-grid">
         <div class="cal-day-name">Lu</div>
@@ -379,8 +402,6 @@
         <div class="cal-day-name">Vi</div>
         <div class="cal-day-name">Sá</div>
         <div class="cal-day-name">Do</div>
-
-        <div></div><div></div><div></div>
 
         <div id="cal-days" style="display: contents;"></div>
       </div>
@@ -396,7 +417,7 @@
     <div id="app-notes" class="quiz-box hidden" style="justify-content: flex-start;">
       <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">📝 Notas y Actividades</div>
       <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.3; text-align: left;">
-        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Acá vas a poder agendar las actividades que hacés en estos días, le vas a poder seleccionar la hora, el color y el tiempo de aviso.
+        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Acá vas a poder agendar las actividades que hacés en estos días, indicando hora, color y aviso.
       </div>
       
       <div class="agenda-container" id="days-list-container"></div>
@@ -436,14 +457,23 @@
       </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Eventos -->
+    <!-- PANTALLA PRINCIPAL: Eventos con Hora y Grid Compacto -->
     <div id="app-events" class="quiz-box hidden" style="justify-content: flex-start;">
       <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef; margin-bottom:8px;">¡Agenda tu evento!</div>
       
       <div style="width:100%; margin-bottom: 6px;">
         <select id="event-day-select" class="input-select" style="margin-bottom: 4px;"></select>
-        <input type="text" id="event-desc-input" class="input-text" placeholder="Ej. Casamiento, partido..." style="margin-bottom: 4px;">
+        <input type="text" id="event-desc-input" class="input-text" placeholder="Ej. Partido, casamiento..." style="margin-bottom: 4px;">
         
+        <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+          <input type="time" id="event-time-input" class="input-text" style="margin-bottom: 0;">
+          <select id="event-alert-select" class="input-select" style="margin-bottom: 0;">
+            <option value="0">Sin aviso</option>
+            <option value="30">30 min antes</option>
+            <option value="60">1 hora antes</option>
+          </select>
+        </div>
+
         <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px; font-size: 11px;">
           <span>Color:</span>
           <select id="event-color-select" class="input-select" style="margin-bottom: 0;">
@@ -454,12 +484,12 @@
           </select>
         </div>
 
-        <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 8px;">Guardar Evento</button>
+        <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 7px;">Guardar Evento</button>
       </div>
 
       <div style="font-size: 11px; font-weight: bold; margin-top: 4px; color: #ffffff; text-align:left; width:100%;">Eventos agendados:</div>
-      <div class="agenda-container" id="events-list" style="max-height: 60px; background: #000; padding: 4px; border-radius: 6px; border: 1px solid #2d6a4f;">
-        <span style="font-size: 10px; color: #777;">No hay eventos aún.</span>
+      <div class="events-grid-container" id="events-list">
+        <span style="font-size: 10px; color: #777; grid-column: span 2;">No hay eventos aún.</span>
       </div>
     </div>
 
@@ -511,10 +541,16 @@
     };
 
     var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    var mesesTexto = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
     var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; 
     var selectedDayForDetail = 1;
 
-    var datosGuardados = localStorage.getItem("mareaGrandeDefinitivo");
+    // Fecha actual para iniciar en el mes y día real (Octubre 2026)
+    var fechaActualObj = new Date(2026, 9, 17); // 17 de Octubre de 2026 por defecto según contexto
+    var mesVisualizado = fechaActualObj.getMonth();
+    var anioVisualizado = fechaActualObj.getFullYear();
+
+    var datosGuardados = localStorage.getItem("mareaGrandePerfecto");
     if (datosGuardados) {
       try {
         var parsed = JSON.parse(datosGuardados);
@@ -554,12 +590,12 @@
     });
 
     function guardarTodo() {
-      localStorage.setItem("mareaGrandeDefinitivo", JSON.stringify(user));
+      localStorage.setItem("mareaGrandePerfecto", JSON.stringify(user));
     }
 
     function reiniciarConfig() {
       if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) {
-        localStorage.removeItem("mareaGrandeDefinitivo");
+        localStorage.removeItem("mareaGrandePerfecto");
         location.reload();
       }
     }
@@ -673,12 +709,26 @@
         document.getElementById("app-events").classList.remove("hidden");
         btns[2].classList.add("active");
         document.getElementById("txt-eventos-saludo").innerText = "¡Hola, " + user.nombre + "! Agendá tu evento";
+        setupEventDays();
         renderEventsList();
       } else if (tabName === 'settings') {
         document.getElementById("app-settings").classList.remove("hidden");
         btns[3].classList.add("active");
         actualizarEstadoGoogle();
       }
+    }
+
+    function cambiarMes(dir) {
+      mesVisualizado += dir;
+      if (mesVisualizado > 11) {
+        mesVisualizado = 0;
+        anioVisualizado++;
+      } else if (mesVisualizado < 0) {
+        mesVisualizado = 11;
+        anioVisualizado--;
+      }
+      showCalendar();
+      setupEventDays();
     }
 
     function renderDaysList() {
@@ -790,12 +840,27 @@
     }
 
     function showCalendar() {
+      document.getElementById("txt-mes-anio").innerText = mesesTexto[mesVisualizado] + " " + anioVisualizado;
       document.getElementById("txt-saludo").innerText = "Hola, " + user.nombre + " 👋";
+      
       var container = document.getElementById("cal-days");
       container.innerHTML = "";
 
-      for (var day = 1; day <= 31; day++) {
-        var dayOfWeek = (day + 3) % 7;
+      // Calcular cuántos días tiene el mes actual y el primer día de la semana
+      var primerDiaIndex = new Date(anioVisualizado, mesVisualizado, 1).getDay();
+      primerDiaIndex = (primerDiaIndex === 0) ? 6 : primerDiaIndex - 1; // Ajuste para arrancar en Lunes
+      var totalDiasMes = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
+
+      // Espacios vacíos previos
+      for (var e = 0; e < primerDiaIndex; e++) {
+        var emptyDiv = document.createElement("div");
+        container.appendChild(emptyDiv);
+      }
+
+      for (var day = 1; day <= totalDiasMes; day++) {
+        var fechaActualBucle = new Date(anioVisualizado, mesVisualizado, day);
+        var dayOfWeek = fechaActualBucle.getDay();
+        
         var isEntreno = user.entreno && user.entreno.indexOf(dayOfWeek) !== -1;
         var isNoEntreno = user.noEntreno && user.noEntreno.indexOf(dayOfWeek) !== -1;
 
@@ -811,8 +876,10 @@
           }
         }
 
-        if (user.eventos && user.eventos[day]) {
-          var colorEv = user.eventos[day].color || "#ff9f1c";
+        // Clave única para eventos con año-mes-día
+        var claveEvento = anioVisualizado + "-" + mesVisualizado + "-" + day;
+        if (user.eventos && user.eventos[claveEvento]) {
+          var colorEv = user.eventos[claveEvento].color || "#ff9f1c";
           dotsHTML += '<div class="dot" style="background-color: ' + colorEv + ';"></div>';
         }
 
@@ -820,9 +887,12 @@
         dayDiv.className = "cal-day";
         dayDiv.innerHTML = day + '<div class="dot-container">' + dotsHTML + '</div>';
         
-        dayDiv.setAttribute("data-day", day);
+        dayDiv.setAttribute("data-anio", anioVisualizado);
+        dayDiv.setAttribute("data-mes", mesVisualizado);
+        dayDiv.setAttribute("data-dia", day);
+        
         dayDiv.onclick = function() {
-          verDetalleDia(parseInt(this.getAttribute("data-day")));
+          verDetalleDia(parseInt(this.getAttribute("data-anio")), parseInt(this.getAttribute("data-mes")), parseInt(this.getAttribute("data-dia")));
         };
 
         container.appendChild(dayDiv);
@@ -831,16 +901,16 @@
       document.getElementById("app-calendar").classList.remove("hidden");
     }
 
-    function verDetalleDia(numDiaMes) {
-      var dayOfWeek = (numDiaMes + 3) % 7;
-      var indexTexto = diasMapeo.indexOf(dayOfWeek);
-      var nombreDia = diasSemanaTexto[indexTexto];
+    function verDetalleDia(anio, mes, dia) {
+      var fechaObj = new Date(anio, mes, dia);
+      var dayOfWeek = fechaObj.getDay();
+      var nombreDia = diasSemanaTexto[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
       var entrena = user.entreno && user.entreno.indexOf(dayOfWeek) !== -1;
 
-      var contenido = "<strong>Día " + numDiaMes + " de Octubre (" + nombreDia + ")</strong><br><br>";
+      var contenido = "<strong>" + dia + " de " + mesesTexto[mes] + " " + anio + " (" + nombreDia + ")</strong><br><br>";
       contenido += entrena ? "🟢 Estado: Día de entrenamiento de " + user.deporte + ".<br>" : "🔴 Estado: Día de descanso.<br>";
       
-      contenido += "<br><strong>Actividades agendadas:</strong><br>";
+      contenido += "<br><strong>Actividades semanales:</strong><br>";
       var lista = user.agendaLibre && user.agendaLibre[dayOfWeek];
       if (lista && lista.length > 0) {
         for (var i = 0; i < lista.length; i++) {
@@ -850,11 +920,13 @@
         contenido += "<em>Sin actividades agendadas.</em><br>";
       }
 
-      if (user.eventos && user.eventos[numDiaMes]) {
-        contenido += "<br>🎉 <strong>Evento:</strong> " + user.eventos[numDiaMes].desc;
+      var claveEvento = anio + "-" + mes + "-" + dia;
+      if (user.eventos && user.eventos[claveEvento]) {
+        var ev = user.eventos[claveEvento];
+        contenido += "<br>🎉 <strong>Evento (" + ev.hora + "):</strong> " + ev.desc;
       }
 
-      document.getElementById("modal-title").innerText = "Detalle del Día " + numDiaMes;
+      document.getElementById("modal-title").innerText = "Detalle del Día " + dia;
       document.getElementById("modal-content").innerHTML = contenido;
       document.getElementById("day-modal").classList.remove("hidden");
     }
@@ -866,30 +938,37 @@
     function setupEventDays() {
       var select = document.getElementById("event-day-select");
       select.innerHTML = "";
-      for(var d=1; d<=31; d++) {
+      
+      var totalDiasMes = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
+      for(var d=1; d<=totalDiasMes; d++) {
         var opt = document.createElement("option");
-        opt.value = d;
-        opt.text = d + " de Octubre";
+        opt.value = anioVisualizado + "-" + mesVisualizado + "-" + d;
+        opt.text = d + " de " + mesesTexto[mesVisualizado];
         select.appendChild(opt);
       }
     }
 
     function saveEvent() {
-      var day = document.getElementById("event-day-select").value;
+      var claveFecha = document.getElementById("event-day-select").value;
       var desc = document.getElementById("event-desc-input").value.trim();
+      var hora = document.getElementById("event-time-input").value;
+      var alerta = document.getElementById("event-alert-select").value;
       var color = document.getElementById("event-color-select").value;
       
-      if(!desc) {
-        alert("Escribí una descripción para el evento");
+      if(!desc || !hora) {
+        alert("Por favor, escribí la descripción del evento y la hora.");
         return;
       }
       if (!user.eventos) user.eventos = {};
-      user.eventos[day] = { desc: desc, color: color };
+      
+      user.eventos[claveFecha] = { desc: desc, hora: hora, alerta: alerta, color: color };
       guardarTodo();
+      
       document.getElementById("event-desc-input").value = "";
+      document.getElementById("event-time-input").value = "";
       renderEventsList();
       showCalendar();
-      alert("¡Evento guardado!");
+      alert("¡Evento guardado con éxito!");
     }
 
     function renderEventsList() {
@@ -899,21 +978,23 @@
       if (!user.eventos) user.eventos = {};
       var keys = Object.keys(user.eventos);
       if(keys.length === 0) {
-        listContainer.innerHTML = '<span style="font-size: 10px; color: #777;">No hay eventos aún.</span>';
+        listContainer.innerHTML = '<span style="font-size: 10px; color: #777; grid-column: span 2;">No hay eventos aún.</span>';
         return;
       }
 
       for(var i=0; i<keys.length; i++) {
-        var d = keys[i];
-        var ev = user.eventos[d];
-        var item = document.createElement("div");
-        item.style.fontSize = "10px";
-        item.style.marginBottom = "3px";
-        item.style.borderBottom = "1px solid #222";
-        item.style.paddingBottom = "2px";
-        item.style.color = "#fff";
-        item.innerHTML = "<strong>Día " + d + ":</strong> <span style='color: " + ev.color + ";'>■</span> " + ev.desc;
-        listContainer.appendChild(item);
+        var clave = keys[i];
+        var ev = user.eventos[clave];
+        var partes = clave.split("-");
+        var dStr = partes[2] + " de " + mesesTexto[parseInt(partes[1])];
+
+        var card = document.createElement("div");
+        card.className = "event-mini-card";
+        card.innerHTML = `
+          <div style="font-weight:bold; color:#95d5b2; margin-bottom:2px;">📅 ${dStr}</div>
+          <div><span style="color: ${ev.color};">■</span> <strong>${ev.hora}</strong> - ${ev.desc}</div>
+        `;
+        listContainer.appendChild(card);
       }
     }
 
@@ -948,13 +1029,14 @@
     function verificarAlertasEnVivo() {
       if (Notification.permission !== 'granted') return;
       var ahora = new Date();
-      var diaActual = ahora.getDay();
+      var diaActualSemana = ahora.getDay();
       var horaActual = ahora.getHours();
       var minActual = ahora.getMinutes();
       var horaStr = (horaActual < 10 ? "0" : "") + horaActual + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
       
-      if (user.agendaLibre && user.agendaLibre[diaActual]) {
-        var lista = user.agendaLibre[diaActual];
+      // Verificar actividades
+      if (user.agendaLibre && user.agendaLibre[diaActualSemana]) {
+        var lista = user.agendaLibre[diaActualSemana];
         for (var i = 0; i < lista.length; i++) {
           if (lista[i].alerta !== "0") {
             if (lista[i].hora === horaStr && minActual === 0) {
@@ -966,6 +1048,20 @@
               });
             }
           }
+        }
+      }
+
+      // Verificar eventos del día actual real
+      var claveHoy = ahora.getFullYear() + "-" + ahora.getMonth() + "-" + ahora.getDate();
+      if (user.eventos && user.eventos[claveHoy]) {
+        var evHoy = user.eventos[claveHoy];
+        if (evHoy.hora === horaStr && minActual === 0 && evHoy.alerta !== "0") {
+          navigator.serviceWorker.ready.then((reg) => {
+            reg.showNotification('🎉 ¡Evento próximo!', {
+              body: evHoy.desc + ' a las ' + evHoy.hora,
+              icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png'
+            });
+          });
         }
       }
     }
