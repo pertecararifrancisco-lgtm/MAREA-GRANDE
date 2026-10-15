@@ -115,6 +115,27 @@
       color: #ffffff;
     }
 
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .opt-label {
+      background-color: #0b110e;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: #ffffff;
+      border: 1px solid #2d6a4f;
+    }
+
     .btn-next {
       width: 100%;
       padding: 11px;
@@ -234,6 +255,8 @@
     }
 
     .dot-green { background-color: #2b9348; }
+    .dot-red { background-color: #d90429; }
+    .dot-blue { background-color: #0077b6; }
 
     .legend-box {
       margin-top: 8px;
@@ -291,11 +314,41 @@
       ⚡ Sistema Activo - Monitoreando alertas
     </div>
 
-    <!-- PASO ÚNICO: Solo pedir nombre -->
+    <!-- PASO 1: Nombre -->
     <div id="step-1" class="quiz-box hidden">
-      <div class="question-title">¿Cómo te llamás?</div>
+      <div class="question-title">1. ¿Cómo te llamás?</div>
       <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
-      <button type="button" class="btn-next" onclick="guardarNombre()">Entrar a la App ➔</button>
+      <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
+    </div>
+
+    <!-- PASO 2: ¿Qué días entrenás? -->
+    <div id="step-2" class="quiz-box hidden">
+      <div class="question-title">2. ¿Qué días entrenás? (Marcá los que sí)</div>
+      <div class="options-grid">
+        <label class="opt-label"><input type="checkbox" value="1" class="cb-entreno"> Lunes</label>
+        <label class="opt-label"><input type="checkbox" value="2" class="cb-entreno"> Martes</label>
+        <label class="opt-label"><input type="checkbox" value="3" class="cb-entreno"> Miércoles</label>
+        <label class="opt-label"><input type="checkbox" value="4" class="cb-entreno"> Jueves</label>
+        <label class="opt-label"><input type="checkbox" value="5" class="cb-entreno"> Viernes</label>
+        <label class="opt-label"><input type="checkbox" value="6" class="cb-entreno"> Sábado</label>
+        <label class="opt-label"><input type="checkbox" value="0" class="cb-entreno"> Domingo</label>
+      </div>
+      <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
+    </div>
+
+    <!-- PASO 3: ¿Qué días tenés más carga horaria? -->
+    <div id="step-3" class="quiz-box hidden">
+      <div class="question-title">3. ¿Qué días tenés más carga horaria?</div>
+      <div class="options-grid">
+        <label class="opt-label"><input type="checkbox" value="1" class="cb-carga"> Lunes</label>
+        <label class="opt-label"><input type="checkbox" value="2" class="cb-carga"> Martes</label>
+        <label class="opt-label"><input type="checkbox" value="3" class="cb-carga"> Miércoles</label>
+        <label class="opt-label"><input type="checkbox" value="4" class="cb-carga"> Jueves</label>
+        <label class="opt-label"><input type="checkbox" value="5" class="cb-carga"> Viernes</label>
+        <label class="opt-label"><input type="checkbox" value="6" class="cb-carga"> Sábado</label>
+        <label class="opt-label"><input type="checkbox" value="0" class="cb-carga"> Domingo</label>
+      </div>
+      <button type="button" class="btn-next" onclick="nextStep(3)">Entrar a la App ➔</button>
     </div>
 
     <!-- PANTALLA PRINCIPAL: Calendario -->
@@ -319,11 +372,13 @@
 
       <div class="legend-box">
         <strong>REFERENCIAS:</strong>
-        <div class="legend-item"><div class="dot dot-green"></div> Días con actividades / eventos</div>
+        <div class="legend-item"><div class="dot dot-green"></div> Días que entrenás</div>
+        <div class="legend-item"><div class="dot dot-red"></div> Días que no entrenás</div>
+        <div class="legend-item"><div class="dot dot-blue"></div> Mayor carga horaria</div>
       </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Notas con Tutorial Gigante -->
+    <!-- PANTALLA PRINCIPAL: Notas con Tutorial -->
     <div id="app-notes" class="quiz-box hidden">
       <div class="question-title" style="font-size: 14px; color: #90e0ef;">📝 Notas y Actividades</div>
       <div id="notes-tutorial-msg" style="font-size: 12px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.4;">
@@ -411,6 +466,9 @@
   <script>
     var user = {
       nombre: "",
+      entreno: [],
+      noEntreno: [],
+      menosCarga: [],
       agendaLibre: {},
       eventos: {}
     };
@@ -419,7 +477,7 @@
     var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; 
     var selectedDayForDetail = 1;
 
-    var datosGuardados = localStorage.getItem("mareaGrandeDirecto");
+    var datosGuardados = localStorage.getItem("mareaGrandeFinal");
     if (datosGuardados) {
       user = JSON.parse(datosGuardados);
     } else {
@@ -446,12 +504,12 @@
     });
 
     function guardarTodo() {
-      localStorage.setItem("mareaGrandeDirecto", JSON.stringify(user));
+      localStorage.setItem("mareaGrandeFinal", JSON.stringify(user));
     }
 
     function reiniciarConfig() {
       if (confirm("¿Querés reiniciar la app y borrar los datos?")) {
-        localStorage.removeItem("mareaGrandeDirecto");
+        localStorage.removeItem("mareaGrandeFinal");
         location.reload();
       }
     }
@@ -467,16 +525,48 @@
       alert("💾 Respaldo guardado con éxito.");
     }
 
-    function guardarNombre() {
-      var nom = document.getElementById("input-nombre").value.trim();
-      if (!nom) {
-        alert("Por favor, escribí tu nombre");
-        return;
+    function nextStep(step) {
+      if (step === 1) {
+        var nom = document.getElementById("input-nombre").value.trim();
+        if (!nom) {
+          alert("Por favor, escribí tu nombre");
+          return;
+        }
+        user.nombre = nom;
+        guardarTodo();
+        document.getElementById("step-1").classList.add("hidden");
+        document.getElementById("step-2").classList.remove("hidden");
+      } 
+      else if (step === 2) {
+        var checkboxesEntreno = document.querySelectorAll(".cb-entreno:checked");
+        user.entreno = [];
+        for (var i = 0; i < checkboxesEntreno.length; i++) {
+          user.entreno.push(parseInt(checkboxesEntreno[i].value));
+        }
+        
+        // Deducir automáticamente los días que NO entrena
+        user.noEntreno = [];
+        for (var d = 0; d < 7; d++) {
+          var numD = diasMapeo[d];
+          if (user.entreno.indexOf(numD) === -1) {
+            user.noEntreno.push(numD);
+          }
+        }
+
+        guardarTodo();
+        document.getElementById("step-2").classList.add("hidden");
+        document.getElementById("step-3").classList.remove("hidden");
       }
-      user.nombre = nom;
-      guardarTodo();
-      document.getElementById("step-1").classList.add("hidden");
-      initMainAppLink();
+      else if (step === 3) {
+        var checkboxesCarga = document.querySelectorAll(".cb-carga:checked");
+        user.menosCarga = [];
+        for (var j = 0; j < checkboxesCarga.length; j++) {
+          user.menosCarga.push(parseInt(checkboxesCarga[j].value));
+        }
+        guardarTodo();
+        document.getElementById("step-3").classList.add("hidden");
+        initMainAppLink();
+      }
     }
 
     function initMainAppLink() {
@@ -626,10 +716,14 @@
 
       for (var day = 1; day <= 31; day++) {
         var dayOfWeek = (day + 3) % 7;
-        var tieneActs = user.agendaLibre[dayOfWeek] && user.agendaLibre[dayOfWeek].length > 0;
+        var isEntreno = user.entreno.indexOf(dayOfWeek) !== -1;
+        var isNoEntreno = user.noEntreno.indexOf(dayOfWeek) !== -1;
+        var isCarga = user.menosCarga.indexOf(dayOfWeek) !== -1;
 
         var dotsHTML = "";
-        if (tieneActs) dotsHTML += '<div class="dot dot-green"></div>';
+        if (isEntreno) dotsHTML += '<div class="dot dot-green"></div>';
+        if (isNoEntreno) dotsHTML += '<div class="dot dot-red"></div>';
+        if (isCarga) dotsHTML += '<div class="dot dot-blue"></div>';
 
         if (user.eventos[day]) {
           var colorEv = user.eventos[day].color || "#ff9f1c";
@@ -655,10 +749,12 @@
       var dayOfWeek = (numDiaMes + 3) % 7;
       var indexTexto = diasMapeo.indexOf(dayOfWeek);
       var nombreDia = diasSemanaTexto[indexTexto];
+      var entrena = user.entreno.indexOf(dayOfWeek) !== -1;
 
       var contenido = "<strong>Día " + numDiaMes + " de Octubre (" + nombreDia + ")</strong><br><br>";
-      contenido += "<strong>Actividades:</strong><br>";
+      contenido += entrena ? "🟢 Estado: Día de entrenamiento.<br>" : "🔴 Estado: Día que no entrenás.<br>";
       
+      contenido += "<br><strong>Actividades agendadas:</strong><br>";
       var lista = user.agendaLibre[dayOfWeek];
       if (lista && lista.length > 0) {
         for (var i = 0; i < lista.length; i++) {
