@@ -291,6 +291,7 @@
     }
 
     .dot-green { background-color: #2b9348; }
+    .dot-red { background-color: #d90429; }
     .dot-blue { background-color: #0077b6; }
 
     .legend-box {
@@ -372,23 +373,23 @@
       ⚡ Sistema Activo - Monitoreando alertas
     </div>
 
-    <!-- PANTALLA DE ACCESO / INICIAR SESIÓN -->
-    <div id="step-login" class="quiz-box">
-      <div class="question-title">🔐 Iniciar Sesión en Marea Grande</div>
-      <p style="font-size: 12px; color: #ccc; margin-bottom: 12px;">Ingresá con tu cuenta para acceder a tu agenda personalizada:</p>
-      <input type="text" id="input-nombre" class="input-text" placeholder="Tu nombre o usuario...">
-      
-      <button type="button" class="btn-next" style="background: #db4437; margin-bottom: 8px;" onclick="iniciarConGoogleSimulado()">
-        🌐 Continuar con Google
-      </button>
-      <button type="button" class="btn-next" onclick="nextStep(1)" style="margin-top:0;">
-        Continuar con Usuario ➔
-      </button>
+    <!-- PASO 1: Nombre -->
+    <div id="step-1" class="quiz-box hidden">
+      <div class="question-title">1. ¿Cuál es tu nombre?</div>
+      <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
+      <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
     </div>
 
-    <!-- PASO 2: Días que entrenás -->
+    <!-- PASO 2: Deporte / Actividad Física -->
     <div id="step-2" class="quiz-box hidden">
-      <div class="question-title">2. ¿Qué días entrenás? (Marcá los que sí)</div>
+      <div class="question-title">2. ¿Hacés algún deporte / actividad física?</div>
+      <input type="text" id="input-deporte" class="input-text" placeholder="Ej. Rugby, gimnasio, correr...">
+      <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
+    </div>
+
+    <!-- PASO 3: Días que entrenás -->
+    <div id="step-3" class="quiz-box hidden">
+      <div class="question-title">3. ¿Qué días entrenás ese deporte / actividad física?</div>
       <div class="options-grid">
         <label class="opt-label"><input type="checkbox" value="1" class="cb-entreno"> Lunes</label>
         <label class="opt-label"><input type="checkbox" value="2" class="cb-entreno"> Martes</label>
@@ -398,12 +399,12 @@
         <label class="opt-label"><input type="checkbox" value="6" class="cb-entreno"> Sábado</label>
         <label class="opt-label"><input type="checkbox" value="0" class="cb-entreno"> Domingo</label>
       </div>
-      <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
+      <button type="button" class="btn-next" onclick="nextStep(3)">Siguiente</button>
     </div>
 
-    <!-- PASO 3: Carga Horaria -->
-    <div id="step-carga" class="quiz-box hidden">
-      <div class="question-title">3. ¿Qué días tenés más carga horaria?</div>
+    <!-- PASO 4: Carga Horaria -->
+    <div id="step-4" class="quiz-box hidden">
+      <div class="question-title">4. ¿Qué días tenés más carga horaria?</div>
       <div class="options-grid">
         <label class="opt-label"><input type="checkbox" value="1" class="cb-carga"> Lunes</label>
         <label class="opt-label"><input type="checkbox" value="2" class="cb-carga"> Martes</label>
@@ -413,10 +414,10 @@
         <label class="opt-label"><input type="checkbox" value="6" class="cb-carga"> Sábado</label>
         <label class="opt-label"><input type="checkbox" value="0" class="cb-carga"> Domingo</label>
       </div>
-      <button type="button" class="btn-next" onclick="nextStep('carga')">Ir a Planificación</button>
+      <button type="button" class="btn-next" onclick="nextStep(4)">Ir a Planificación</button>
     </div>
 
-    <!-- PASO 4: Pantalla de Bienvenida -->
+    <!-- PASO 5: Pantalla de Bienvenida -->
     <div id="step-welcome" class="quiz-box hidden" style="text-align: center; justify-content: center;">
       <div class="question-title" id="welcome-title" style="font-size: 18px; color: #00b4d8;">¡Hola!</div>
       <p style="font-size: 13px; color: #ddd; margin-bottom: 20px; line-height: 1.5;">
@@ -456,8 +457,9 @@
 
       <div class="legend-box">
         <strong>REFERENCIAS:</strong>
-        <div class="legend-item"><div class="dot dot-green"></div> Entrenás</div>
-        <div class="legend-item"><div class="dot dot-blue"></div> Alta carga</div>
+        <div class="legend-item"><div class="dot dot-green"></div> Días que entrenás</div>
+        <div class="legend-item"><div class="dot dot-red"></div> Días que no entrenás</div>
+        <div class="legend-item"><div class="dot dot-blue"></div> Días con más carga horaria</div>
       </div>
     </div>
 
@@ -499,7 +501,7 @@
 
       <div style="display: flex; gap: 6px; margin-top: 6px;">
         <button type="button" onclick="exportarRespaldo()" style="flex:1; background:#1d3557; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">💾 Respaldo</button>
-        <button type="button" onclick="reiniciarEncuesta()" style="flex:1; background:#d90429; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">🔄 Reiniciar</button>
+        <button type="button" onclick="reiniciarEncuesta()" style="flex:1; background:#d90429; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">🔄 Reiniciar / Modificar</button>
       </div>
     </div>
 
@@ -522,6 +524,7 @@
   <script>
     var user = {
       nombre: "",
+      deporte: "",
       entreno: [],
       noEntreno: [],
       menosCarga: [],
@@ -552,12 +555,11 @@
     }
 
     window.addEventListener('load', () => {
-      // Si ya hay nombre guardado, entramos directo a la app; sino mostramos el login
       if (user.nombre && user.nombre !== "") {
-        document.getElementById("step-login").classList.add("hidden");
+        document.getElementById("step-1").classList.add("hidden");
         initMainAppLink();
       } else {
-        document.getElementById("step-login").classList.remove("hidden");
+        document.getElementById("step-1").classList.remove("hidden");
       }
       
       if (window.Notification && Notification.permission === 'granted') {
@@ -574,19 +576,10 @@
     }
 
     function reiniciarEncuesta() {
-      if (confirm("¿Querés reiniciar la configuración y borrar los datos guardados?")) {
+      if (confirm("¿Querés reiniciar la configuración y modificar la encuesta?")) {
         localStorage.removeItem("mareaGrandeData");
         location.reload();
       }
-    }
-
-    function iniciarConGoogleSimulado() {
-      var nom = document.getElementById("input-nombre").value.trim();
-      if (!nom) nom = "Usuario Google";
-      user.nombre = nom;
-      guardarTodo();
-      document.getElementById("step-login").classList.add("hidden");
-      document.getElementById("step-2").classList.remove("hidden");
     }
 
     function exportarRespaldo() {
@@ -609,16 +602,24 @@
         }
         user.nombre = nom;
         guardarTodo();
-        document.getElementById("step-login").classList.add("hidden");
+        document.getElementById("step-1").classList.add("hidden");
         document.getElementById("step-2").classList.remove("hidden");
       } 
       else if (step === 2) {
+        var dep = document.getElementById("input-deporte").value.trim();
+        user.deporte = dep || "Entrenamiento general";
+        guardarTodo();
+        document.getElementById("step-2").classList.add("hidden");
+        document.getElementById("step-3").classList.remove("hidden");
+      }
+      else if (step === 3) {
         var checkboxesEntreno = document.querySelectorAll(".cb-entreno:checked");
         user.entreno = [];
         for (var i = 0; i < checkboxesEntreno.length; i++) {
           user.entreno.push(parseInt(checkboxesEntreno[i].value));
         }
         
+        // Deducir automáticamente los días que NO entrena
         user.noEntreno = [];
         for (var d = 0; d < 7; d++) {
           var numD = diasMapeo[d];
@@ -628,17 +629,17 @@
         }
 
         guardarTodo();
-        document.getElementById("step-2").classList.add("hidden");
-        document.getElementById("step-carga").classList.remove("hidden");
+        document.getElementById("step-3").classList.add("hidden");
+        document.getElementById("step-4").classList.remove("hidden");
       } 
-      else if (step === "carga") {
+      else if (step === 4) {
         var checkboxesCarga = document.querySelectorAll(".cb-carga:checked");
         user.menosCarga = [];
         for (var j = 0; j < checkboxesCarga.length; j++) {
           user.menosCarga.push(parseInt(checkboxesCarga[j].value));
         }
         guardarTodo();
-        document.getElementById("step-carga").classList.add("hidden");
+        document.getElementById("step-4").classList.add("hidden");
         
         document.getElementById("welcome-title").innerText = "¡Hola, " + user.nombre + "!";
         document.getElementById("step-welcome").classList.remove("hidden");
@@ -802,10 +803,12 @@
       for (var day = 1; day <= 31; day++) {
         var dayOfWeek = (day + 3) % 7;
         var isEntreno = user.entreno.indexOf(dayOfWeek) !== -1;
+        var isNoEntreno = user.noEntreno.indexOf(dayOfWeek) !== -1;
         var isCarga = user.menosCarga.indexOf(dayOfWeek) !== -1;
 
         var dotsHTML = "";
         if (isEntreno) dotsHTML += '<div class="dot dot-green"></div>';
+        if (isNoEntreno) dotsHTML += '<div class="dot dot-red"></div>';
         if (isCarga) dotsHTML += '<div class="dot dot-blue"></div>';
 
         if (user.eventos[day]) {
@@ -834,7 +837,7 @@
       var entrena = user.entreno.indexOf(dayOfWeek) !== -1;
 
       var contenido = "<strong>Día " + numDiaMes + " de Octubre (" + nombreDia + ")</strong><br>";
-      contenido += entrena ? "🟢 Estado: Entrenás este día.<br><br>" : "⚪ Estado: Día de descanso.<br><br>";
+      contenido += entrena ? "🟢 Estado: Entrenás " + user.deporte + " este día.<br><br>" : "⚪ Estado: Día de descanso (no entrenás).<br><br>";
       
       contenido +="<strong>Actividades:</strong><br>";
       var contadorActs = 0;
