@@ -109,31 +109,10 @@
       border-radius: 10px;
       border: 1.5px solid #2d6a4f;
       font-size: 13px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       outline: none;
       background: #000000;
       color: #ffffff;
-    }
-
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-
-    .opt-label {
-      background-color: #0b110e;
-      padding: 8px 10px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      color: #ffffff;
-      border: 1px solid #2d6a4f;
     }
 
     .btn-next {
@@ -154,73 +133,37 @@
       background-color: #457b9d;
     }
 
-    .day-header {
+    .day-card-item {
+      background: #0b110e;
+      border:: 1px solid #2d6a4f;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .day-card-item:hover {
+      background: #132a13;
+    }
+
+    .day-card-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #95d5b2;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
-      color: #95d5b2;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .section-tag {
-      font-size: 11px;
-      font-weight: bold;
-      color: #00b4d8;
-      background: #0b110e;
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin: 6px 0 4px 0;
-      border: 1px solid #1d3557;
     }
 
     .agenda-container {
-      max-height: 240px;
+      max-height: 250px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 6px;
       margin-bottom: 10px;
       padding-right: 4px;
-    }
-
-    .hour-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: #0b110e;
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid #1b4332;
-    }
-
-    .hour-label {
-      font-size: 11px;
-      font-weight: bold;
-      color: #95d5b2;
-      min-width: 40px;
-    }
-
-    .hour-input {
-      flex: 1;
-      padding: 5px;
-      border: 1px solid #2d6a4f;
-      background: #000;
-      color: #fff;
-      border-radius: 6px;
-      font-size: 11px;
-      outline: none;
-    }
-
-    .alert-select {
-      padding: 5px;
-      border: 1px solid #2d6a4f;
-      border-radius: 6px;
-      font-size: 10px;
-      background: #0b110e;
-      color: #fff;
-      cursor: pointer;
     }
 
     .bottom-nav {
@@ -291,8 +234,6 @@
     }
 
     .dot-green { background-color: #2b9348; }
-    .dot-red { background-color: #d90429; }
-    .dot-blue { background-color: #0077b6; }
 
     .legend-box {
       margin-top: 8px;
@@ -310,29 +251,6 @@
       display: flex;
       align-items: center;
       gap: 5px;
-    }
-
-    .days-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 8px;
-    }
-
-    .day-pill {
-      background: #0b110e;
-      color: #ffffff;
-      border: 1px solid #2d6a4f;
-      padding: 5px 8px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .day-pill.active {
-      background: #1d3557;
-      color: white;
     }
 
     .modal-overlay {
@@ -384,56 +302,7 @@
     <div id="step-2" class="quiz-box hidden">
       <div class="question-title">2. ¿Hacés algún deporte / actividad física?</div>
       <input type="text" id="input-deporte" class="input-text" placeholder="Ej. Rugby, gimnasio, correr...">
-      <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
-    </div>
-
-    <!-- PASO 3: Días que entrenás -->
-    <div id="step-3" class="quiz-box hidden">
-      <div class="question-title">3. ¿Qué días entrenás ese deporte / actividad física?</div>
-      <div class="options-grid">
-        <label class="opt-label"><input type="checkbox" value="1" class="cb-entreno"> Lunes</label>
-        <label class="opt-label"><input type="checkbox" value="2" class="cb-entreno"> Martes</label>
-        <label class="opt-label"><input type="checkbox" value="3" class="cb-entreno"> Miércoles</label>
-        <label class="opt-label"><input type="checkbox" value="4" class="cb-entreno"> Jueves</label>
-        <label class="opt-label"><input type="checkbox" value="5" class="cb-entreno"> Viernes</label>
-        <label class="opt-label"><input type="checkbox" value="6" class="cb-entreno"> Sábado</label>
-        <label class="opt-label"><input type="checkbox" value="0" class="cb-entreno"> Domingo</label>
-      </div>
-      <button type="button" class="btn-next" onclick="nextStep(3)">Siguiente</button>
-    </div>
-
-    <!-- PASO 4: Carga Horaria -->
-    <div id="step-4" class="quiz-box hidden">
-      <div class="question-title">4. ¿Qué días tenés más carga horaria?</div>
-      <div class="options-grid">
-        <label class="opt-label"><input type="checkbox" value="1" class="cb-carga"> Lunes</label>
-        <label class="opt-label"><input type="checkbox" value="2" class="cb-carga"> Martes</label>
-        <label class="opt-label"><input type="checkbox" value="3" class="cb-carga"> Miércoles</label>
-        <label class="opt-label"><input type="checkbox" value="4" class="cb-carga"> Jueves</label>
-        <label class="opt-label"><input type="checkbox" value="5" class="cb-carga"> Viernes</label>
-        <label class="opt-label"><input type="checkbox" value="6" class="cb-carga"> Sábado</label>
-        <label class="opt-label"><input type="checkbox" value="0" class="cb-carga"> Domingo</label>
-      </div>
-      <button type="button" class="btn-next" onclick="nextStep(4)">Ir a Planificación</button>
-    </div>
-
-    <!-- PASO 5: Pantalla de Bienvenida -->
-    <div id="step-welcome" class="quiz-box hidden" style="text-align: center; justify-content: center;">
-      <div class="question-title" id="welcome-title" style="font-size: 18px; color: #00b4d8;">¡Hola!</div>
-      <p style="font-size: 13px; color: #ddd; margin-bottom: 20px; line-height: 1.5;">
-        Esta app es tu agenda deportiva personal para organizar entrenamientos, cargas horarias y eventos con total facilidad. ¡Todo listo para arrancar!
-      </p>
-      <button type="button" class="btn-next" onclick="finalizarBienvenida()">Entrar a la App ➔</button>
-    </div>
-
-    <!-- AGENDA (AM y PM) -->
-    <div id="step-agenda" class="quiz-box hidden">
-      <div class="day-header">
-        <span id="agenda-day-title">Lunes</span>
-        <span id="agenda-counter" style="font-size: 11px; color: #95d5b2;">1 de 7 días</span>
-      </div>
-      <div class="agenda-container" id="agenda-rows"></div>
-      <button type="button" class="btn-next" id="btn-next-day" onclick="nextDayAgenda()">Siguiente ➔</button>
+      <button type="button" class="btn-next" onclick="nextStep(2)">Comenzar a usar la App ➔</button>
     </div>
 
     <!-- PANTALLA PRINCIPAL: Calendario -->
@@ -457,20 +326,46 @@
 
       <div class="legend-box">
         <strong>REFERENCIAS:</strong>
-        <div class="legend-item"><div class="dot dot-green"></div> Días que entrenás</div>
-        <div class="legend-item"><div class="dot dot-red"></div> Días que no entrenás</div>
-        <div class="legend-item"><div class="dot dot-blue"></div> Días con más carga horaria</div>
+        <div class="legend-item"><div class="dot dot-green"></div> Días con actividades / eventos</div>
       </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Notas -->
+    <!-- PANTALLA PRINCIPAL: Notas (Lista de Días) -->
     <div id="app-notes" class="quiz-box hidden">
       <div class="question-title" style="font-size: 14px; color: #90e0ef;">📝 Notas y Actividades</div>
       <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 6px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #2d6a4f;">
-        ¡Hola de nuevo! Acá podés revisar y anotar todas tus actividades organizadas por día.
+        ¡Hola! Acá podés agendar tus actividades por día, indicar la hora y configurar tus avisos.
       </div>
-      <div class="days-pills" id="notes-day-pills"></div>
-      <div class="agenda-container" id="notes-rows" style="max-height: 180px;"></div>
+      
+      <div class="agenda-container" id="days-list-container">
+        <!-- Se generan los días del Lunes al Domingo -->
+      </div>
+    </div>
+
+    <!-- VISTA DETALLE DE UN DÍA (Para agregar actividades libres) -->
+    <div id="app-day-detail" class="quiz-box hidden">
+      <div class="day-header">
+        <span id="detail-day-title" style="font-size: 15px;">Lunes</span>
+        <button type="button" class="btn-head" onclick="volverANotas()">⬅ Volver</button>
+      </div>
+      
+      <div style="margin-bottom: 8px;">
+        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Almuerza, Entrena rugby..." style="margin-bottom: 6px;">
+        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+          <input type="time" id="activity-time-input" class="input-text" style="margin-bottom: 0;">
+          <select id="activity-alert-select" class="input-select" style="margin-bottom: 0;">
+            <option value="0">Sin aviso</option>
+            <option value="30">30 min antes</option>
+            <option value="60">1 hora antes</option>
+          </select>
+        </div>
+        <button type="button" class="btn-next" onclick="agregarActividadDia()" style="padding: 8px; margin-top:0;">Agregar Actividad</button>
+      </div>
+
+      <div style="font-size: 11px; font-weight: bold; margin-top: 4px; color: #ffffff;">Actividades agendadas:</div>
+      <div class="agenda-container" id="day-activities-list" style="max-height: 120px; background: #000; padding: 6px; border-radius: 8px; border: 1px solid #2d6a4f;">
+        <span style="font-size: 10px; color: #777;">No hay actividades aún.</span>
+      </div>
     </div>
 
     <!-- PANTALLA PRINCIPAL: Eventos -->
@@ -501,7 +396,7 @@
 
       <div style="display: flex; gap: 6px; margin-top: 6px;">
         <button type="button" onclick="exportarRespaldo()" style="flex:1; background:#1d3557; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">💾 Respaldo</button>
-        <button type="button" onclick="reiniciarEncuesta()" style="flex:1; background:#d90429; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">🔄 Reiniciar / Modificar</button>
+        <button type="button" onclick="reiniciarEncuesta()" style="flex:1; background:#d90429; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">🔄 Reiniciar</button>
       </div>
     </div>
 
@@ -525,32 +420,20 @@
     var user = {
       nombre: "",
       deporte: "",
-      entreno: [],
-      noEntreno: [],
-      menosCarga: [],
-      agenda: {},
+      agendaLibre: {}, // Estructura: { 1: [ {hora: "12:00", actividad: "Almuerza", alerta: "0"} ], ... }
       eventos: {}
     };
 
-    var diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-    var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; 
-    var currentDayIndex = 0;
-    var currentNotesDay = 1;
+    var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; // 1: Lunes, ..., 0: Domingo
+    var selectedDayForDetail = 1;
 
-    var datosGuardados = localStorage.getItem("mareaGrandeData");
+    var datosGuardados = localStorage.getItem("mareaGrandeDataLibre");
     if (datosGuardados) {
       user = JSON.parse(datosGuardados);
     } else {
       for (var i = 0; i < 7; i++) {
-        user.agenda[diasMapeo[i]] = {};
-        for (var h = 0; h < 24; h++) {
-          var horaStr = (h < 10 ? "0" : "") + h + ":00";
-          if (h >= 1 && h <= 6) {
-            user.agenda[diasMapeo[i]][horaStr] = { actividad: "Horas de sueño", alerta: "0" };
-          } else {
-            user.agenda[diasMapeo[i]][horaStr] = { actividad: "", alerta: "0" };
-          }
-        }
+        user.agendaLibre[diasMapeo[i]] = [];
       }
     }
 
@@ -572,12 +455,12 @@
     });
 
     function guardarTodo() {
-      localStorage.setItem("mareaGrandeData", JSON.stringify(user));
+      localStorage.setItem("mareaGrandeDataLibre", JSON.stringify(user));
     }
 
     function reiniciarEncuesta() {
-      if (confirm("¿Querés reiniciar la configuración y modificar la encuesta?")) {
-        localStorage.removeItem("mareaGrandeData");
+      if (confirm("¿Querés reiniciar la configuración y borrar los datos?")) {
+        localStorage.removeItem("mareaGrandeDataLibre");
         location.reload();
       }
     }
@@ -607,157 +490,9 @@
       } 
       else if (step === 2) {
         var dep = document.getElementById("input-deporte").value.trim();
-        user.deporte = dep || "Entrenamiento general";
+        user.deporte = dep || "Deporte general";
         guardarTodo();
         document.getElementById("step-2").classList.add("hidden");
-        document.getElementById("step-3").classList.remove("hidden");
-      }
-      else if (step === 3) {
-        var checkboxesEntreno = document.querySelectorAll(".cb-entreno:checked");
-        user.entreno = [];
-        for (var i = 0; i < checkboxesEntreno.length; i++) {
-          user.entreno.push(parseInt(checkboxesEntreno[i].value));
-        }
-        
-        // Deducir automáticamente los días que NO entrena
-        user.noEntreno = [];
-        for (var d = 0; d < 7; d++) {
-          var numD = diasMapeo[d];
-          if (user.entreno.indexOf(numD) === -1) {
-            user.noEntreno.push(numD);
-          }
-        }
-
-        guardarTodo();
-        document.getElementById("step-3").classList.add("hidden");
-        document.getElementById("step-4").classList.remove("hidden");
-      } 
-      else if (step === 4) {
-        var checkboxesCarga = document.querySelectorAll(".cb-carga:checked");
-        user.menosCarga = [];
-        for (var j = 0; j < checkboxesCarga.length; j++) {
-          user.menosCarga.push(parseInt(checkboxesCarga[j].value));
-        }
-        guardarTodo();
-        document.getElementById("step-4").classList.add("hidden");
-        
-        document.getElementById("welcome-title").innerText = "¡Hola, " + user.nombre + "!";
-        document.getElementById("step-welcome").classList.remove("hidden");
-      }
-    }
-
-    function finalizarBienvenida() {
-      document.getElementById("step-welcome").classList.add("hidden");
-      startAgenda();
-    }
-
-    function startAgenda() {
-      currentDayIndex = 0;
-      document.getElementById("step-agenda").classList.remove("hidden");
-      renderAgendaDay();
-    }
-
-    function renderAgendaDay() {
-      var numDia = diasMapeo[currentDayIndex];
-      var nombreDia = diasSemana[currentDayIndex];
-      
-      document.getElementById("agenda-day-title").innerText = nombreDia;
-      document.getElementById("agenda-counter").innerText = (currentDayIndex + 1) + " de 7 días";
-      
-      if (currentDayIndex === 6) {
-        document.getElementById("btn-next-day").innerText = "Finalizar planificación ➔";
-      } else {
-        document.getElementById("btn-next-day").innerText = "Siguiente ➔";
-      }
-
-      var container = document.getElementById("agenda-rows");
-      container.innerHTML = "";
-
-      var tagAM = document.createElement("div");
-      tagAM.className = "section-tag";
-      tagAM.innerText = "🌅 MAÑANA (AM)";
-      container.appendChild(tagAM);
-
-      for (var h = 0; h < 12; h++) {
-        container.appendChild(crearFilaAgenda(numDia, h));
-      }
-
-      var tagPM = document.createElement("div");
-      tagPM.className = "section-tag";
-      tagPM.innerText = "🌆 TARDE / NOCHE (PM)";
-      container.appendChild(tagPM);
-
-      for (var h = 12; h < 24; h++) {
-        container.appendChild(crearFilaAgenda(numDia, h));
-      }
-    }
-
-    function crearFilaAgenda(numDia, h) {
-      var horaStr = (h < 10 ? "0" : "") + h + ":00";
-      var datosHora = user.agenda[numDia][horaStr];
-
-      var rowDiv = document.createElement("div");
-      rowDiv.className = "hour-row";
-
-      var labelDiv = document.createElement("div");
-      labelDiv.className = "hour-label";
-      labelDiv.innerText = horaStr;
-
-      var inputAct = document.createElement("input");
-      inputAct.type = "text";
-      inputAct.className = "hour-input";
-      inputAct.placeholder = "Actividad...";
-      inputAct.value = datosHora.actividad;
-      inputAct.setAttribute("data-dia", numDia);
-      inputAct.setAttribute("data-hora", horaStr);
-      inputAct.oninput = function() {
-        var d = this.getAttribute("data-dia");
-        var hr = this.getAttribute("data-hora");
-        user.agenda[d][hr].actividad = this.value;
-        guardarTodo();
-      };
-
-      var selectAlert = document.createElement("select");
-      selectAlert.className = "alert-select";
-      selectAlert.setAttribute("data-dia", numDia);
-      selectAlert.setAttribute("data-hora", horaStr);
-      
-      var opcionesAlerta = [
-        {val: "0", text: "Sin aviso"},
-        {val: "30", text: "30 min"},
-        {val: "60", text: "1 hora"}
-      ];
-
-      for (var op = 0; op < opcionesAlerta.length; op++) {
-        var opt = document.createElement("option");
-        opt.value = opcionesAlerta[op].val;
-        opt.text = opcionesAlerta[op].text;
-        if (datosHora.alerta === opcionesAlerta[op].val) {
-          opt.selected = true;
-        }
-        selectAlert.appendChild(opt);
-      }
-
-      selectAlert.onchange = function() {
-        var d = this.getAttribute("data-dia");
-        var hr = this.getAttribute("data-hora");
-        user.agenda[d][hr].alerta = this.value;
-        guardarTodo();
-      };
-
-      rowDiv.appendChild(labelDiv);
-      rowDiv.appendChild(inputAct);
-      rowDiv.appendChild(selectAlert);
-      return rowDiv;
-    }
-
-    function nextDayAgenda() {
-      if (currentDayIndex < 6) {
-        currentDayIndex++;
-        renderAgendaDay();
-      } else {
-        document.getElementById("step-agenda").classList.add("hidden");
-        guardarTodo();
         initMainAppLink();
       }
     }
@@ -765,7 +500,7 @@
     function initMainAppLink() {
       document.getElementById("bottom-nav-bar").classList.remove("hidden");
       showCalendar();
-      setupNotesPills();
+      renderDaysList();
       setupEventDays();
       renderEventsList();
     }
@@ -773,6 +508,7 @@
     function switchTab(tabName) {
       document.getElementById("app-calendar").classList.add("hidden");
       document.getElementById("app-notes").classList.add("hidden");
+      document.getElementById("app-day-detail").classList.add("hidden");
       document.getElementById("app-events").classList.add("hidden");
 
       var btns = document.querySelectorAll(".nav-btn");
@@ -785,14 +521,121 @@
       } else if (tabName === 'notes') {
         document.getElementById("app-notes").classList.remove("hidden");
         btns[1].classList.add("active");
-        document.getElementById("notes-tutorial-msg").innerHTML = "¡Hola, " + user.nombre + "! Esta es la sección de notas para ver todas tus actividades.";
-        renderNotesDay(currentNotesDay);
+        document.getElementById("notes-tutorial-msg").innerHTML = "¡Hola, " + user.nombre + "! Acá podés agendar tus actividades de " + user.deporte + " por día.";
+        renderDaysList();
       } else if (tabName === 'events') {
         document.getElementById("app-events").classList.remove("hidden");
         btns[2].classList.add("active");
         document.getElementById("txt-eventos-saludo").innerText = "¡Hola, " + user.nombre + "! Agendá tu evento";
         renderEventsList();
       }
+    }
+
+    function renderDaysList() {
+      var container = document.getElementById("days-list-container");
+      container.innerHTML = "";
+
+      for (var i = 0; i < 7; i++) {
+        var numDia = diasMapeo[i];
+        var nombreDia = diasSemanaTexto[i];
+        var cantActs = user.agendaLibre[numDia] ? user.agendaLibre[numDia].length : 0;
+
+        var card = document.createElement("div");
+        card.className = "day-card-item";
+        card.innerHTML = `
+          <div class="day-card-title">
+            <span>📅 ${nombreDia}</span>
+            <span style="font-size: 11px; color: #95d5b2; font-weight: normal;">${cantActs} actividad(es)</span>
+          </div>
+        `;
+        card.setAttribute("data-num", numDia);
+        card.onclick = function() {
+          abrirDetalleDia(parseInt(this.getAttribute("data-num")));
+        };
+        container.appendChild(card);
+      }
+    }
+
+    function abrirDetalleDia(numDia) {
+      selectedDayForDetail = numDia;
+      var indexTexto = diasMapeo.indexOf(numDia);
+      document.getElementById("detail-day-title").innerText = diasSemanaTexto[indexTexto];
+      
+      document.getElementById("app-notes").classList.add("hidden");
+      document.getElementById("app-day-detail").classList.remove("hidden");
+      renderDayActivities();
+    }
+
+    function volverANotas() {
+      document.getElementById("app-day-detail").classList.add("hidden");
+      document.getElementById("app-notes").classList.remove("hidden");
+      renderDaysList();
+      showCalendar();
+    }
+
+    function agregarActividadDia() {
+      var actNombre = document.getElementById("activity-name-input").value.trim();
+      var actHora = document.getElementById("activity-time-input").value;
+      var actAlerta = document.getElementById("activity-alert-select").value;
+
+      if (!actNombre || !actHora) {
+        alert("Por favor, escribí el nombre de la actividad y la hora.");
+        return;
+      }
+
+      if (!user.agendaLibre[selectedDayForDetail]) {
+        user.agendaLibre[selectedDayForDetail] = [];
+      }
+
+      user.agendaLibre[selectedDayForDetail].push({
+        hora: actHora,
+        actividad: actNombre,
+        alerta: actAlerta
+      });
+
+      // Ordenar por hora
+      user.agendaLibre[selectedDayForDetail].sort((a, b) => a.hora.localeCompare(b.hora));
+
+      guardarTodo();
+      document.getElementById("activity-name-input").value = "";
+      document.getElementById("activity-time-input").value = "";
+      renderDayActivities();
+    }
+
+    function renderDayActivities() {
+      var container = document.getElementById("day-activities-list");
+      container.innerHTML = "";
+
+      var lista = user.agendaLibre[selectedDayForDetail];
+      if (!lista || lista.length === 0) {
+        container.innerHTML = '<span style="font-size: 10px; color: #777;">No hay actividades aún.</span>';
+        return;
+      }
+
+      for (var i = 0; i < lista.length; i++) {
+        var item = lista[i];
+        var row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+        row.style.fontSize = "11px";
+        row.style.marginBottom = "4px";
+        row.style.borderBottom = "1px solid #222";
+        row.style.paddingBottom = "3px";
+        row.style.color = "#fff";
+        
+        row.innerHTML = `
+          <span><strong>${item.hora}</strong> - ${item.actividad}</span>
+          <button onclick="eliminarActividad(${selectedDayForDetail}, ${i})" style="background:#d90429; color:#fff; border:none; padding:2px 6px; border-radius:4px; font-size:9px; cursor:pointer;">X</button>
+        `;
+        container.appendChild(row);
+      }
+    }
+
+    function eliminarActividad(numDia, index) {
+      user.agendaLibre[numDia].splice(index, 1);
+      guardarTodo();
+      renderDayActivities();
     }
 
     function showCalendar() {
@@ -802,14 +645,10 @@
 
       for (var day = 1; day <= 31; day++) {
         var dayOfWeek = (day + 3) % 7;
-        var isEntreno = user.entreno.indexOf(dayOfWeek) !== -1;
-        var isNoEntreno = user.noEntreno.indexOf(dayOfWeek) !== -1;
-        var isCarga = user.menosCarga.indexOf(dayOfWeek) !== -1;
+        var tieneActs = user.agendaLibre[dayOfWeek] && user.agendaLibre[dayOfWeek].length > 0;
 
         var dotsHTML = "";
-        if (isEntreno) dotsHTML += '<div class="dot dot-green"></div>';
-        if (isNoEntreno) dotsHTML += '<div class="dot dot-red"></div>';
-        if (isCarga) dotsHTML += '<div class="dot dot-blue"></div>';
+        if (tieneActs) dotsHTML += '<div class="dot dot-green"></div>';
 
         if (user.eventos[day]) {
           var colorEv = user.eventos[day].color || "#ff9f1c";
@@ -833,23 +672,20 @@
 
     function verDetalleDia(numDiaMes) {
       var dayOfWeek = (numDiaMes + 3) % 7;
-      var nombreDia = diasSemana[diasMapeo.indexOf(dayOfWeek)];
-      var entrena = user.entreno.indexOf(dayOfWeek) !== -1;
+      var indexTexto = diasMapeo.indexOf(dayOfWeek);
+      var nombreDia = diasSemanaTexto[indexTexto];
 
-      var contenido = "<strong>Día " + numDiaMes + " de Octubre (" + nombreDia + ")</strong><br>";
-      contenido += entrena ? "🟢 Estado: Entrenás " + user.deporte + " este día.<br><br>" : "⚪ Estado: Día de descanso (no entrenás).<br><br>";
+      var contenido = "<strong>Día " + numDiaMes + " de Octubre (" + nombreDia + ")</strong><br><br>";
+      contenido +="<strong>Actividades de " + user.deporte + ":</strong><br>";
       
-      contenido +="<strong>Actividades:</strong><br>";
-      var contadorActs = 0;
-      for (var h = 0; h < 24; h++) {
-        var horaStr = (h < 10 ? "0" : "") + h + ":00";
-        var act = user.agenda[dayOfWeek][horaStr].actividad;
-        if (act && act !== "Horas de sueño") {
-          contenido += "- " + horaStr + ": " + act + "<br>";
-          contadorActs++;
+      var lista = user.agendaLibre[dayOfWeek];
+      if (lista && lista.length > 0) {
+        for (var i = 0; i < lista.length; i++) {
+          contenido += "- " + lista[i].hora + ": " + lista[i].actividad + "<br>";
         }
+      } else {
+        contenido += "<em>Sin actividades agendadas.</em><br>";
       }
-      if (contadorActs === 0) contenido += "<em>Sin actividades.</em><br>";
 
       if (user.eventos[numDiaMes]) {
         contenido += "<br>🎉 <strong>Evento:</strong> " + user.eventos[numDiaMes].desc;
@@ -862,63 +698,6 @@
 
     function cerrarModal() {
       document.getElementById("day-modal").classList.add("hidden");
-    }
-
-    function setupNotesPills() {
-      var pillsContainer = document.getElementById("notes-day-pills");
-      pillsContainer.innerHTML = "";
-      
-      var ordenDias = [
-        {num: 1, name: "Lunes"},
-        {num: 2, name: "Martes"},
-        {num: 3, name: "Miércoles"},
-        {num: 4, name: "Jueves"},
-        {num: 5, name: "Viernes"},
-        {num: 6, name: "Sábado"},
-        {num: 0, name: "Domingo"}
-      ];
-
-      for(var i=0; i<ordenDias.length; i++) {
-        var btn = document.createElement("button");
-        btn.className = "day-pill " + (ordenDias[i].num === currentNotesDay ? "active" : "");
-        btn.innerText = ordenDias[i].name;
-        btn.setAttribute("data-num", ordenDias[i].num);
-        btn.onclick = function() {
-          currentNotesDay = parseInt(this.getAttribute("data-num"));
-          var allPills = document.querySelectorAll(".day-pill");
-          for(var p=0; p<allPills.length; p++) { allPills[p].classList.remove("active"); }
-          this.classList.add("active");
-          renderNotesDay(currentNotesDay);
-        };
-        pillsContainer.appendChild(btn);
-      }
-    }
-
-    function renderNotesDay(numDia) {
-      var container = document.getElementById("notes-rows");
-      container.innerHTML = "";
-
-      for (var h = 0; h < 24; h++) {
-        var horaStr = (h < 10 ? "0" : "") + h + ":00";
-        var datosHora = user.agenda[numDia][horaStr];
-
-        var rowDiv = document.createElement("div");
-        rowDiv.className = "hour-row";
-
-        var labelDiv = document.createElement("div");
-        labelDiv.className = "hour-label";
-        labelDiv.innerText = horaStr;
-
-        var textAct = document.createElement("div");
-        textAct.style.flex = "1";
-        textAct.style.fontSize = "11px";
-        textAct.style.color = datosHora.actividad ? "#ffffff" : "#6c757d";
-        textAct.innerText = datosHora.actividad || "(Sin actividad)";
-
-        rowDiv.appendChild(labelDiv);
-        rowDiv.appendChild(textAct);
-        container.appendChild(rowDiv);
-      }
     }
 
     function setupEventDays() {
@@ -1007,18 +786,21 @@
       var diaActual = ahora.getDay();
       var horaActual = ahora.getHours();
       var minActual = ahora.getMinutes();
-      var horaStr = (horaActual < 10 ? "0" : "") + horaActual + ":00";
+      var horaStr = (horaActual < 10 ? "0" : "") + horaActual + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
       
-      if (user.agenda && user.agenda[diaActual] && user.agenda[diaActual][horaStr]) {
-        var item = user.agenda[diaActual][horaStr];
-        if (item.actividad && item.actividad !== "Horas de sueño" && item.alerta !== "0") {
-          if (minActual === 0) { 
-            navigator.serviceWorker.ready.then((reg) => {
-              reg.showNotification('⏰ ¡Próxima actividad!', {
-                body: 'En poco tiempo arranca: ' + item.actividad,
-                icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png'
+      if (user.agendaLibre && user.agendaLibre[diaActual]) {
+        var lista = user.agendaLibre[diaActual];
+        for (var i = 0; i < lista.length; i++) {
+          if (lista[i].alerta !== "0") {
+            // Lógica simple de aviso en la hora exacta
+            if (lista[i].hora === horaStr && minActual === 0) {
+              navigator.serviceWorker.ready.then((reg) => {
+                reg.showNotification('⏰ ¡Próxima actividad!', {
+                  body: 'Arranca: ' + lista[i].actividad,
+                  icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png'
+                });
               });
-            });
+            }
           }
         }
       }
