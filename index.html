@@ -112,7 +112,7 @@
       border-radius: 10px;
       border: 1.5px solid #2d6a4f;
       font-size: 13px;
-      margin-bottom: 12px;
+      margin-bottom: 6px;
       outline: none;
       background: #000000;
       color: #ffffff;
@@ -204,7 +204,6 @@
       width: 100%;
     }
 
-    /* Eventos en formato tarjeta/grid prolijo en vez de una tira abajo de otra */
     .events-grid-container {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -296,6 +295,7 @@
     }
 
     .dot-green { background-color: #2b9348; }
+    .dot-blue { background-color: #0077b6; }
     .dot-red { background-color: #d90429; }
 
     .legend-box {
@@ -357,35 +357,36 @@
     </div>
 
     <!-- PASO 1: Nombre -->
-    <div id="step-1" class="quiz-box hidden">
+    <div id="step-1" class="quiz-box">
       <div class="question-title">1. ¿Cómo te llamás?</div>
       <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
       <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
     </div>
 
-    <!-- PASO 2: Deporte -->
+    <!-- PASO 2: Deportes (Con aclaración chica) -->
     <div id="step-2" class="quiz-box hidden">
-      <div class="question-title">2. ¿Qué deporte o actividad física hacés?</div>
-      <input type="text" id="input-deporte" class="input-text" placeholder="Ej. Rugby, gimnasio, correr...">
+      <div class="question-title">2. ¿Qué deporte/s o actividad/es hacés?</div>
+      <input type="text" id="input-deportes" class="input-text" placeholder="Ej. Rugby, fútbol, gimnasio...">
+      <div style="font-size: 9px; color: #adb5bd; margin-bottom: 12px; font-style: italic;">* Si hacés dos o más, separalas con coma.</div>
       <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
     </div>
 
-    <!-- PASO 3: Días de entreno -->
-    <div id="step-3" class="quiz-box hidden">
-      <div class="question-title">3. ¿Qué días entrenás?</div>
-      <div class="options-grid">
-        <label class="opt-label"><input type="checkbox" value="1" class="cb-entreno"> Lunes</label>
-        <label class="opt-label"><input type="checkbox" value="2" class="cb-entreno"> Martes</label>
-        <label class="opt-label"><input type="checkbox" value="3" class="cb-entreno"> Miércoles</label>
-        <label class="opt-label"><input type="checkbox" value="4" class="cb-entreno"> Jueves</label>
-        <label class="opt-label"><input type="checkbox" value="5" class="cb-entreno"> Viernes</label>
-        <label class="opt-label"><input type="checkbox" value="6" class="cb-entreno"> Sábado</label>
-        <label class="opt-label"><input type="checkbox" value="0" class="cb-entreno"> Domingo</label>
+    <!-- PASO 3: Días por cada deporte -->
+    <div id="step-deportes-dias" class="quiz-box hidden">
+      <div class="question-title" id="txt-pregunta-deporte">3. ¿Qué días entrenás?</div>
+      <div class="options-grid" id="grid-dias-deporte">
+        <label class="opt-label"><input type="checkbox" value="1" class="cb-dias-dep"> Lunes</label>
+        <label class="opt-label"><input type="checkbox" value="2" class="cb-dias-dep"> Martes</label>
+        <label class="opt-label"><input type="checkbox" value="3" class="cb-dias-dep"> Miércoles</label>
+        <label class="opt-label"><input type="checkbox" value="4" class="cb-dias-dep"> Jueves</label>
+        <label class="opt-label"><input type="checkbox" value="5" class="cb-dias-dep"> Viernes</label>
+        <label class="opt-label"><input type="checkbox" value="6" class="cb-dias-dep"> Sábado</label>
+        <label class="opt-label"><input type="checkbox" value="0" class="cb-dias-dep"> Domingo</label>
       </div>
-      <button type="button" class="btn-next" onclick="nextStep(3)">Entrar a la App ➔</button>
+      <button type="button" class="btn-next" onclick="siguienteDeporteDias()">Siguiente ➔</button>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Calendario con Navegación de Meses -->
+    <!-- PANTALLA PRINCIPAL: Calendario -->
     <div id="app-calendar" class="quiz-box hidden" style="justify-content: flex-start;">
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
         <button onclick="cambiarMes(-1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">◀</button>
@@ -406,10 +407,8 @@
         <div id="cal-days" style="display: contents;"></div>
       </div>
 
-      <div class="legend-box">
+      <div class="legend-box" id="legend-references-box">
         <strong>REFERENCIAS:</strong>
-        <div class="legend-item"><div class="dot dot-green"></div> Días que entrenás</div>
-        <div class="legend-item"><div class="dot dot-red"></div> Días de descanso</div>
       </div>
     </div>
 
@@ -417,7 +416,7 @@
     <div id="app-notes" class="quiz-box hidden" style="justify-content: flex-start;">
       <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">📝 Notas y Actividades</div>
       <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.3; text-align: left;">
-        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Acá vas a poder agendar las actividades que hacés en estos días, indicando hora, color y aviso.
+        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Acá vas a poder agendar tus actividades, indicando hora, color y aviso.
       </div>
       
       <div class="agenda-container" id="days-list-container"></div>
@@ -457,7 +456,7 @@
       </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Eventos con Hora y Grid Compacto -->
+    <!-- PANTALLA PRINCIPAL: Eventos -->
     <div id="app-events" class="quiz-box hidden" style="justify-content: flex-start;">
       <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef; margin-bottom:8px;">¡Agenda tu evento!</div>
       
@@ -532,10 +531,9 @@
   <script>
     var user = {
       nombre: "",
-      deporte: "",
+      listaDeportes: [],
+      entrenosPorDeporte: {},
       emailGoogle: "",
-      entreno: [],
-      noEntreno: [],
       agendaLibre: {},
       eventos: {}
     };
@@ -544,13 +542,14 @@
     var mesesTexto = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
     var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; 
     var selectedDayForDetail = 1;
+    var indiceDeporteActual = 0;
+    var coloresDeportes = ["#2b9348", "#0077b6", "#ff9f1c", "#9b5de5", "#f15bb5"];
 
-    // Fecha actual para iniciar en el mes y día real (Octubre 2026)
-    var fechaActualObj = new Date(2026, 9, 17); // 17 de Octubre de 2026 por defecto según contexto
+    var fechaActualObj = new Date(2026, 9, 17);
     var mesVisualizado = fechaActualObj.getMonth();
     var anioVisualizado = fechaActualObj.getFullYear();
 
-    var datosGuardados = localStorage.getItem("mareaGrandePerfecto");
+    var datosGuardados = localStorage.getItem("mareaGrandeMultiDeporteAclarado");
     if (datosGuardados) {
       try {
         var parsed = JSON.parse(datosGuardados);
@@ -572,8 +571,6 @@
     window.addEventListener('load', () => {
       if (!user.nombre || user.nombre.trim() === "") {
         document.getElementById("step-1").classList.remove("hidden");
-        document.getElementById("step-2").classList.add("hidden");
-        document.getElementById("step-3").classList.add("hidden");
         document.getElementById("app-calendar").classList.add("hidden");
         document.getElementById("bottom-nav-bar").classList.add("hidden");
       } else {
@@ -590,12 +587,12 @@
     });
 
     function guardarTodo() {
-      localStorage.setItem("mareaGrandePerfecto", JSON.stringify(user));
+      localStorage.setItem("mareaGrandeMultiDeporteAclarado", JSON.stringify(user));
     }
 
     function reiniciarConfig() {
       if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) {
-        localStorage.removeItem("mareaGrandePerfecto");
+        localStorage.removeItem("mareaGrandeMultiDeporteAclarado");
         location.reload();
       }
     }
@@ -647,37 +644,57 @@
         document.getElementById("step-2").classList.remove("hidden");
       } 
       else if (step === 2) {
-        var dep = document.getElementById("input-deporte").value.trim();
-        user.deporte = dep || "Entrenamiento general";
-        guardarTodo();
-        document.getElementById("step-2").classList.add("hidden");
-        document.getElementById("step-3").classList.remove("hidden");
-      }
-      else if (step === 3) {
-        var checkboxesEntreno = document.querySelectorAll(".cb-entreno:checked");
-        user.entreno = [];
-        for (var i = 0; i < checkboxesEntreno.length; i++) {
-          user.entreno.push(parseInt(checkboxesEntreno[i].value));
+        var depInput = document.getElementById("input-deportes").value.trim();
+        if (!depInput) {
+          alert("Por favor, ingresá al menos un deporte o actividad");
+          return;
         }
-        
-        user.noEntreno = [];
-        for (var d = 0; d < 7; d++) {
-          var numD = diasMapeo[d];
-          if (user.entreno.indexOf(numD) === -1) {
-            user.noEntreno.push(numD);
-          }
-        }
+        user.listaDeportes = depInput.split(',').map(d => d.trim()).filter(d => d.length > 0);
+        user.entrenosPorDeporte = {};
+        indiceDeporteActual = 0;
 
         guardarTodo();
-        document.getElementById("step-3").classList.add("hidden");
+        document.getElementById("step-2").classList.add("hidden");
+        mostrarPreguntaDeporteActual();
+      }
+    }
+
+    function mostrarPreguntaDeporteActual() {
+      if (indiceDeporteActual < user.listaDeportes.length) {
+        var depActual = user.listaDeportes[indiceDeporteActual];
+        document.getElementById("txt-pregunta-deporte").innerText = "3. ¿Qué días entrenás " + depActual + "?";
+        
+        var cbs = document.querySelectorAll(".cb-dias-dep");
+        for (var i = 0; i < cbs.length; i++) {
+          cbs[i].checked = false;
+        }
+
+        document.getElementById("step-deportes-dias").classList.remove("hidden");
+      } else {
+        document.getElementById("step-deportes-dias").classList.add("hidden");
         initMainAppLink();
       }
+    }
+
+    function siguienteDeporteDias() {
+      var depActual = user.listaDeportes[indiceDeporteActual];
+      var checkboxes = document.querySelectorAll(".cb-dias-dep:checked");
+      var diasSeleccionados = [];
+      for (var i = 0; i < checkboxes.length; i++) {
+        diasSeleccionados.push(parseInt(checkboxes[i].value));
+      }
+
+      user.entrenosPorDeporte[depActual] = diasSeleccionados;
+      guardarTodo();
+
+      indiceDeporteActual++;
+      mostrarPreguntaDeporteActual();
     }
 
     function initMainAppLink() {
       document.getElementById("step-1").classList.add("hidden");
       document.getElementById("step-2").classList.add("hidden");
-      document.getElementById("step-3").classList.add("hidden");
+      document.getElementById("step-deportes-dias").classList.add("hidden");
       document.getElementById("bottom-nav-bar").classList.remove("hidden");
       switchTab('calendar');
       renderDaysList();
@@ -846,27 +863,43 @@
       var container = document.getElementById("cal-days");
       container.innerHTML = "";
 
-      // Calcular cuántos días tiene el mes actual y el primer día de la semana
       var primerDiaIndex = new Date(anioVisualizado, mesVisualizado, 1).getDay();
-      primerDiaIndex = (primerDiaIndex === 0) ? 6 : primerDiaIndex - 1; // Ajuste para arrancar en Lunes
+      primerDiaIndex = (primerDiaIndex === 0) ? 6 : primerDiaIndex - 1;
       var totalDiasMes = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
 
-      // Espacios vacíos previos
       for (var e = 0; e < primerDiaIndex; e++) {
         var emptyDiv = document.createElement("div");
         container.appendChild(emptyDiv);
       }
 
+      var legendBox = document.getElementById("legend-references-box");
+      legendBox.innerHTML = "<strong>REFERENCIAS:</strong>";
+      
+      if (user.listaDeportes) {
+        for (var dIdx = 0; dIdx < user.listaDeportes.length; dIdx++) {
+          var depName = user.listaDeportes[dIdx];
+          var colDep = coloresDeportes[dIdx % coloresDeportes.length];
+          legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:${colDep};"></div> Entrena ${depName}</div>`;
+        }
+      }
+
       for (var day = 1; day <= totalDiasMes; day++) {
         var fechaActualBucle = new Date(anioVisualizado, mesVisualizado, day);
         var dayOfWeek = fechaActualBucle.getDay();
-        
-        var isEntreno = user.entreno && user.entreno.indexOf(dayOfWeek) !== -1;
-        var isNoEntreno = user.noEntreno && user.noEntreno.indexOf(dayOfWeek) !== -1;
 
         var dotsHTML = "";
-        if (isEntreno) dotsHTML += '<div class="dot dot-green"></div>';
-        if (isNoEntreno) dotsHTML += '<div class="dot dot-red"></div>';
+        
+        if (user.entrenosPorDeporte) {
+          var keysDeps = Object.keys(user.entrenosPorDeporte);
+          for (var k = 0; k < keysDeps.length; k++) {
+            var deporteKey = keysDeps[k];
+            var diasDelDep = user.entrenosPorDeporte[deporteKey];
+            if (diasDelDep && diasDelDep.indexOf(dayOfWeek) !== -1) {
+              var colorAsignado = coloresDeportes[k % coloresDeportes.length];
+              dotsHTML += `<div class="dot" style="background-color: ${colorAsignado};"></div>`;
+            }
+          }
+        }
 
         if (user.agendaLibre && user.agendaLibre[dayOfWeek]) {
           var listaActs = user.agendaLibre[dayOfWeek];
@@ -876,7 +909,6 @@
           }
         }
 
-        // Clave única para eventos con año-mes-día
         var claveEvento = anioVisualizado + "-" + mesVisualizado + "-" + day;
         if (user.eventos && user.eventos[claveEvento]) {
           var colorEv = user.eventos[claveEvento].color || "#ff9f1c";
@@ -905,12 +937,22 @@
       var fechaObj = new Date(anio, mes, dia);
       var dayOfWeek = fechaObj.getDay();
       var nombreDia = diasSemanaTexto[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
-      var entrena = user.entreno && user.entreno.indexOf(dayOfWeek) !== -1;
 
       var contenido = "<strong>" + dia + " de " + mesesTexto[mes] + " " + anio + " (" + nombreDia + ")</strong><br><br>";
-      contenido += entrena ? "🟢 Estado: Día de entrenamiento de " + user.deporte + ".<br>" : "🔴 Estado: Día de descanso.<br>";
       
-      contenido += "<br><strong>Actividades semanales:</strong><br>";
+      if (user.entrenosPorDeporte) {
+        var keysDeps = Object.keys(user.entrenosPorDeporte);
+        for (var k = 0; k < keysDeps.length; k++) {
+          var deporteKey = keysDeps[k];
+          var diasDelDep = user.entrenosPorDeporte[deporteKey];
+          var colorAsignado = coloresDeportes[k % coloresDeportes.length];
+          if (diasDelDep && diasDelDep.indexOf(dayOfWeek) !== -1) {
+            contenido += `<span style="color:${colorAsignado};">■</span> Entrena <strong>${deporteKey}</strong><br>`;
+          }
+        }
+      }
+
+      contenido += "<br><strong>Actividades agendadas:</strong><br>";
       var lista = user.agendaLibre && user.agendaLibre[dayOfWeek];
       if (lista && lista.length > 0) {
         for (var i = 0; i < lista.length; i++) {
@@ -1034,7 +1076,6 @@
       var minActual = ahora.getMinutes();
       var horaStr = (horaActual < 10 ? "0" : "") + horaActual + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
       
-      // Verificar actividades
       if (user.agendaLibre && user.agendaLibre[diaActualSemana]) {
         var lista = user.agendaLibre[diaActualSemana];
         for (var i = 0; i < lista.length; i++) {
@@ -1051,7 +1092,6 @@
         }
       }
 
-      // Verificar eventos del día actual real
       var claveHoy = ahora.getFullYear() + "-" + ahora.getMonth() + "-" + ahora.getDate();
       if (user.eventos && user.eventos[claveHoy]) {
         var evHoy = user.eventos[claveHoy];
