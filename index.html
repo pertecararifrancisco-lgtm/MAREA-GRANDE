@@ -1,1 +1,980 @@
-file:///storage/emulated/0/Android/data/com.teejay.trebedit/files/TrebEdit%20user%20files/Proyecto%20de%20muestra%20-%20Acme/app%20marea/apps/mareaapp.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marea Grande - Planificador Deportivo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #000000 !important;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      color: white;
+    }
+
+    .app-card {
+      background-color: #0b110e !important;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 24px;
+      padding: 22px;
+      border: 2px solid #1b4332;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.9);
+      color: #ffffff;
+      position: relative;
+      min-height: 580px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .app-title {
+      color: #00b4d8;
+      font-size: 18px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-head {
+      background: #2b9348;
+      color: #ffffff;
+      border: none;
+      padding: 6px 8px;
+      border-radius: 15px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .btn-head-bell {
+      background: #0077b6;
+    }
+
+    .btn-head:hover {
+      transform: scale(1.05);
+    }
+
+    .quiz-box {
+      background-color: #132a13 !important;
+      border-radius: 18px;
+      padding: 18px;
+      color: #ffffff;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+      border: 1px solid #2d6a4f;
+    }
+
+    .question-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #95d5b2;
+    }
+
+    .input-text, .input-select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1.5px solid #2d6a4f;
+      font-size: 13px;
+      margin-bottom: 10px;
+      outline: none;
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .opt-label {
+      background-color: #0b110e;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: #ffffff;
+      border: 1px solid #2d6a4f;
+    }
+
+    .btn-next {
+      width: 100%;
+      padding: 11px;
+      background-color: #1d3557;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 13px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: auto;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-next:hover {
+      background-color: #457b9d;
+    }
+
+    /* Animación de la mano con pulso */
+    @keyframes pulseHand {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+      100% { transform: scale(1); }
+    }
+
+    .pulsing-hand {
+      display: inline-block;
+      animation: pulseHand 1.5s infinite ease-in-out;
+    }
+
+    .day-card-item {
+      background: #0b110e;
+      border: 1px solid #2d6a4f;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .day-card-item:hover {
+      background: #132a13;
+    }
+
+    .day-card-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #95d5b2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .agenda-container {
+      max-height: 240px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+      padding-right: 4px;
+    }
+
+    .bottom-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      margin-top: 12px;
+      background: #000000;
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid #2d6a4f;
+    }
+
+    .nav-btn {
+      background-color: #1d3557;
+      color: white;
+      border: none;
+      padding: 8px 2px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .nav-btn.active {
+      background-color: #2b9348;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      gap: 3px;
+      margin-top: 6px;
+    }
+
+    .cal-day-name {
+      font-size: 10px;
+      font-weight: bold;
+      color: #95d5b2;
+    }
+
+    .cal-day {
+      padding: 5px 0;
+      font-size: 10px;
+      font-weight: bold;
+      background-color: #0b110e;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #ffffff;
+      border: 1px solid #1b4332;
+      cursor: pointer;
+    }
+
+    .dot-container {
+      display: flex;
+      gap: 2px;
+      margin-top: 2px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 25px;
+    }
+
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .dot-green { background-color: #2b9348; }
+    .dot-red { background-color: #d90429; }
+
+    .legend-box {
+      margin-top: 6px;
+      background-color: #0b110e;
+      padding: 6px;
+      border-radius: 8px;
+      font-size: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border: 1px solid #1b4332;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-card {
+      background: #0b110e;
+      border: 2px solid #2d6a4f;
+      padding: 18px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 350px;
+      color: #fff;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="app-card">
+    <div class="app-header">
+      <h1 class="app-title">Marea Grande</h1>
+      <div class="header-btns">
+        <button type="button" id="btnAvisos" class="btn-head btn-head-bell" onclick="pedirPermisoNotificaciones()">🔔 Avisos</button>
+        <button type="button" id="btnInstalar" class="btn-head" onclick="descargarApp()">📥 Descargar</button>
+      </div>
+    </div>
+
+    <div id="live-banner" style="background: #1b4332; padding: 5px; border-radius: 6px; font-size: 10px; margin-bottom: 8px; display: none; text-align: center; color: #95d5b2; font-weight: bold;">
+      ⚡ Sistema Activo - Monitoreando alertas
+    </div>
+
+    <!-- PASO 1: Nombre -->
+    <div id="step-1" class="quiz-box hidden">
+      <div class="question-title">1. ¿Cómo te llamás?</div>
+      <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
+      <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
+    </div>
+
+    <!-- PASO 2: ¿Qué días entrenás? -->
+    <div id="step-2" class="quiz-box hidden">
+      <div class="question-title">2. ¿Qué días entrenás? (Marcá los que sí)</div>
+      <div class="options-grid">
+        <label class="opt-label"><input type="checkbox" value="1" class="cb-entreno"> Lunes</label>
+        <label class="opt-label"><input type="checkbox" value="2" class="cb-entreno"> Martes</label>
+        <label class="opt-label"><input type="checkbox" value="3" class="cb-entreno"> Miércoles</label>
+        <label class="opt-label"><input type="checkbox" value="4" class="cb-entreno"> Jueves</label>
+        <label class="opt-label"><input type="checkbox" value="5" class="cb-entreno"> Viernes</label>
+        <label class="opt-label"><input type="checkbox" value="6" class="cb-entreno"> Sábado</label>
+        <label class="opt-label"><input type="checkbox" value="0" class="cb-entreno"> Domingo</label>
+      </div>
+      <button type="button" class="btn-next" onclick="nextStep(2)">Entrar a la App ➔</button>
+    </div>
+
+    <!-- PANTALLA PRINCIPAL: Calendario -->
+    <div id="app-calendar" class="quiz-box hidden">
+      <div class="question-title" id="txt-saludo" style="font-size: 15px; color: #90e0ef;">Hola 👋</div>
+      <div style="font-size: 10px; color: #adb5bd; margin-bottom: 4px; font-weight: bold;">Octubre 2026 - Tocá un día para ver detalles</div>
+
+      <div class="cal-grid">
+        <div class="cal-day-name">Lu</div>
+        <div class="cal-day-name">Ma</div>
+        <div class="cal-day-name">Mi</div>
+        <div class="cal-day-name">Ju</div>
+        <div class="cal-day-name">Vi</div>
+        <div class="cal-day-name">Sá</div>
+        <div class="cal-day-name">Do</div>
+
+        <div></div><div></div><div></div>
+
+        <div id="cal-days" style="display: contents;"></div>
+      </div>
+
+      <div class="legend-box">
+        <strong>REFERENCIAS:</strong>
+        <div class="legend-item"><div class="dot dot-green"></div> Días que entrenás</div>
+        <div class="legend-item"><div class="dot dot-red"></div> Días que no entrenás</div>
+      </div>
+    </div>
+
+    <!-- PANTALLA PRINCIPAL: Notas con Animación de Saludo -->
+    <div id="app-notes" class="quiz-box hidden">
+      <div class="question-title" style="font-size: 14px; color: #90e0ef;">📝 Notas y Actividades</div>
+      <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 8px; border-radius: 8px; margin-bottom: 8px; border: 1.5px solid #2d6a4f; line-height: 1.3;">
+        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Acá vas a poder seleccionar las actividades que hacés en estos días, le vas a poder seleccionar la hora, el color y cuál querés que sea el tiempo de aviso.
+      </div>
+      
+      <div class="agenda-container" id="days-list-container"></div>
+    </div>
+
+    <!-- VISTA DETALLE DE UN DÍA (Con colores personalizados) -->
+    <div id="app-day-detail" class="quiz-box hidden">
+      <div class="day-header">
+        <span id="detail-day-title" style="font-size: 15px;">Lunes</span>
+        <button type="button" class="btn-head" onclick="volverANotas()">⬅ Volver</button>
+      </div>
+      
+      <div style="margin-bottom: 6px;">
+        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Entrena rugby, almuerza..." style="margin-bottom: 4px;">
+        <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+          <input type="time" id="activity-time-input" class="input-text" style="margin-bottom: 0;">
+          <select id="activity-color-select" class="input-select" style="margin-bottom: 0;">
+            <option value="#2b9348">Verde</option>
+            <option value="#0077b6">Azul</option>
+            <option value="#ff9f1c">Naranja</option>
+            <option value="#d90429">Rojo</option>
+            <option value="#ffffff">Blanco</option>
+          </select>
+        </div>
+        <select id="activity-alert-select" class="input-select" style="margin-bottom: 4px;">
+          <option value="0">Sin aviso</option>
+          <option value="30">30 min antes</option>
+          <option value="60">1 hora antes</option>
+          <option value="120">2 horas antes</option>
+        </select>
+        <button type="button" class="btn-next" onclick="agregarActividadDia()" style="padding: 7px; margin-top:0;">Agregar Actividad</button>
+      </div>
+
+      <div style="font-size: 11px; font-weight: bold; margin-top: 2px; color: #ffffff;">Actividades agendadas:</div>
+      <div class="agenda-container" id="day-activities-list" style="max-height: 95px; background: #000; padding: 4px; border-radius: 8px; border: 1px solid #2d6a4f;">
+        <span style="font-size: 10px; color: #777;">No hay actividades aún.</span>
+      </div>
+    </div>
+
+    <!-- PANTALLA PRINCIPAL: Eventos -->
+    <div id="app-events" class="quiz-box hidden">
+      <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef;">¡Agenda tu evento!</div>
+      
+      <div style="margin-bottom: 6px;">
+        <select id="event-day-select" class="input-select" style="margin-bottom: 4px;"></select>
+        <input type="text" id="event-desc-input" class="input-text" placeholder="Ej. Casamiento, partido..." style="margin-bottom: 4px;">
+        
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px; font-size: 11px;">
+          <span>Color:</span>
+          <select id="event-color-select" class="input-select" style="margin-bottom: 0;">
+            <option value="#ff9f1c">Naranja</option>
+            <option value="#0077b6">Azul</option>
+            <option value="#d90429">Rojo</option>
+            <option value="#ffffff">Blanco</option>
+          </select>
+        </div>
+
+        <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 7px; margin-top:0;">Guardar Evento</button>
+      </div>
+
+      <div style="font-size: 11px; font-weight: bold; margin-top: 2px; color: #ffffff;">Eventos agendados:</div>
+      <div class="agenda-container" id="events-list" style="max-height: 50px; background: #000; padding: 4px; border-radius: 6px; border: 1px solid #2d6a4f;">
+        <span style="font-size: 10px; color: #777;">No hay eventos aún.</span>
+      </div>
+    </div>
+
+    <!-- PANTALLA PRINCIPAL: Ajustes -->
+    <div id="app-settings" class="quiz-box hidden">
+      <div class="question-title" style="font-size: 14px; color: #90e0ef;">⚙️ Ajustes y Cuenta</div>
+      
+      <div style="background: #0b110e; padding: 12px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 10px; font-size: 12px;">
+        <p style="margin-bottom: 8px; color: #95d5b2; font-weight: bold;">Cuenta de Google:</p>
+        <p id="google-account-status" style="margin-bottom: 10px; color: #ccc;">No vinculado</p>
+        <button type="button" class="btn-next" style="background: #db4437; padding: 8px; margin-top:0;" onclick="vincularGoogle()">
+          🌐 Iniciar sesión con Google
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <button type="button" onclick="exportarRespaldo()" style="background:#1d3557; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">💾 Guardar Respaldo (JSON)</button>
+        <button type="button" onclick="reiniciarConfig()" style="background:#d90429; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">🔄 Reiniciar / Modificar Encuesta</button>
+      </div>
+    </div>
+
+    <!-- Barra de Navegación Inferior -->
+    <div id="bottom-nav-bar" class="bottom-nav hidden">
+      <button class="nav-btn active" onclick="switchTab('calendar')">Calendario</button>
+      <button class="nav-btn" onclick="switchTab('notes')">Notas</button>
+      <button class="nav-btn" onclick="switchTab('events')">Eventos</button>
+      <button class="nav-btn" onclick="switchTab('settings')">Ajustes</button>
+    </div>
+
+  </div>
+
+  <div id="day-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div id="modal-title" style="font-weight: bold; font-size: 15px; color: #95d5b2; margin-bottom: 6px;">Día</div>
+      <div id="modal-content" style="font-size: 12px; margin-bottom: 12px; color: #ddd;">Detalle...</div>
+      <button type="button" class="btn-next" onclick="cerrarModal()" style="padding: 8px;">Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    var user = {
+      nombre: "",
+      emailGoogle: "",
+      entreno: [],
+      noEntreno: [],
+      agendaLibre: {},
+      eventos: {}
+    };
+
+    var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; 
+    var selectedDayForDetail = 1;
+
+    var datosGuardados = localStorage.getItem("mareaGrandeAjustes");
+    if (datosGuardados) {
+      try {
+        var parsed = JSON.parse(datosGuardados);
+        if (parsed && typeof parsed === 'object') {
+          user = parsed;
+        }
+      } catch(e) {
+        user = {};
+      }
+    }
+
+    if (!user.agendaLibre) {
+      user.agendaLibre = {};
+      for (var i = 0; i < 7; i++) {
+        user.agendaLibre[diasMapeo[i]] = [];
+      }
+    }
+
+    window.addEventListener('load', () => {
+      if (!user.nombre || user.nombre.trim() === "") {
+        document.getElementById("step-1").classList.remove("hidden");
+        document.getElementById("step-2").classList.add("hidden");
+        document.getElementById("app-calendar").classList.add("hidden");
+        document.getElementById("bottom-nav-bar").classList.add("hidden");
+      } else {
+        initMainAppLink();
+      }
+      
+      if (window.Notification && Notification.permission === 'granted') {
+        var btnAvisos = document.getElementById("btnAvisos");
+        if(btnAvisos) btnAvisos.style.display = 'none';
+        document.getElementById("live-banner").style.display = "block";
+      }
+
+      setInterval(verificarAlertasEnVivo, 30000);
+    });
+
+    function guardarTodo() {
+      localStorage.setItem("mareaGrandeAjustes", JSON.stringify(user));
+    }
+
+    function reiniciarConfig() {
+      if (confirm("¿Querés reiniciar la app y borrar los datos?")) {
+        localStorage.removeItem("mareaGrandeAjustes");
+        location.reload();
+      }
+    }
+
+    function vincularGoogle() {
+      var cuentaSimulada = prompt("Ingresá tu correo de Google (Gmail):", user.emailGoogle || "usuario@gmail.com");
+      if (cuentaSimulada) {
+        user.emailGoogle = cuentaSimulada.trim();
+        guardarTodo();
+        actualizarEstadoGoogle();
+        alert("🌐 ¡Cuenta vinculada con éxito: " + user.emailGoogle + "!");
+      }
+    }
+
+    function actualizarEstadoGoogle() {
+      var statusEl = document.getElementById("google-account-status");
+      if (statusEl) {
+        if (user.emailGoogle && user.emailGoogle !== "") {
+          statusEl.innerText = "Conectado como: " + user.emailGoogle;
+          statusEl.style.color = "#95d5b2";
+        } else {
+          statusEl.innerText = "No vinculado";
+          statusEl.style.color = "#ccc";
+        }
+      }
+    }
+
+    function exportarRespaldo() {
+      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(user));
+      var downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "marea_grande_respaldo.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      alert("💾 Respaldo guardado con éxito.");
+    }
+
+    function nextStep(step) {
+      if (step === 1) {
+        var nom = document.getElementById("input-nombre").value.trim();
+        if (!nom) {
+          alert("Por favor, escribí tu nombre");
+          return;
+        }
+        user.nombre = nom;
+        guardarTodo();
+        document.getElementById("step-1").classList.add("hidden");
+        document.getElementById("step-2").classList.remove("hidden");
+      } 
+      else if (step === 2) {
+        var checkboxesEntreno = document.querySelectorAll(".cb-entreno:checked");
+        user.entreno = [];
+        for (var i = 0; i < checkboxesEntreno.length; i++) {
+          user.entreno.push(parseInt(checkboxesEntreno[i].value));
+        }
+        
+        user.noEntreno = [];
+        for (var d = 0; d < 7; d++) {
+          var numD = diasMapeo[d];
+          if (user.entreno.indexOf(numD) === -1) {
+            user.noEntreno.push(numD);
+          }
+        }
+
+        guardarTodo();
+        document.getElementById("step-2").classList.add("hidden");
+        initMainAppLink();
+      }
+    }
+
+    function initMainAppLink() {
+      document.getElementById("step-1").classList.add("hidden");
+      document.getElementById("step-2").classList.add("hidden");
+      document.getElementById("bottom-nav-bar").classList.remove("hidden");
+      switchTab('calendar');
+      renderDaysList();
+      setupEventDays();
+      renderEventsList();
+      actualizarEstadoGoogle();
+    }
+
+    function switchTab(tabName) {
+      document.getElementById("app-calendar").classList.add("hidden");
+      document.getElementById("app-notes").classList.add("hidden");
+      document.getElementById("app-day-detail").classList.add("hidden");
+      document.getElementById("app-events").classList.add("hidden");
+      document.getElementById("app-settings").classList.add("hidden");
+
+      var btns = document.querySelectorAll(".nav-btn");
+      for(var i=0; i<btns.length; i++) { btns[i].classList.remove("active"); }
+
+      if (tabName === 'calendar') {
+        document.getElementById("app-calendar").classList.remove("hidden");
+        btns[0].classList.add("active");
+        showCalendar();
+      } else if (tabName === 'notes') {
+        document.getElementById("app-notes").classList.remove("hidden");
+        btns[1].classList.add("active");
+        document.getElementById("user-name-span").innerText = user.nombre;
+        renderDaysList();
+      } else if (tabName === 'events') {
+        document.getElementById("app-events").classList.remove("hidden");
+        btns[2].classList.add("active");
+        document.getElementById("txt-eventos-saludo").innerText = "¡Hola, " + user.nombre + "! Agendá tu evento";
+        renderEventsList();
+      } else if (tabName === 'settings') {
+        document.getElementById("app-settings").classList.remove("hidden");
+        btns[3].classList.add("active");
+        actualizarEstadoGoogle();
+      }
+    }
+
+    function renderDaysList() {
+      var container = document.getElementById("days-list-container");
+      container.innerHTML = "";
+
+      for (var i = 0; i < 7; i++) {
+        var numDia = diasMapeo[i];
+        var nombreDia = diasSemanaTexto[i];
+        var cantActs = user.agendaLibre[numDia] ? user.agendaLibre[numDia].length : 0;
+
+        var card = document.createElement("div");
+        card.className = "day-card-item";
+        card.innerHTML = `
+          <div class="day-card-title">
+            <span>📅 ${nombreDia}</span>
+            <span style="font-size: 11px; color: #95d5b2; font-weight: normal;">${cantActs} actividad(es)</span>
+          </div>
+        `;
+        card.setAttribute("data-num", numDia);
+        card.onclick = function() {
+          abrirDetalleDia(parseInt(this.getAttribute("data-num")));
+        };
+        container.appendChild(card);
+      }
+    }
+
+    function abrirDetalleDia(numDia) {
+      selectedDayForDetail = numDia;
+      var indexTexto = diasMapeo.indexOf(numDia);
+      document.getElementById("detail-day-title").innerText = diasSemanaTexto[indexTexto];
+      
+      document.getElementById("app-notes").classList.add("hidden");
+      document.getElementById("app-day-detail").classList.remove("hidden");
+      renderDayActivities();
+    }
+
+    function volverANotas() {
+      document.getElementById("app-day-detail").classList.add("hidden");
+      document.getElementById("app-notes").classList.remove("hidden");
+      renderDaysList();
+      showCalendar();
+    }
+
+    function agregarActividadDia() {
+      var actNombre = document.getElementById("activity-name-input").value.trim();
+      var actHora = document.getElementById("activity-time-input").value;
+      var actColor = document.getElementById("activity-color-select").value;
+      var actAlerta = document.getElementById("activity-alert-select").value;
+
+      if (!actNombre || !actHora) {
+        alert("Por favor, escribí el nombre de la actividad y la hora.");
+        return;
+      }
+
+      if (!user.agendaLibre[selectedDayForDetail]) {
+        user.agendaLibre[selectedDayForDetail] = [];
+      }
+
+      user.agendaLibre[selectedDayForDetail].push({
+        hora: actHora,
+        actividad: actNombre,
+        color: actColor,
+        alerta: actAlerta
+      });
+
+      user.agendaLibre[selectedDayForDetail].sort((a, b) => a.hora.localeCompare(b.hora));
+
+      guardarTodo();
+      document.getElementById("activity-name-input").value = "";
+      document.getElementById("activity-time-input").value = "";
+      renderDayActivities();
+    }
+
+    function renderDayActivities() {
+      var container = document.getElementById("day-activities-list");
+      container.innerHTML = "";
+
+      var lista = user.agendaLibre[selectedDayForDetail];
+      if (!lista || lista.length === 0) {
+        container.innerHTML = '<span style="font-size: 10px; color: #777;">No hay actividades aún.</span>';
+        return;
+      }
+
+      for (var i = 0; i < lista.length; i++) {
+        var item = lista[i];
+        var row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+        row.style.fontSize = "11px";
+        row.style.marginBottom = "4px";
+        row.style.borderBottom = "1px solid #222";
+        row.style.paddingBottom = "3px";
+        row.style.color = "#fff";
+        
+        row.innerHTML = `
+          <span><span style="color: ${item.color || '#2b9348'};">■</span> <strong>${item.hora}</strong> - ${item.actividad}</span>
+          <button onclick="eliminarActividad(${selectedDayForDetail}, ${i})" style="background:#d90429; color:#fff; border:none; padding:2px 6px; border-radius:4px; font-size:9px; cursor:pointer;">X</button>
+        `;
+        container.appendChild(row);
+      }
+    }
+
+    function eliminarActividad(numDia, index) {
+      user.agendaLibre[numDia].splice(index, 1);
+      guardarTodo();
+      renderDayActivities();
+    }
+
+    function showCalendar() {
+      document.getElementById("txt-saludo").innerText = "Hola, " + user.nombre + " 👋";
+      var container = document.getElementById("cal-days");
+      container.innerHTML = "";
+
+      for (var day = 1; day <= 31; day++) {
+        var dayOfWeek = (day + 3) % 7;
+        var isEntreno = user.entreno && user.entreno.indexOf(dayOfWeek) !== -1;
+        var isNoEntreno = user.noEntreno && user.noEntreno.indexOf(dayOfWeek) !== -1;
+
+        var dotsHTML = "";
+        if (isEntreno) dotsHTML += '<div class="dot dot-green"></div>';
+        if (isNoEntreno) dotsHTML += '<div class="dot dot-red"></div>';
+
+        // Mostrar puntos de actividades con sus colores elegidos
+        if (user.agendaLibre && user.agendaLibre[dayOfWeek]) {
+          var listaActs = user.agendaLibre[dayOfWeek];
+          for (var a = 0; a < listaActs.length; a++) {
+            var colAct = listaActs[a].color || "#2b9348";
+            dotsHTML += '<div class="dot" style="background-color: ' + colAct + ';"></div>';
+          }
+        }
+
+        if (user.eventos && user.eventos[day]) {
+          var colorEv = user.eventos[day].color || "#ff9f1c";
+          dotsHTML += '<div class="dot" style="background-color: ' + colorEv + ';"></div>';
+        }
+
+        var dayDiv = document.createElement("div");
+        dayDiv.className = "cal-day";
+        dayDiv.innerHTML = day + '<div class="dot-container">' + dotsHTML + '</div>';
+        
+        dayDiv.setAttribute("data-day", day);
+        dayDiv.onclick = function() {
+          verDetalleDia(parseInt(this.getAttribute("data-day")));
+        };
+
+        container.appendChild(dayDiv);
+      }
+
+      document.getElementById("app-calendar").classList.remove("hidden");
+    }
+
+    function verDetalleDia(numDiaMes) {
+      var dayOfWeek = (numDiaMes + 3) % 7;
+      var indexTexto = diasMapeo.indexOf(dayOfWeek);
+      var nombreDia = diasSemanaTexto[indexTexto];
+      var entrena = user.entreno && user.entreno.indexOf(dayOfWeek) !== -1;
+
+      var contenido = "<strong>Día " + numDiaMes + " de Octubre (" + nombreDia + ")</strong><br><br>";
+      contenido += entrena ? "🟢 Estado: Día de entrenamiento.<br>" : "🔴 Estado: Día que no entrenás.<br>";
+      
+      contenido += "<br><strong>Actividades agendadas:</strong><br>";
+      var lista = user.agendaLibre && user.agendaLibre[dayOfWeek];
+      if (lista && lista.length > 0) {
+        for (var i = 0; i < lista.length; i++) {
+          contenido += "- <span style='color: " + (lista[i].color || '#2b9348') + ";'>■</span> " + lista[i].hora + ": " + lista[i].actividad + "<br>";
+        }
+      } else {
+        contenido += "<em>Sin actividades agendadas.</em><br>";
+      }
+
+      if (user.eventos && user.eventos[numDiaMes]) {
+        contenido += "<br>🎉 <strong>Evento:</strong> " + user.eventos[numDiaMes].desc;
+      }
+
+      document.getElementById("modal-title").innerText = "Detalle del Día " + numDiaMes;
+      document.getElementById("modal-content").innerHTML = contenido;
+      document.getElementById("day-modal").classList.remove("hidden");
+    }
+
+    function cerrarModal() {
+      document.getElementById("day-modal").classList.add("hidden");
+    }
+
+    function setupEventDays() {
+      var select = document.getElementById("event-day-select");
+      select.innerHTML = "";
+      for(var d=1; d<=31; d++) {
+        var opt = document.createElement("option");
+        opt.value = d;
+        opt.text = d + " de Octubre";
+        select.appendChild(opt);
+      }
+    }
+
+    function saveEvent() {
+      var day = document.getElementById("event-day-select").value;
+      var desc = document.getElementById("event-desc-input").value.trim();
+      var color = document.getElementById("event-color-select").value;
+      
+      if(!desc) {
+        alert("Escribí una descripción para el evento");
+        return;
+      }
+      if (!user.eventos) user.eventos = {};
+      user.eventos[day] = { desc: desc, color: color };
+      guardarTodo();
+      document.getElementById("event-desc-input").value = "";
+      renderEventsList();
+      showCalendar();
+      alert("¡Evento guardado!");
+    }
+
+    function renderEventsList() {
+      var listContainer = document.getElementById("events-list");
+      listContainer.innerHTML = "";
+
+      if (!user.eventos) user.eventos = {};
+      var keys = Object.keys(user.eventos);
+      if(keys.length === 0) {
+        listContainer.innerHTML = '<span style="font-size: 10px; color: #777;">No hay eventos aún.</span>';
+        return;
+      }
+
+      for(var i=0; i<keys.length; i++) {
+        var d = keys[i];
+        var ev = user.eventos[d];
+        var item = document.createElement("div");
+        item.style.fontSize = "10px";
+        item.style.marginBottom = "3px";
+        item.style.borderBottom = "1px solid #222";
+        item.style.paddingBottom = "2px";
+        item.style.color = "#fff";
+        item.innerHTML = "<strong>Día " + d + ":</strong> <span style='color: " + ev.color + ";'>■</span> " + ev.desc;
+        listContainer.appendChild(item);
+      }
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
+      });
+    }
+
+    function pedirPermisoNotificaciones() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            alert('🔔 ¡Notificaciones activadas!');
+            document.getElementById("btnAvisos").style.display = 'none';
+            document.getElementById("live-banner").style.display = "block";
+            if (navigator.serviceWorker.controller) {
+              navigator.serviceWorker.ready.then((reg) => {
+                reg.showNotification('Marea Grande', {
+                  body: '¡Sistema activo! Te avisaremos de tus actividades.',
+                  icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png'
+                });
+              });
+            }
+          } else {
+            alert('⚠️ Notificaciones bloqueadas desde el navegador.');
+          }
+        });
+      }
+    }
+
+    function verificarAlertasEnVivo() {
+      if (Notification.permission !== 'granted') return;
+      var ahora = new Date();
+      var diaActual = ahora.getDay();
+      var horaActual = ahora.getHours();
+      var minActual = ahora.getMinutes();
+      var horaStr = (horaActual < 10 ? "0" : "") + horaActual + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
+      
+      if (user.agendaLibre && user.agendaLibre[diaActual]) {
+        var lista = user.agendaLibre[diaActual];
+        for (var i = 0; i < lista.length; i++) {
+          if (lista[i].alerta !== "0") {
+            if (lista[i].hora === horaStr && minActual === 0) {
+              navigator.serviceWorker.ready.then((reg) => {
+                reg.showNotification('⏰ ¡Próxima actividad!', {
+                  body: 'Arranca: ' + lista[i].actividad,
+                  icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png'
+                });
+              });
+            }
+          }
+        }
+      }
+    }
+
+    let deferredPrompt;
+    const btnInstalar = document.getElementById('btnInstalar');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      if(btnInstalar) btnInstalar.style.display = 'none';
+    }
+
+    window.addEventListener('appinstalled', () => {
+      if(btnInstalar) btnInstalar.style.display = 'none';
+      deferredPrompt = null;
+    });
+
+    function descargarApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            btnInstalar.style.display = 'none';
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        alert("📱 Para instalar la App:\n\n1. Tocá los tres puntos (⋮) o el botón compartir del navegador.\n2. Seleccioná 'Agregar a la pantalla principal' o 'Instalar aplicación'.");
+      }
+    }
+  </script>
+</body>
+</html>
