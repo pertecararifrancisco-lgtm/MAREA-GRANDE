@@ -135,7 +135,7 @@
 
     .day-card-item {
       background: #0b110e;
-      border:: 1px solid #2d6a4f;
+      border: 1px solid #2d6a4f;
       border-radius: 12px;
       padding: 12px;
       margin-bottom: 8px;
@@ -291,18 +291,11 @@
       ⚡ Sistema Activo - Monitoreando alertas
     </div>
 
-    <!-- PASO 1: Nombre -->
+    <!-- PASO ÚNICO: Solo pedir nombre -->
     <div id="step-1" class="quiz-box hidden">
-      <div class="question-title">1. ¿Cuál es tu nombre?</div>
+      <div class="question-title">¿Cómo te llamás?</div>
       <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
-      <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
-    </div>
-
-    <!-- PASO 2: Deporte / Actividad Física -->
-    <div id="step-2" class="quiz-box hidden">
-      <div class="question-title">2. ¿Hacés algún deporte / actividad física?</div>
-      <input type="text" id="input-deporte" class="input-text" placeholder="Ej. Rugby, gimnasio, correr...">
-      <button type="button" class="btn-next" onclick="nextStep(2)">Comenzar a usar la App ➔</button>
+      <button type="button" class="btn-next" onclick="guardarNombre()">Entrar a la App ➔</button>
     </div>
 
     <!-- PANTALLA PRINCIPAL: Calendario -->
@@ -330,19 +323,17 @@
       </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Notas (Lista de Días) -->
+    <!-- PANTALLA PRINCIPAL: Notas con Tutorial Gigante -->
     <div id="app-notes" class="quiz-box hidden">
       <div class="question-title" style="font-size: 14px; color: #90e0ef;">📝 Notas y Actividades</div>
-      <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 6px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #2d6a4f;">
-        ¡Hola! Acá podés agendar tus actividades por día, indicar la hora y configurar tus avisos.
+      <div id="notes-tutorial-msg" style="font-size: 12px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.4;">
+        ¡Hola! Acá vas a poder seleccionar las actividades que hacés en estos días, le vas a poder seleccionar la hora y cuál querés que sea el tiempo de aviso.
       </div>
       
-      <div class="agenda-container" id="days-list-container">
-        <!-- Se generan los días del Lunes al Domingo -->
-      </div>
+      <div class="agenda-container" id="days-list-container"></div>
     </div>
 
-    <!-- VISTA DETALLE DE UN DÍA (Para agregar actividades libres) -->
+    <!-- VISTA DETALLE DE UN DÍA -->
     <div id="app-day-detail" class="quiz-box hidden">
       <div class="day-header">
         <span id="detail-day-title" style="font-size: 15px;">Lunes</span>
@@ -350,7 +341,7 @@
       </div>
       
       <div style="margin-bottom: 8px;">
-        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Almuerza, Entrena rugby..." style="margin-bottom: 6px;">
+        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Entrena rugby, almuerza..." style="margin-bottom: 6px;">
         <div style="display: flex; gap: 6px; margin-bottom: 6px;">
           <input type="time" id="activity-time-input" class="input-text" style="margin-bottom: 0;">
           <select id="activity-alert-select" class="input-select" style="margin-bottom: 0;">
@@ -363,7 +354,7 @@
       </div>
 
       <div style="font-size: 11px; font-weight: bold; margin-top: 4px; color: #ffffff;">Actividades agendadas:</div>
-      <div class="agenda-container" id="day-activities-list" style="max-height: 120px; background: #000; padding: 6px; border-radius: 8px; border: 1px solid #2d6a4f;">
+      <div class="agenda-container" id="day-activities-list" style="max-height: 110px; background: #000; padding: 6px; border-radius: 8px; border: 1px solid #2d6a4f;">
         <span style="font-size: 10px; color: #777;">No hay actividades aún.</span>
       </div>
     </div>
@@ -396,10 +387,11 @@
 
       <div style="display: flex; gap: 6px; margin-top: 6px;">
         <button type="button" onclick="exportarRespaldo()" style="flex:1; background:#1d3557; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">💾 Respaldo</button>
-        <button type="button" onclick="reiniciarEncuesta()" style="flex:1; background:#d90429; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">🔄 Reiniciar</button>
+        <button type="button" onclick="reiniciarConfig()" style="flex:1; background:#d90429; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">🔄 Reiniciar</button>
       </div>
     </div>
 
+    <!-- Barra de Navegación Inferior -->
     <div id="bottom-nav-bar" class="bottom-nav hidden">
       <button class="nav-btn active" onclick="switchTab('calendar')">Calendario</button>
       <button class="nav-btn" onclick="switchTab('notes')">Notas</button>
@@ -419,16 +411,15 @@
   <script>
     var user = {
       nombre: "",
-      deporte: "",
-      agendaLibre: {}, // Estructura: { 1: [ {hora: "12:00", actividad: "Almuerza", alerta: "0"} ], ... }
+      agendaLibre: {},
       eventos: {}
     };
 
     var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-    var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; // 1: Lunes, ..., 0: Domingo
+    var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; 
     var selectedDayForDetail = 1;
 
-    var datosGuardados = localStorage.getItem("mareaGrandeDataLibre");
+    var datosGuardados = localStorage.getItem("mareaGrandeDirecto");
     if (datosGuardados) {
       user = JSON.parse(datosGuardados);
     } else {
@@ -455,12 +446,12 @@
     });
 
     function guardarTodo() {
-      localStorage.setItem("mareaGrandeDataLibre", JSON.stringify(user));
+      localStorage.setItem("mareaGrandeDirecto", JSON.stringify(user));
     }
 
-    function reiniciarEncuesta() {
-      if (confirm("¿Querés reiniciar la configuración y borrar los datos?")) {
-        localStorage.removeItem("mareaGrandeDataLibre");
+    function reiniciarConfig() {
+      if (confirm("¿Querés reiniciar la app y borrar los datos?")) {
+        localStorage.removeItem("mareaGrandeDirecto");
         location.reload();
       }
     }
@@ -476,30 +467,21 @@
       alert("💾 Respaldo guardado con éxito.");
     }
 
-    function nextStep(step) {
-      if (step === 1) {
-        var nom = document.getElementById("input-nombre").value.trim();
-        if (!nom) {
-          alert("Por favor, escribí tu nombre");
-          return;
-        }
-        user.nombre = nom;
-        guardarTodo();
-        document.getElementById("step-1").classList.add("hidden");
-        document.getElementById("step-2").classList.remove("hidden");
-      } 
-      else if (step === 2) {
-        var dep = document.getElementById("input-deporte").value.trim();
-        user.deporte = dep || "Deporte general";
-        guardarTodo();
-        document.getElementById("step-2").classList.add("hidden");
-        initMainAppLink();
+    function guardarNombre() {
+      var nom = document.getElementById("input-nombre").value.trim();
+      if (!nom) {
+        alert("Por favor, escribí tu nombre");
+        return;
       }
+      user.nombre = nom;
+      guardarTodo();
+      document.getElementById("step-1").classList.add("hidden");
+      initMainAppLink();
     }
 
     function initMainAppLink() {
       document.getElementById("bottom-nav-bar").classList.remove("hidden");
-      showCalendar();
+      switchTab('calendar');
       renderDaysList();
       setupEventDays();
       renderEventsList();
@@ -521,7 +503,7 @@
       } else if (tabName === 'notes') {
         document.getElementById("app-notes").classList.remove("hidden");
         btns[1].classList.add("active");
-        document.getElementById("notes-tutorial-msg").innerHTML = "¡Hola, " + user.nombre + "! Acá podés agendar tus actividades de " + user.deporte + " por día.";
+        document.getElementById("notes-tutorial-msg").innerHTML = "¡Hola, " + user.nombre + "! Acá vas a poder seleccionar las actividades que hacés en estos días, le vas a poder seleccionar la hora y cuál querés que sea el tiempo de aviso.";
         renderDaysList();
       } else if (tabName === 'events') {
         document.getElementById("app-events").classList.remove("hidden");
@@ -593,7 +575,6 @@
         alerta: actAlerta
       });
 
-      // Ordenar por hora
       user.agendaLibre[selectedDayForDetail].sort((a, b) => a.hora.localeCompare(b.hora));
 
       guardarTodo();
@@ -676,7 +657,7 @@
       var nombreDia = diasSemanaTexto[indexTexto];
 
       var contenido = "<strong>Día " + numDiaMes + " de Octubre (" + nombreDia + ")</strong><br><br>";
-      contenido +="<strong>Actividades de " + user.deporte + ":</strong><br>";
+      contenido += "<strong>Actividades:</strong><br>";
       
       var lista = user.agendaLibre[dayOfWeek];
       if (lista && lista.length > 0) {
@@ -792,7 +773,6 @@
         var lista = user.agendaLibre[diaActual];
         for (var i = 0; i < lista.length; i++) {
           if (lista[i].alerta !== "0") {
-            // Lógica simple de aviso en la hora exacta
             if (lista[i].hora === horaStr && minActual === 0) {
               navigator.serviceWorker.ready.then((reg) => {
                 reg.showNotification('⏰ ¡Próxima actividad!', {
