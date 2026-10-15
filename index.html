@@ -87,49 +87,55 @@
     .quiz-box {
       background-color: #132a13 !important;
       border-radius: 18px;
-      padding: 18px;
+      padding: 20px;
       color: #ffffff;
       flex: 1;
       display: flex;
       flex-direction: column;
+      justify-content: center; /* Centrado vertical */
+      align-items: center;     /* Centrado horizontal */
+      text-align: center;
       box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
       border: 1px solid #2d6a4f;
     }
 
     .question-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       color: #95d5b2;
     }
 
     .input-text, .input-select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border-radius: 10px;
       border: 1.5px solid #2d6a4f;
       font-size: 13px;
-      margin-bottom: 10px;
+      margin-bottom: 16px;
       outline: none;
       background: #000000;
       color: #ffffff;
+      text-align: center;
     }
 
     .options-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 16px;
+      width: 100%;
     }
 
     .opt-label {
       background-color: #0b110e;
-      padding: 8px 10px;
+      padding: 10px;
       border-radius: 10px;
       font-size: 12px;
       font-weight: 600;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       cursor: pointer;
       color: #ffffff;
@@ -138,7 +144,7 @@
 
     .btn-next {
       width: 100%;
-      padding: 11px;
+      padding: 12px;
       background-color: #1d3557;
       color: #ffffff;
       font-weight: bold;
@@ -146,7 +152,6 @@
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      margin-top: auto;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
 
@@ -154,10 +159,10 @@
       background-color: #457b9d;
     }
 
-    /* Animación de la mano con pulso */
+    /* Animación de la mano saludando */
     @keyframes pulseHand {
       0% { transform: scale(1); }
-      50% { transform: scale(1.25); }
+      50% { transform: scale(1.3); }
       100% { transform: scale(1); }
     }
 
@@ -197,6 +202,7 @@
       gap: 6px;
       margin-bottom: 10px;
       padding-right: 4px;
+      width: 100%;
     }
 
     .bottom-nav {
@@ -232,6 +238,7 @@
       text-align: center;
       gap: 3px;
       margin-top: 6px;
+      width: 100%;
     }
 
     .cal-day-name {
@@ -273,15 +280,17 @@
     .dot-red { background-color: #d90429; }
 
     .legend-box {
-      margin-top: 6px;
+      margin-top: 8px;
       background-color: #0b110e;
       padding: 6px;
       border-radius: 8px;
-      font-size: 9px;
+      font-size: 10px;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
       border: 1px solid #1b4332;
+      width: 100%;
+      text-align: left;
     }
 
     .legend-item {
@@ -328,16 +337,23 @@
       ⚡ Sistema Activo - Monitoreando alertas
     </div>
 
-    <!-- PASO 1: Nombre -->
+    <!-- PASO 1: Nombre (Centrado) -->
     <div id="step-1" class="quiz-box hidden">
       <div class="question-title">1. ¿Cómo te llamás?</div>
       <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
       <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
     </div>
 
-    <!-- PASO 2: ¿Qué días entrenás? -->
+    <!-- PASO 2: Deporte / Actividad Física (Centrado) -->
     <div id="step-2" class="quiz-box hidden">
-      <div class="question-title">2. ¿Qué días entrenás? (Marcá los que sí)</div>
+      <div class="question-title">2. ¿Qué deporte o actividad física hacés?</div>
+      <input type="text" id="input-deporte" class="input-text" placeholder="Ej. Rugby, gimnasio, correr...">
+      <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
+    </div>
+
+    <!-- PASO 3: Días que entrenás (Centrado) -->
+    <div id="step-3" class="quiz-box hidden">
+      <div class="question-title">3. ¿Qué días entrenás?</div>
       <div class="options-grid">
         <label class="opt-label"><input type="checkbox" value="1" class="cb-entreno"> Lunes</label>
         <label class="opt-label"><input type="checkbox" value="2" class="cb-entreno"> Martes</label>
@@ -347,13 +363,13 @@
         <label class="opt-label"><input type="checkbox" value="6" class="cb-entreno"> Sábado</label>
         <label class="opt-label"><input type="checkbox" value="0" class="cb-entreno"> Domingo</label>
       </div>
-      <button type="button" class="btn-next" onclick="nextStep(2)">Entrar a la App ➔</button>
+      <button type="button" class="btn-next" onclick="nextStep(3)">Entrar a la App ➔</button>
     </div>
 
     <!-- PANTALLA PRINCIPAL: Calendario -->
-    <div id="app-calendar" class="quiz-box hidden">
-      <div class="question-title" id="txt-saludo" style="font-size: 15px; color: #90e0ef;">Hola 👋</div>
-      <div style="font-size: 10px; color: #adb5bd; margin-bottom: 4px; font-weight: bold;">Octubre 2026 - Tocá un día para ver detalles</div>
+    <div id="app-calendar" class="quiz-box hidden" style="justify-content: flex-start;">
+      <div class="question-title" id="txt-saludo" style="font-size: 15px; color: #90e0ef; margin-bottom: 4px;">Hola 👋</div>
+      <div style="font-size: 10px; color: #adb5bd; margin-bottom: 8px; font-weight: bold;">Octubre 2026 - Tocá un día para ver detalles</div>
 
       <div class="cal-grid">
         <div class="cal-day-name">Lu</div>
@@ -372,30 +388,30 @@
       <div class="legend-box">
         <strong>REFERENCIAS:</strong>
         <div class="legend-item"><div class="dot dot-green"></div> Días que entrenás</div>
-        <div class="legend-item"><div class="dot dot-red"></div> Días que no entrenás</div>
+        <div class="legend-item"><div class="dot dot-red"></div> Días de descanso</div>
       </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Notas con Animación de Saludo -->
-    <div id="app-notes" class="quiz-box hidden">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef;">📝 Notas y Actividades</div>
-      <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 8px; border-radius: 8px; margin-bottom: 8px; border: 1.5px solid #2d6a4f; line-height: 1.3;">
-        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Acá vas a poder seleccionar las actividades que hacés en estos días, le vas a poder seleccionar la hora, el color y cuál querés que sea el tiempo de aviso.
+    <!-- PANTALLA PRINCIPAL: Notas -->
+    <div id="app-notes" class="quiz-box hidden" style="justify-content: flex-start;">
+      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">📝 Notas y Actividades</div>
+      <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.3; text-align: left;">
+        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Acá vas a poder agendar las actividades que hacés en estos días, le vas a poder seleccionar la hora, el color y el tiempo de aviso.
       </div>
       
       <div class="agenda-container" id="days-list-container"></div>
     </div>
 
-    <!-- VISTA DETALLE DE UN DÍA (Con colores personalizados) -->
-    <div id="app-day-detail" class="quiz-box hidden">
-      <div class="day-header">
-        <span id="detail-day-title" style="font-size: 15px;">Lunes</span>
+    <!-- VISTA DETALLE DE UN DÍA -->
+    <div id="app-day-detail" class="quiz-box hidden" style="justify-content: flex-start;">
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
+        <span id="detail-day-title" style="font-size: 15px; font-weight:bold; color:#95d5b2;">Lunes</span>
         <button type="button" class="btn-head" onclick="volverANotas()">⬅ Volver</button>
       </div>
       
-      <div style="margin-bottom: 6px;">
-        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Entrena rugby, almuerza..." style="margin-bottom: 4px;">
-        <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+      <div style="width:100%; margin-bottom: 6px;">
+        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Almuerzo, Gimnasio..." style="margin-bottom: 6px;">
+        <div style="display: flex; gap: 4px; margin-bottom: 6px;">
           <input type="time" id="activity-time-input" class="input-text" style="margin-bottom: 0;">
           <select id="activity-color-select" class="input-select" style="margin-bottom: 0;">
             <option value="#2b9348">Verde</option>
@@ -405,26 +421,26 @@
             <option value="#ffffff">Blanco</option>
           </select>
         </div>
-        <select id="activity-alert-select" class="input-select" style="margin-bottom: 4px;">
+        <select id="activity-alert-select" class="input-select" style="margin-bottom: 6px;">
           <option value="0">Sin aviso</option>
           <option value="30">30 min antes</option>
           <option value="60">1 hora antes</option>
           <option value="120">2 horas antes</option>
         </select>
-        <button type="button" class="btn-next" onclick="agregarActividadDia()" style="padding: 7px; margin-top:0;">Agregar Actividad</button>
+        <button type="button" class="btn-next" onclick="agregarActividadDia()" style="padding: 8px;">Agregar Actividad</button>
       </div>
 
-      <div style="font-size: 11px; font-weight: bold; margin-top: 2px; color: #ffffff;">Actividades agendadas:</div>
-      <div class="agenda-container" id="day-activities-list" style="max-height: 95px; background: #000; padding: 4px; border-radius: 8px; border: 1px solid #2d6a4f;">
+      <div style="font-size: 11px; font-weight: bold; margin-top: 4px; color: #ffffff; text-align:left; width:100%;">Actividades agendadas:</div>
+      <div class="agenda-container" id="day-activities-list" style="max-height: 90px; background: #000; padding: 4px; border-radius: 8px; border: 1px solid #2d6a4f;">
         <span style="font-size: 10px; color: #777;">No hay actividades aún.</span>
       </div>
     </div>
 
     <!-- PANTALLA PRINCIPAL: Eventos -->
-    <div id="app-events" class="quiz-box hidden">
-      <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef;">¡Agenda tu evento!</div>
+    <div id="app-events" class="quiz-box hidden" style="justify-content: flex-start;">
+      <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef; margin-bottom:8px;">¡Agenda tu evento!</div>
       
-      <div style="margin-bottom: 6px;">
+      <div style="width:100%; margin-bottom: 6px;">
         <select id="event-day-select" class="input-select" style="margin-bottom: 4px;"></select>
         <input type="text" id="event-desc-input" class="input-text" placeholder="Ej. Casamiento, partido..." style="margin-bottom: 4px;">
         
@@ -438,30 +454,30 @@
           </select>
         </div>
 
-        <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 7px; margin-top:0;">Guardar Evento</button>
+        <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 8px;">Guardar Evento</button>
       </div>
 
-      <div style="font-size: 11px; font-weight: bold; margin-top: 2px; color: #ffffff;">Eventos agendados:</div>
-      <div class="agenda-container" id="events-list" style="max-height: 50px; background: #000; padding: 4px; border-radius: 6px; border: 1px solid #2d6a4f;">
+      <div style="font-size: 11px; font-weight: bold; margin-top: 4px; color: #ffffff; text-align:left; width:100%;">Eventos agendados:</div>
+      <div class="agenda-container" id="events-list" style="max-height: 60px; background: #000; padding: 4px; border-radius: 6px; border: 1px solid #2d6a4f;">
         <span style="font-size: 10px; color: #777;">No hay eventos aún.</span>
       </div>
     </div>
 
     <!-- PANTALLA PRINCIPAL: Ajustes -->
-    <div id="app-settings" class="quiz-box hidden">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef;">⚙️ Ajustes y Cuenta</div>
+    <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
+      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:12px;">⚙️ Ajustes y Configuración</div>
       
-      <div style="background: #0b110e; padding: 12px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 10px; font-size: 12px;">
-        <p style="margin-bottom: 8px; color: #95d5b2; font-weight: bold;">Cuenta de Google:</p>
-        <p id="google-account-status" style="margin-bottom: 10px; color: #ccc;">No vinculado</p>
-        <button type="button" class="btn-next" style="background: #db4437; padding: 8px; margin-top:0;" onclick="vincularGoogle()">
-          🌐 Iniciar sesión con Google
+      <div style="background: #0b110e; padding: 12px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 12px; font-size: 12px; width:100%;">
+        <p style="margin-bottom: 6px; color: #95d5b2; font-weight: bold;">Cuenta vinculada:</p>
+        <p id="google-account-status" style="margin-bottom: 10px; color: #ccc;">No registrado</p>
+        <button type="button" class="btn-next" style="background: #db4437; padding: 8px;" onclick="vincularGoogle()">
+          🌐 Vincular con Google
         </button>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 6px;">
-        <button type="button" onclick="exportarRespaldo()" style="background:#1d3557; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">💾 Guardar Respaldo (JSON)</button>
-        <button type="button" onclick="reiniciarConfig()" style="background:#d90429; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">🔄 Reiniciar / Modificar Encuesta</button>
+      <div style="display: flex; flex-direction: column; gap: 8px; width:100%;">
+        <button type="button" onclick="exportarRespaldo()" style="background:#1d3557; color:#fff; border:none; padding:10px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">💾 Guardar Respaldo (JSON)</button>
+        <button type="button" onclick="reiniciarConfig()" style="background:#d90429; color:#fff; border:none; padding:10px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">🔄 Reiniciar / Modificar Encuesta</button>
       </div>
     </div>
 
@@ -486,6 +502,7 @@
   <script>
     var user = {
       nombre: "",
+      deporte: "",
       emailGoogle: "",
       entreno: [],
       noEntreno: [],
@@ -497,7 +514,7 @@
     var diasMapeo = [1, 2, 3, 4, 5, 6, 0]; 
     var selectedDayForDetail = 1;
 
-    var datosGuardados = localStorage.getItem("mareaGrandeAjustes");
+    var datosGuardados = localStorage.getItem("mareaGrandeDefinitivo");
     if (datosGuardados) {
       try {
         var parsed = JSON.parse(datosGuardados);
@@ -520,6 +537,7 @@
       if (!user.nombre || user.nombre.trim() === "") {
         document.getElementById("step-1").classList.remove("hidden");
         document.getElementById("step-2").classList.add("hidden");
+        document.getElementById("step-3").classList.add("hidden");
         document.getElementById("app-calendar").classList.add("hidden");
         document.getElementById("bottom-nav-bar").classList.add("hidden");
       } else {
@@ -536,12 +554,12 @@
     });
 
     function guardarTodo() {
-      localStorage.setItem("mareaGrandeAjustes", JSON.stringify(user));
+      localStorage.setItem("mareaGrandeDefinitivo", JSON.stringify(user));
     }
 
     function reiniciarConfig() {
-      if (confirm("¿Querés reiniciar la app y borrar los datos?")) {
-        localStorage.removeItem("mareaGrandeAjustes");
+      if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) {
+        localStorage.removeItem("mareaGrandeDefinitivo");
         location.reload();
       }
     }
@@ -563,7 +581,7 @@
           statusEl.innerText = "Conectado como: " + user.emailGoogle;
           statusEl.style.color = "#95d5b2";
         } else {
-          statusEl.innerText = "No vinculado";
+          statusEl.innerText = "No registrado";
           statusEl.style.color = "#ccc";
         }
       }
@@ -593,6 +611,13 @@
         document.getElementById("step-2").classList.remove("hidden");
       } 
       else if (step === 2) {
+        var dep = document.getElementById("input-deporte").value.trim();
+        user.deporte = dep || "Entrenamiento general";
+        guardarTodo();
+        document.getElementById("step-2").classList.add("hidden");
+        document.getElementById("step-3").classList.remove("hidden");
+      }
+      else if (step === 3) {
         var checkboxesEntreno = document.querySelectorAll(".cb-entreno:checked");
         user.entreno = [];
         for (var i = 0; i < checkboxesEntreno.length; i++) {
@@ -608,7 +633,7 @@
         }
 
         guardarTodo();
-        document.getElementById("step-2").classList.add("hidden");
+        document.getElementById("step-3").classList.add("hidden");
         initMainAppLink();
       }
     }
@@ -616,6 +641,7 @@
     function initMainAppLink() {
       document.getElementById("step-1").classList.add("hidden");
       document.getElementById("step-2").classList.add("hidden");
+      document.getElementById("step-3").classList.add("hidden");
       document.getElementById("bottom-nav-bar").classList.remove("hidden");
       switchTab('calendar');
       renderDaysList();
@@ -777,7 +803,6 @@
         if (isEntreno) dotsHTML += '<div class="dot dot-green"></div>';
         if (isNoEntreno) dotsHTML += '<div class="dot dot-red"></div>';
 
-        // Mostrar puntos de actividades con sus colores elegidos
         if (user.agendaLibre && user.agendaLibre[dayOfWeek]) {
           var listaActs = user.agendaLibre[dayOfWeek];
           for (var a = 0; a < listaActs.length; a++) {
@@ -813,7 +838,7 @@
       var entrena = user.entreno && user.entreno.indexOf(dayOfWeek) !== -1;
 
       var contenido = "<strong>Día " + numDiaMes + " de Octubre (" + nombreDia + ")</strong><br><br>";
-      contenido += entrena ? "🟢 Estado: Día de entrenamiento.<br>" : "🔴 Estado: Día que no entrenás.<br>";
+      contenido += entrena ? "🟢 Estado: Día de entrenamiento de " + user.deporte + ".<br>" : "🔴 Estado: Día de descanso.<br>";
       
       contenido += "<br><strong>Actividades agendadas:</strong><br>";
       var lista = user.agendaLibre && user.agendaLibre[dayOfWeek];
