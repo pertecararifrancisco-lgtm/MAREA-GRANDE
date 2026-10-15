@@ -14,7 +14,7 @@
     }
 
     body {
-      background: #000000;
+      background: #000000 !important;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -25,7 +25,7 @@
     }
 
     .app-card {
-      background-color: #0b110e;
+      background-color: #0b110e !important;
       width: 100%;
       max-width: 420px;
       border-radius: 24px;
@@ -38,12 +38,6 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      animation: fadeIn 0.4s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .app-header {
@@ -77,7 +71,6 @@
       font-weight: bold;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(43, 147, 72, 0.4);
       display: inline-flex;
       align-items: center;
       gap: 3px;
@@ -92,7 +85,7 @@
     }
 
     .quiz-box {
-      background-color: #132a13;
+      background-color: #132a13 !important;
       border-radius: 18px;
       padding: 18px;
       color: #ffffff;
@@ -101,7 +94,6 @@
       flex-direction: column;
       box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
       border: 1px solid #2d6a4f;
-      animation: fadeIn 0.3s ease;
     }
 
     .question-title {
@@ -154,7 +146,6 @@
       border: none;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
       margin-top: auto;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
@@ -253,7 +244,6 @@
       font-weight: bold;
       cursor: pointer;
       text-align: center;
-      transition: background 0.2s;
     }
 
     .nav-btn.active {
@@ -286,10 +276,6 @@
       color: #ffffff;
       border: 1px solid #1b4332;
       cursor: pointer;
-    }
-
-    .cal-day:hover {
-      background-color: #1b4332;
     }
 
     .dot-container {
@@ -387,7 +373,7 @@
     </div>
 
     <!-- PASO 1: Nombre -->
-    <div id="step-1" class="quiz-box">
+    <div id="step-1" class="quiz-box hidden">
       <div class="question-title">1. ¿Cómo te llamás?</div>
       <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
       <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
@@ -506,6 +492,7 @@
 
       <div style="display: flex; gap: 6px; margin-top: 6px;">
         <button type="button" onclick="exportarRespaldo()" style="flex:1; background:#1d3557; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">💾 Guardar Respaldo</button>
+        <button type="button" onclick="reiniciarEncuesta()" style="flex:1; background:#d90429; color:#fff; border:none; padding:6px; border-radius:6px; font-size:10px; cursor:pointer;">🔄 Reiniciar Config</button>
       </div>
     </div>
 
@@ -558,7 +545,6 @@
     }
 
     window.addEventListener('load', () => {
-      // Si ya hay nombre guardado, saltamos directo a la app principal
       if (user.nombre && user.nombre !== "") {
         document.getElementById("step-1").classList.add("hidden");
         initMainAppLink();
@@ -579,6 +565,13 @@
       localStorage.setItem("mareaGrandeData", JSON.stringify(user));
     }
 
+    function reiniciarEncuesta() {
+      if (confirm("¿Querés reiniciar la configuración y hacer la encuesta de nuevo?")) {
+        localStorage.removeItem("mareaGrandeData");
+        location.reload();
+      }
+    }
+
     function exportarRespaldo() {
       var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(user));
       var downloadAnchor = document.createElement('a');
@@ -587,7 +580,7 @@
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
-      alert("💾 Respaldo guardado con éxito en tu dispositivo.");
+      alert("💾 Respaldo guardado con éxito.");
     }
 
     function nextStep(step) {
