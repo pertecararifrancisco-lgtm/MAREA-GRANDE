@@ -1,4 +1,4 @@
-// Service Worker para Marea Grande
+// Service Worker Avanzado para Marea Grande
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
@@ -7,15 +7,14 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// Listener para mostrar notificaciones
-self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : {};
-  const title = data.title || 'Marea Grande';
-  const options = {
-    body: data.body || '¡Tenés una actividad programada!',
-    icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png',
-    badge: 'https://cdn-icons-png.flaticon.com/512/857/857686.png'
-  };
-
-  event.waitUntil(self.registration.showNotification(title, options));
+// Escuchar mensajes desde la app para forzar notificaciones
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'DISPARAR_ALERTA') {
+    self.registration.showNotification(event.data.title, {
+      body: event.data.body,
+      icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png',
+      badge: 'https://cdn-icons-png.flaticon.com/512/857/857686.png',
+      vibrate: [200, 100, 200]
+    });
+  }
 });
