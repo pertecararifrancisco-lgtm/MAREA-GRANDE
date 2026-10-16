@@ -14,6 +14,7 @@
     .header-btns { display: flex; gap: 4px; }
     .btn-head { background: #2b9348; color: #ffffff; border: none; padding: 6px 8px; border-radius: 15px; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 3px; }
     .btn-head-bell { background: #0077b6; }
+    .badge-active { background: #1b4332; color: #95d5b2; border: 1px solid #2d6a4f; padding: 5px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; }
     .quiz-box { background-color: #132a13 !important; border-radius: 18px; padding: 20px; color: #ffffff; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); border: 1px solid #2d6a4f; }
     .question-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #95d5b2; }
     .input-text, .input-select { width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid #2d6a4f; font-size: 13px; margin-bottom: 6px; outline: none; background: #000000; color: #ffffff; text-align: center; }
@@ -34,8 +35,8 @@
     .cal-day-name { font-size: 10px; font-weight: bold; color: #95d5b2; }
     .cal-day { padding: 6px 0; font-size: 10px; font-weight: bold; background-color: #0b110e; border-radius: 6px; display: flex; flex-direction: column; align-items: center; color: #ffffff; border: 1px solid #1b4332; cursor: pointer; }
     .dot-container { display: flex; gap: 2px; margin-top: 2px; flex-wrap: wrap; justify-content: center; max-width: 25px; }
-    .dot { width: 5px; height: 5px; border-radius: 50%; }
-    .legend-box { margin-top: 8px; background-color: #0b110e; padding: 6px; border-radius: 8px; font-size: 10px; display: flex; flex-direction: column; gap: 3px; border: 1px solid #1b4332; width: 100%; text-align: left; }
+    .dot { width: 5px; height: 5px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
+    .legend-box { margin-top: 8px; background-color: #0b110e; padding: 6px; border-radius: 8px; font-size: 10px; display: flex; flex-direction: column; gap: 3px; border: 1px solid #1b4332; width: 100%; text-align: left; max-height: 90px; overflow-y: auto; }
     .legend-item { display: flex; align-items: center; gap: 5px; }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
     .modal-card { background: #0b110e; border: 2px solid #2d6a4f; padding: 18px; border-radius: 16px; width: 90%; max-width: 350px; color: #fff; }
@@ -48,12 +49,9 @@
       <h1 class="app-title">Marea Grande</h1>
       <div class="header-btns">
         <button type="button" id="btnAvisos" class="btn-head btn-head-bell" onclick="pedirPermisoNotificaciones()">🔔 Avisos</button>
+        <div id="statusNotifActive" class="badge-active hidden">🔔 Notificaciones Activadas</div>
         <button type="button" id="btnInstalar" class="btn-head" onclick="descargarApp()">📥 Descargar</button>
       </div>
-    </div>
-
-    <div id="live-banner" style="background: #1b4332; padding: 5px; border-radius: 6px; font-size: 10px; margin-bottom: 8px; display: none; text-align: center; color: #95d5b2; font-weight: bold;">
-      ⚡ Sistema Activo - Monitoreando alertas
     </div>
 
     <!-- PASO 1 -->
@@ -105,27 +103,38 @@
     <div id="app-notes" class="quiz-box hidden" style="justify-content: flex-start;">
       <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">📝 Notas y Actividades</div>
       <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.3; text-align: left;">
-        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Acá vas a poder agendar tus actividades.
+        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Elegí un día para agendar actividades.
       </div>
       <div class="agenda-container" id="days-list-container"></div>
     </div>
 
-    <!-- DETALLE DÍA -->
+    <!-- DETALLE DÍA (CON PALETA DE COLORES AMPLIADA) -->
     <div id="app-day-detail" class="quiz-box hidden" style="justify-content: flex-start;">
       <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
         <span id="detail-day-title" style="font-size: 15px; font-weight:bold; color:#95d5b2;">Lunes</span>
         <button type="button" class="btn-head" onclick="volverANotas()">⬅ Volver</button>
       </div>
       <div style="width:100%; margin-bottom: 6px;">
-        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Almuerzo, Gimnasio..." style="margin-bottom: 6px;">
+        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Rugby, Gimnasio..." style="margin-bottom: 6px;">
         <div style="display: flex; gap: 4px; margin-bottom: 6px;">
           <input type="time" id="activity-time-input" class="input-text" style="margin-bottom: 0;">
           <select id="activity-color-select" class="input-select" style="margin-bottom: 0;">
-            <option value="#2b9348">Verde</option><option value="#0077b6">Azul</option><option value="#ff9f1c">Naranja</option><option value="#d90429">Rojo</option><option value="#ffffff">Blanco</option>
+            <option value="#2b9348">Verde</option>
+            <option value="#0077b6">Azul</option>
+            <option value="#d90429">Rojo</option>
+            <option value="#ff9f1c">Naranja</option>
+            <option value="#ff1493">Rosa</option>
+            <option value="#9b5de5">Violeta</option>
+            <option value="#ffee32">Amarillo</option>
+            <option value="#00f5d4">Cian</option>
+            <option value="#ffffff">Blanco</option>
+            <option value="#000000">Negro</option>
           </select>
         </div>
         <select id="activity-alert-select" class="input-select" style="margin-bottom: 6px;">
-          <option value="0">Sin aviso</option><option value="30">30 min antes</option><option value="60">1 hora antes</option>
+          <option value="0">Sin aviso</option>
+          <option value="30">30 min antes</option>
+          <option value="60">1 hora antes</option>
         </select>
         <button type="button" class="btn-next" onclick="agregarActividadDia()" style="padding: 8px;">Agregar Actividad</button>
       </div>
@@ -141,22 +150,26 @@
         <div style="display: flex; gap: 4px; margin-bottom: 4px;">
           <input type="time" id="event-time-input" class="input-text" style="margin-bottom: 0;">
           <select id="event-alert-select" class="input-select" style="margin-bottom: 0;">
-            <option value="0">Sin aviso</option><option value="30">30 min antes</option>
+            <option value="0">Sin aviso</option>
+            <option value="30">30 min antes</option>
           </select>
         </div>
         <select id="event-color-select" class="input-select" style="margin-bottom: 6px;">
-          <option value="#ff9f1c">Naranja</option><option value="#0077b6">Azul</option><option value="#d90429">Rojo</option>
+          <option value="#ff9f1c">Naranja</option>
+          <option value="#0077b6">Azul</option>
+          <option value="#d90429">Rojo</option>
+          <option value="#ffee32">Amarillo</option>
+          <option value="#000000">Negro</option>
         </select>
         <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 7px;">Guardar Evento</button>
       </div>
       <div class="events-grid-container" id="events-list"></div>
     </div>
 
-    <!-- AJUSTES CON CONTADOR DE VISITAS -->
+    <!-- AJUSTES Y CONTADOR DE VISITAS -->
     <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
       <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:10px;">⚙️ Ajustes y Cuentas</div>
 
-      <!-- CONTADOR DE VISITAS DENTRO DE LA APP -->
       <div style="background: #000000; padding: 10px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 10px; text-align: center; width:100%;">
         <p style="font-size: 11px; color: #95d5b2; font-weight: bold; margin-bottom: 6px;">👀 Personas que vieron el link:</p>
         <a href="https://www.freevisitorcounters.com" target="_blank" style="pointer-events: none;">
@@ -204,21 +217,34 @@
     var fechaActualObj = new Date(2026, 9, 17);
     var mesVisualizado = fechaActualObj.getMonth(), anioVisualizado = fechaActualObj.getFullYear();
 
-    var datosGuardados = localStorage.getItem("mareaGrandeContadorV1");
+    var datosGuardados = localStorage.getItem("mareaGrandeFullV2");
     if (datosGuardados) { try { var parsed = JSON.parse(datosGuardados); if (parsed && typeof parsed === 'object') user = parsed; } catch(e) { user = {}; } }
     if (!user.agendaLibre) { user.agendaLibre = {}; for (var i = 0; i < 7; i++) user.agendaLibre[diasMapeo[i]] = []; }
 
     window.addEventListener('load', () => {
-      if (!user.nombre || user.nombre.trim() === "") { document.getElementById("step-1").classList.remove("hidden"); } else { initMainAppLink(); }
-      if (window.Notification && Notification.permission === 'granted') {
-        var btnAvisos = document.getElementById("btnAvisos"); if(btnAvisos) btnAvisos.style.display = 'none';
-        document.getElementById("live-banner").style.display = "block";
+      if (!user.nombre || user.nombre.trim() === "") { 
+        document.getElementById("step-1").classList.remove("hidden"); 
+      } else { 
+        initMainAppLink(); 
       }
+      
+      // Control de estado de notificaciones
+      if (window.Notification && Notification.permission === 'granted') {
+        document.getElementById("btnAvisos").classList.add("hidden");
+        document.getElementById("statusNotifActive").classList.remove("hidden");
+      }
+
+      // Si la app está instalada, ocultamos el botón Descargar
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        document.getElementById("btnInstalar").classList.add("hidden");
+      }
+
       setInterval(verificarAlertasEnVivo, 30000);
     });
 
-    function guardarTodo() { localStorage.setItem("mareaGrandeContadorV1", JSON.stringify(user)); }
-    function reiniciarConfig() { if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { localStorage.removeItem("mareaGrandeContadorV1"); location.reload(); } }
+    function guardarTodo() { localStorage.setItem("mareaGrandeFullV2", JSON.stringify(user)); }
+    function reiniciarConfig() { if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { localStorage.removeItem("mareaGrandeFullV2"); location.reload(); } }
+    
     function vincularCuenta(tipo) {
       var correo = prompt("Ingresá tu correo de " + tipo + ":", (tipo === 'Google' ? user.emailGoogle : user.emailApple) || '');
       if (correo) {
@@ -227,15 +253,18 @@
         alert("✉️ [Mensaje enviado a " + correo + "]: ¡Hola " + user.nombre + "! Tu cuenta ya está registrada y recibirás notificaciones en Marea Grande.");
       }
     }
+
     function actualizarEstadoGoogle() {
       var statusEl = document.getElementById("google-account-status");
       if (statusEl) { statusEl.innerText = user.emailGoogle ? "Google: " + user.emailGoogle : (user.emailApple ? "Apple: " + user.emailApple : "No registrado"); statusEl.style.color = (user.emailGoogle || user.emailApple) ? "#95d5b2" : "#ccc"; }
     }
+
     function exportarRespaldo() {
       var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(user));
       var downloadAnchor = document.createElement('a'); downloadAnchor.setAttribute("href", dataStr); downloadAnchor.setAttribute("download", "marea_grande_respaldo.json");
       document.body.appendChild(downloadAnchor); downloadAnchor.click(); downloadAnchor.remove();
     }
+
     function nextStep(step) {
       if (step === 1) {
         var nom = document.getElementById("input-nombre").value.trim(); if (!nom) return alert("Escribí tu nombre");
@@ -246,6 +275,7 @@
         user.entrenosPorDeporte = {}; indiceDeporteActual = 0; guardarTodo(); document.getElementById("step-2").classList.add("hidden"); mostrarPreguntaDeporteActual();
       }
     }
+
     function mostrarPreguntaDeporteActual() {
       if (indiceDeporteActual < user.listaDeportes.length) {
         var depActual = user.listaDeportes[indiceDeporteActual];
@@ -254,16 +284,19 @@
         document.getElementById("step-deportes-dias").classList.remove("hidden");
       } else { document.getElementById("step-deportes-dias").classList.add("hidden"); initMainAppLink(); }
     }
+
     function siguienteDeporteDias() {
       var depActual = user.listaDeportes[indiceDeporteActual];
       var cbs = document.querySelectorAll(".cb-dias-dep:checked");
       var sel = []; for (var i = 0; i < cbs.length; i++) sel.push(parseInt(cbs[i].value));
       user.entrenosPorDeporte[depActual] = sel; guardarTodo(); indiceDeporteActual++; mostrarPreguntaDeporteActual();
     }
+
     function initMainAppLink() {
       document.getElementById("step-1").classList.add("hidden"); document.getElementById("step-2").classList.add("hidden"); document.getElementById("step-deportes-dias").classList.add("hidden");
       document.getElementById("bottom-nav-bar").classList.remove("hidden"); switchTab('calendar'); renderDaysList(); setupEventDays(); renderEventsList(); actualizarEstadoGoogle();
     }
+
     function switchTab(tabName) {
       document.getElementById("app-calendar").classList.add("hidden"); document.getElementById("app-notes").classList.add("hidden"); document.getElementById("app-day-detail").classList.add("hidden"); document.getElementById("app-events").classList.add("hidden"); document.getElementById("app-settings").classList.add("hidden");
       var btns = document.querySelectorAll(".nav-btn"); for(var i=0; i<btns.length; i++) btns[i].classList.remove("active");
@@ -272,7 +305,9 @@
       else if (tabName === 'events') { document.getElementById("app-events").classList.remove("hidden"); btns[2].classList.add("active"); setupEventDays(); renderEventsList(); }
       else if (tabName === 'settings') { document.getElementById("app-settings").classList.remove("hidden"); btns[3].classList.add("active"); actualizarEstadoGoogle(); }
     }
+
     function cambiarMes(dir) { mesVisualizado += dir; if (mesVisualizado > 11) { mesVisualizado = 0; anioVisualizado++; } else if (mesVisualizado < 0) { mesVisualizado = 11; anioVisualizado--; } showCalendar(); setupEventDays(); }
+    
     function renderDaysList() {
       var container = document.getElementById("days-list-container"); container.innerHTML = "";
       for (var i = 0; i < 7; i++) {
@@ -281,8 +316,10 @@
         card.setAttribute("data-num", numDia); card.onclick = function() { abrirDetalleDia(parseInt(this.getAttribute("data-num"))); }; container.appendChild(card);
       }
     }
+
     function abrirDetalleDia(numDia) { selectedDayForDetail = numDia; document.getElementById("detail-day-title").innerText = diasSemanaTexto[diasMapeo.indexOf(numDia)]; document.getElementById("app-notes").classList.add("hidden"); document.getElementById("app-day-detail").classList.remove("hidden"); renderDayActivities(); }
     function volverANotas() { document.getElementById("app-day-detail").classList.add("hidden"); document.getElementById("app-notes").classList.remove("hidden"); renderDaysList(); showCalendar(); }
+    
     function agregarActividadDia() {
       var nom = document.getElementById("activity-name-input").value.trim(), hora = document.getElementById("activity-time-input").value, col = document.getElementById("activity-color-select").value, alertSel = document.getElementById("activity-alert-select").value;
       if (!nom || !hora) return alert("Ingresá nombre y hora");
@@ -291,6 +328,7 @@
       user.agendaLibre[selectedDayForDetail].sort((a, b) => a.hora.localeCompare(b.hora)); guardarTodo();
       document.getElementById("activity-name-input").value = ""; document.getElementById("activity-time-input").value = ""; renderDayActivities();
     }
+
     function renderDayActivities() {
       var container = document.getElementById("day-activities-list"); container.innerHTML = "";
       var lista = user.agendaLibre[selectedDayForDetail]; if (!lista || lista.length === 0) { container.innerHTML = '<span style="font-size: 10px; color: #777;">No hay actividades.</span>'; return; }
@@ -300,6 +338,7 @@
         container.appendChild(row);
       }
     }
+
     function eliminarActividad(numDia, index) { user.agendaLibre[numDia].splice(index, 1); guardarTodo(); renderDayActivities(); }
 
     function showCalendar() {
@@ -313,33 +352,50 @@
       
       var legendBox = document.getElementById("legend-references-box"); 
       legendBox.innerHTML = "<strong>REFERENCIAS:</strong>";
-      legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:#2b9348;"></div> Días que entrenás</div>`;
-      legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:#d90429;"></div> Días de descanso</div>`;
+
+      // Colección de referencias únicas para el calendario
+      var referenciasAgregadas = {};
+
+      // Cargar deportes en referencias
+      if (user.listaDeportes) { 
+        for (var dIdx = 0; dIdx < user.listaDeportes.length; dIdx++) {
+          var depNombre = user.listaDeportes[dIdx];
+          var colDep = coloresDeportes[dIdx % coloresDeportes.length];
+          referenciasAgregadas[depNombre] = colDep;
+        }
+      }
+
+      // Cargar actividades agendadas en referencias
+      for (var d = 0; d < 7; d++) {
+        var listAct = user.agendaLibre[diasMapeo[d]];
+        if (listAct) {
+          for (var a = 0; a < listAct.length; a++) {
+            referenciasAgregadas[listAct[a].actividad] = listAct[a].color || '#0077b6';
+          }
+        }
+      }
+
+      // Mostrar las referencias generadas
+      var keysRef = Object.keys(referenciasAgregadas);
+      for (var r = 0; r < keysRef.length; r++) {
+        legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:${referenciasAgregadas[keysRef[r]]};"></div> ${keysRef[r]}</div>`;
+      }
 
       for (var day = 1; day <= totalDiasMes; day++) {
         var dayOfWeek = new Date(anioVisualizado, mesVisualizado, day).getDay();
         var dotsHTML = "";
-        var esDiaEntreno = false;
 
-        // Verificar si es día de entrenamiento según los deportes cargados
+        // Entrenamientos
         if (user.entrenosPorDeporte) {
           var keysDeps = Object.keys(user.entrenosPorDeporte);
-          for (var k = 0; k < keysDeps.length; k++) {
+          for (var k = 0; k < keysDeps.length; k++) { 
             if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) {
-              esDiaEntreno = true;
-              break;
+              dotsHTML += `<div class="dot" style="background-color: ${coloresDeportes[k % coloresDeportes.length]};"></div>`; 
             }
           }
         }
 
-        // Puntos Verdes para entreno, Rojos para descanso
-        if (esDiaEntreno) {
-          dotsHTML += `<div class="dot" style="background-color: #2b9348;"></div>`;
-        } else {
-          dotsHTML += `<div class="dot" style="background-color: #d90429;"></div>`;
-        }
-
-        // Actividades en notas
+        // Actividades agregadas en Notas
         if (user.agendaLibre && user.agendaLibre[dayOfWeek]) { 
           for (var a = 0; a < user.agendaLibre[dayOfWeek].length; a++) {
             dotsHTML += `<div class="dot" style="background-color: ${user.agendaLibre[dayOfWeek][a].color || '#0077b6'};"></div>`;
@@ -364,40 +420,48 @@
       var dayOfWeek = new Date(anio, mes, dia).getDay(), nombreDia = diasSemanaTexto[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
       var contenido = "<strong>" + dia + " de " + mesesTexto[mes] + " " + anio + " (" + nombreDia + ")</strong><br><br>";
       
-      var esDiaEntreno = false;
       if (user.entrenosPorDeporte) {
         var keysDeps = Object.keys(user.entrenosPorDeporte);
         for (var k = 0; k < keysDeps.length; k++) { 
           if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) { 
-            contenido += `<span style="color:#2b9348;">■</span> Entrena <strong>${keysDeps[k]}</strong><br>`; 
-            esDiaEntreno = true;
+            contenido += `<span style="color:${coloresDeportes[k % coloresDeportes.length]};">■</span> Entrena <strong>${keysDeps[k]}</strong><br>`; 
           } 
         }
       }
 
-      if (!esDiaEntreno) {
-        contenido += `<span style="color:#d90429;">■</span> Día de <strong>Descanso</strong><br>`;
-      }
-
       contenido += "<br><strong>Actividades agendadas:</strong><br>";
       var lista = user.agendaLibre && user.agendaLibre[dayOfWeek];
-      if (lista && lista.length > 0) { for (var i = 0; i < lista.length; i++) contenido += "- <span style='color: " + (lista[i].color || '#2b9348') + ";'>■</span> " + lista[i].hora + ": " + lista[i].actividad + "<br>"; } else contenido += "<em>Sin actividades agendadas.</em><br>";
-      var claveEvento = anio + "-" + mes + "-" + dia; if (user.eventos && user.eventos[claveEvento]) contenido += "<br>🎉 <strong>Evento (" + user.eventos[claveEvento].hora + "):</strong> " + user.eventos[claveEvento].desc;
-      document.getElementById("modal-title").innerText = "Detalle del Día " + dia; document.getElementById("modal-content").innerHTML = contenido; document.getElementById("day-modal").classList.remove("hidden");
+      if (lista && lista.length > 0) { 
+        for (var i = 0; i < lista.length; i++) {
+          contenido += "- <span style='color: " + (lista[i].color || '#2b9348') + ";'>■</span> " + lista[i].hora + ": " + lista[i].actividad + "<br>"; 
+        }
+      } else contenido += "<em>Sin actividades agendadas.</em><br>";
+
+      var claveEvento = anio + "-" + mes + "-" + dia; 
+      if (user.eventos && user.eventos[claveEvento]) {
+        contenido += "<br>🎉 <strong>Evento (" + user.eventos[claveEvento].hora + "):</strong> " + user.eventos[claveEvento].desc;
+      }
+
+      document.getElementById("modal-title").innerText = "Detalle del Día " + dia; 
+      document.getElementById("modal-content").innerHTML = contenido; 
+      document.getElementById("day-modal").classList.remove("hidden");
     }
 
     function cerrarModal() { document.getElementById("day-modal").classList.add("hidden"); }
+
     function setupEventDays() {
       var select = document.getElementById("event-day-select"); select.innerHTML = "";
       var total = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
       for(var d=1; d<=total; d++) { var opt = document.createElement("option"); opt.value = anioVisualizado + "-" + mesVisualizado + "-" + d; opt.text = d + " de " + mesesTexto[mesVisualizado]; select.appendChild(opt); }
     }
+
     function saveEvent() {
       var clave = document.getElementById("event-day-select").value, desc = document.getElementById("event-desc-input").value.trim(), hora = document.getElementById("event-time-input").value, alerta = document.getElementById("event-alert-select").value, col = document.getElementById("event-color-select").value;
       if(!desc || !hora) return alert("Escribí descripción y hora");
       if (!user.eventos) user.eventos = {}; user.eventos[clave] = { desc: desc, hora: hora, alerta: alerta, color: col }; guardarTodo();
       document.getElementById("event-desc-input").value = ""; document.getElementById("event-time-input").value = ""; renderEventsList(); showCalendar(); alert("¡Evento guardado!");
     }
+
     function renderEventsList() {
       var listContainer = document.getElementById("events-list"); listContainer.innerHTML = "";
       if (!user.eventos) user.eventos = {}; var keys = Object.keys(user.eventos);
@@ -408,17 +472,26 @@
         listContainer.appendChild(card);
       }
     }
+
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log(err)); }); }
+
     function pedirPermisoNotificaciones() {
       if ('Notification' in window) {
         Notification.requestPermission().then((permission) => {
           if (permission === 'granted') {
-            alert('🔔 ¡Notificaciones activadas!'); document.getElementById("btnAvisos").style.display = 'none'; document.getElementById("live-banner").style.display = "block";
-            if (navigator.serviceWorker.controller) { navigator.serviceWorker.ready.then((reg) => { reg.showNotification('Marea Grande', { body: '¡Sistema activo! Te avisaremos de tus actividades.', icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png' }); }); }
+            document.getElementById("btnAvisos").classList.add("hidden");
+            document.getElementById("statusNotifActive").classList.remove("hidden");
+            alert('🔔 ¡Notificaciones activadas!');
+            if (navigator.serviceWorker.controller) { 
+              navigator.serviceWorker.ready.then((reg) => { 
+                reg.showNotification('Marea Grande', { body: '¡Sistema activo! Te avisaremos de tus actividades.', icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png' }); 
+              }); 
+            }
           } else alert('⚠️ Notificaciones denegadas en el navegador.');
         });
       }
     }
+
     function verificarAlertasEnVivo() {
       if (Notification.permission !== 'granted') return;
       var ahora = new Date(), diaSemana = ahora.getDay(), horaStr = (ahora.getHours() < 10 ? "0" : "") + ahora.getHours() + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
@@ -430,9 +503,21 @@
         }
       }
     }
+
     let deferredPrompt; const btnInstalar = document.getElementById('btnInstalar');
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-    function descargarApp() { if (deferredPrompt) { deferredPrompt.prompt(); } else { alert("📱 Para instalar:\n1. Tocá compartir o tres puntos en tu navegador.\n2. Seleccioná 'Agregar a la pantalla principal'."); } }
+    function descargarApp() { 
+      if (deferredPrompt) { 
+        deferredPrompt.prompt(); 
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            btnInstalar.classList.add("hidden");
+          }
+        });
+      } else { 
+        alert("📱 Para instalar:\n1. Tocá compartir o tres puntos en tu navegador.\n2. Seleccioná 'Agregar a la pantalla principal'."); 
+      } 
+    }
   </script>
 </body>
 </html>
