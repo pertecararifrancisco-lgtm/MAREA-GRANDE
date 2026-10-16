@@ -1,15 +1,17 @@
 {
+  "name": "Marea Grande",
   "short_name": "Marea Grande",
-  "name": "Marea Grande - Planificador Deportivo",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#0b110e",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/857/857686.png",
+      "src": "icono.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "any maskable"
     }
-  ],
-  "start_url": "./index.html",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff",
-  "display": "standalone"
-} 
+  ]
+}
