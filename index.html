@@ -363,7 +363,7 @@
       <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
     </div>
 
-    <!-- PASO 2: Deportes (Con aclaración chica) -->
+    <!-- PASO 2: Deportes -->
     <div id="step-2" class="quiz-box hidden">
       <div class="question-title">2. ¿Qué deporte/s o actividad/es hacés?</div>
       <input type="text" id="input-deportes" class="input-text" placeholder="Ej. Rugby, fútbol, gimnasio...">
@@ -492,21 +492,27 @@
       </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL: Ajustes -->
+    <!-- PANTALLA PRINCIPAL: Ajustes (Google y Apple) -->
     <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:12px;">⚙️ Ajustes y Configuración</div>
+      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:10px;">⚙️ Ajustes y Cuentas</div>
       
-      <div style="background: #0b110e; padding: 12px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 12px; font-size: 12px; width:100%;">
-        <p style="margin-bottom: 6px; color: #95d5b2; font-weight: bold;">Cuenta vinculada:</p>
-        <p id="google-account-status" style="margin-bottom: 10px; color: #ccc;">No registrado</p>
-        <button type="button" class="btn-next" style="background: #db4437; padding: 8px;" onclick="vincularGoogle()">
-          🌐 Vincular con Google
-        </button>
+      <div style="background: #0b110e; padding: 10px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 8px; font-size: 11px; width:100%;">
+        <p style="margin-bottom: 4px; color: #95d5b2; font-weight: bold;">Cuenta vinculada:</p>
+        <p id="google-account-status" style="margin-bottom: 8px; color: #ccc;">No registrado</p>
+        
+        <div style="display: flex; gap: 4px;">
+          <button type="button" class="btn-next" style="background: #db4437; padding: 6px; font-size: 10px;" onclick="vincularCuenta('Google')">
+            🌐 Google
+          </button>
+          <button type="button" class="btn-next" style="background: #333333; padding: 6px; font-size: 10px;" onclick="vincularCuenta('Apple')">
+            🍎 Apple
+          </button>
+        </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 8px; width:100%;">
-        <button type="button" onclick="exportarRespaldo()" style="background:#1d3557; color:#fff; border:none; padding:10px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">💾 Guardar Respaldo (JSON)</button>
-        <button type="button" onclick="reiniciarConfig()" style="background:#d90429; color:#fff; border:none; padding:10px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">🔄 Reiniciar / Modificar Encuesta</button>
+      <div style="display: flex; flex-direction: column; gap: 6px; width:100%;">
+        <button type="button" onclick="exportarRespaldo()" style="background:#1d3557; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">💾 Guardar Respaldo (JSON)</button>
+        <button type="button" onclick="reiniciarConfig()" style="background:#d90429; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; cursor:pointer; font-weight:bold;">🔄 Reiniciar / Modificar Encuesta</button>
       </div>
     </div>
 
@@ -534,6 +540,7 @@
       listaDeportes: [],
       entrenosPorDeporte: {},
       emailGoogle: "",
+      emailApple: "",
       agendaLibre: {},
       eventos: {}
     };
@@ -549,7 +556,7 @@
     var mesVisualizado = fechaActualObj.getMonth();
     var anioVisualizado = fechaActualObj.getFullYear();
 
-    var datosGuardados = localStorage.getItem("mareaGrandeMultiDeporteAclarado");
+    var datosGuardados = localStorage.getItem("mareaGrandeAppleGoogle");
     if (datosGuardados) {
       try {
         var parsed = JSON.parse(datosGuardados);
@@ -587,23 +594,33 @@
     });
 
     function guardarTodo() {
-      localStorage.setItem("mareaGrandeMultiDeporteAclarado", JSON.stringify(user));
+      localStorage.setItem("mareaGrandeAppleGoogle", JSON.stringify(user));
     }
 
     function reiniciarConfig() {
       if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) {
-        localStorage.removeItem("mareaGrandeMultiDeporteAclarado");
+        localStorage.removeItem("mareaGrandeAppleGoogle");
         location.reload();
       }
     }
 
-    function vincularGoogle() {
-      var cuentaSimulada = prompt("Ingresá tu correo de Google (Gmail):", user.emailGoogle || "usuario@gmail.com");
-      if (cuentaSimulada) {
-        user.emailGoogle = cuentaSimulada.trim();
+    function vincularCuenta(tipo) {
+      var placeholder = (tipo === 'Google') ? 'usuario@gmail.com' : 'usuario@icloud.com';
+      var cuentaActual = (tipo === 'Google') ? user.emailGoogle : user.emailApple;
+      var correo = prompt("Ingresá tu correo de " + tipo + ":", cuentaActual || placeholder);
+      
+      if (correo) {
+        correo = correo.trim();
+        if (tipo === 'Google') {
+          user.emailGoogle = correo;
+        } else {
+          user.emailApple = correo;
+        }
         guardarTodo();
         actualizarEstadoGoogle();
-        alert("🌐 ¡Cuenta vinculada con éxito: " + user.emailGoogle + "!");
+        
+        // Simulación de correo recibido con el mensaje solicitado
+        alert("✉️ [Mensaje simulado a " + correo + "]:\n\n¡Hola " + user.nombre + "! Tu cuenta ya está registrada y ya podrás recibir notificaciones en Marea Grande.");
       }
     }
 
@@ -611,7 +628,10 @@
       var statusEl = document.getElementById("google-account-status");
       if (statusEl) {
         if (user.emailGoogle && user.emailGoogle !== "") {
-          statusEl.innerText = "Conectado como: " + user.emailGoogle;
+          statusEl.innerText = "Google: " + user.emailGoogle;
+          statusEl.style.color = "#95d5b2";
+        } else if (user.emailApple && user.emailApple !== "") {
+          statusEl.innerText = "Apple: " + user.emailApple;
           statusEl.style.color = "#95d5b2";
         } else {
           statusEl.innerText = "No registrado";
@@ -1050,9 +1070,11 @@
       if ('Notification' in window) {
         Notification.requestPermission().then((permission) => {
           if (permission === 'granted') {
-            alert('🔔 ¡Notificaciones activadas!');
-            document.getElementById("btnAvisos").style.display = 'none';
+            alert('🔔 ¡Notificaciones activadas con éxito!');
+            var btnAvisos = document.getElementById("btnAvisos");
+            if(btnAvisos) btnAvisos.style.display = 'none';
             document.getElementById("live-banner").style.display = "block";
+            
             if (navigator.serviceWorker.controller) {
               navigator.serviceWorker.ready.then((reg) => {
                 reg.showNotification('Marea Grande', {
@@ -1062,9 +1084,11 @@
               });
             }
           } else {
-            alert('⚠️ Notificaciones bloqueadas desde el navegador.');
+            alert('⚠️ Los permisos de notificación fueron denegados en el navegador. Activalos desde la configuración de tu celular o navegador.');
           }
         });
+      } else {
+        alert('❌ Tu navegador no soporta notificaciones.');
       }
     }
 
