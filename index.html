@@ -44,6 +44,9 @@
   </style>
 </head>
 <body>
+  <!-- CONTADOR INVISIBLE (Suma las visitas sin mostrarse al usuario) -->
+  <img src="https://www.freevisitorcounters.com/hostedcounters.php?id=y_marea_grande_app_stats&core=green" style="display:none; opacity:0; width:0; height:0;" alt="counter_tracker">
+
   <div class="app-card">
     <div class="app-header">
       <h1 class="app-title">Marea Grande</h1>
@@ -108,7 +111,7 @@
       <div class="agenda-container" id="days-list-container"></div>
     </div>
 
-    <!-- DETALLE DÍA (CON PALETA DE COLORES AMPLIADA) -->
+    <!-- DETALLE DÍA -->
     <div id="app-day-detail" class="quiz-box hidden" style="justify-content: flex-start;">
       <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
         <span id="detail-day-title" style="font-size: 15px; font-weight:bold; color:#95d5b2;">Lunes</span>
@@ -166,16 +169,10 @@
       <div class="events-grid-container" id="events-list"></div>
     </div>
 
-    <!-- AJUSTES Y CONTADOR DE VISITAS -->
+    <!-- AJUSTES (SIN CONTADOR VISIBLE PARA EL PÚBLICO) -->
     <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:10px;">⚙️ Ajustes y Cuentas</div>
-
-      <div style="background: #000000; padding: 10px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 10px; text-align: center; width:100%;">
-        <p style="font-size: 11px; color: #95d5b2; font-weight: bold; margin-bottom: 6px;">👀 Personas que vieron el link:</p>
-        <a href="https://www.freevisitorcounters.com" target="_blank" style="pointer-events: none;">
-          <img src="https://www.freevisitorcounters.com/hostedcounters.php?id=y_marea_grande_app_stats&core=green" border="0" alt="Contador de visitas" style="border-radius: 4px; max-width: 120px;">
-        </a>
-      </div>
+      <!-- Al tocar 3 veces este título se activa tu vista privada -->
+      <div class="question-title" id="title-settings-secret" onclick="toqueSecretoContador()" style="font-size: 14px; color: #90e0ef; margin-bottom:10px; cursor:pointer; user-select:none;">⚙️ Ajustes y Cuentas</div>
 
       <div style="background: #0b110e; padding: 10px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 8px; font-size: 11px; width:100%;">
         <p id="google-account-status" style="margin-bottom: 8px; color: #ccc;">No registrado</p>
@@ -216,8 +213,11 @@
     var coloresDeportes = ["#2b9348", "#0077b6", "#ff9f1c", "#9b5de5", "#f15bb5"];
     var fechaActualObj = new Date(2026, 9, 17);
     var mesVisualizado = fechaActualObj.getMonth(), anioVisualizado = fechaActualObj.getFullYear();
+    
+    // Contador de clics secretos
+    var toquesSecretos = 0;
 
-    var datosGuardados = localStorage.getItem("mareaGrandeFullV2");
+    var datosGuardados = localStorage.getItem("mareaGrandeFullV3");
     if (datosGuardados) { try { var parsed = JSON.parse(datosGuardados); if (parsed && typeof parsed === 'object') user = parsed; } catch(e) { user = {}; } }
     if (!user.agendaLibre) { user.agendaLibre = {}; for (var i = 0; i < 7; i++) user.agendaLibre[diasMapeo[i]] = []; }
 
@@ -228,13 +228,11 @@
         initMainAppLink(); 
       }
       
-      // Control de estado de notificaciones
       if (window.Notification && Notification.permission === 'granted') {
         document.getElementById("btnAvisos").classList.add("hidden");
         document.getElementById("statusNotifActive").classList.remove("hidden");
       }
 
-      // Si la app está instalada, ocultamos el botón Descargar
       if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
         document.getElementById("btnInstalar").classList.add("hidden");
       }
@@ -242,8 +240,16 @@
       setInterval(verificarAlertasEnVivo, 30000);
     });
 
-    function guardarTodo() { localStorage.setItem("mareaGrandeFullV2", JSON.stringify(user)); }
-    function reiniciarConfig() { if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { localStorage.removeItem("mareaGrandeFullV2"); location.reload(); } }
+    function toqueSecretoContador() {
+      toquesSecretos++;
+      if (toquesSecretos >= 3) {
+        toquesSecretos = 0;
+        alert("🔒 [Panel de Control Creador Marea Grande]\n\nEl contador está activo registrando las entradas al link.\nPara ver las métricas completas en vivo ingresá a:\nhttps://www.freevisitorcounters.com");
+      }
+    }
+
+    function guardarTodo() { localStorage.setItem("mareaGrandeFullV3", JSON.stringify(user)); }
+    function reiniciarConfig() { if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { localStorage.removeItem("mareaGrandeFullV3"); location.reload(); } }
     
     function vincularCuenta(tipo) {
       var correo = prompt("Ingresá tu correo de " + tipo + ":", (tipo === 'Google' ? user.emailGoogle : user.emailApple) || '');
@@ -353,10 +359,8 @@
       var legendBox = document.getElementById("legend-references-box"); 
       legendBox.innerHTML = "<strong>REFERENCIAS:</strong>";
 
-      // Colección de referencias únicas para el calendario
       var referenciasAgregadas = {};
 
-      // Cargar deportes en referencias
       if (user.listaDeportes) { 
         for (var dIdx = 0; dIdx < user.listaDeportes.length; dIdx++) {
           var depNombre = user.listaDeportes[dIdx];
@@ -365,7 +369,6 @@
         }
       }
 
-      // Cargar actividades agendadas en referencias
       for (var d = 0; d < 7; d++) {
         var listAct = user.agendaLibre[diasMapeo[d]];
         if (listAct) {
@@ -375,7 +378,6 @@
         }
       }
 
-      // Mostrar las referencias generadas
       var keysRef = Object.keys(referenciasAgregadas);
       for (var r = 0; r < keysRef.length; r++) {
         legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:${referenciasAgregadas[keysRef[r]]};"></div> ${keysRef[r]}</div>`;
@@ -385,7 +387,6 @@
         var dayOfWeek = new Date(anioVisualizado, mesVisualizado, day).getDay();
         var dotsHTML = "";
 
-        // Entrenamientos
         if (user.entrenosPorDeporte) {
           var keysDeps = Object.keys(user.entrenosPorDeporte);
           for (var k = 0; k < keysDeps.length; k++) { 
@@ -395,14 +396,12 @@
           }
         }
 
-        // Actividades agregadas en Notas
         if (user.agendaLibre && user.agendaLibre[dayOfWeek]) { 
           for (var a = 0; a < user.agendaLibre[dayOfWeek].length; a++) {
             dotsHTML += `<div class="dot" style="background-color: ${user.agendaLibre[dayOfWeek][a].color || '#0077b6'};"></div>`;
           }
         }
 
-        // Eventos
         var claveEvento = anioVisualizado + "-" + mesVisualizado + "-" + day; 
         if (user.eventos && user.eventos[claveEvento]) {
           dotsHTML += `<div class="dot" style="background-color: ${user.eventos[claveEvento].color || '#ff9f1c'};"></div>`;
@@ -449,75 +448,4 @@
 
     function cerrarModal() { document.getElementById("day-modal").classList.add("hidden"); }
 
-    function setupEventDays() {
-      var select = document.getElementById("event-day-select"); select.innerHTML = "";
-      var total = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
-      for(var d=1; d<=total; d++) { var opt = document.createElement("option"); opt.value = anioVisualizado + "-" + mesVisualizado + "-" + d; opt.text = d + " de " + mesesTexto[mesVisualizado]; select.appendChild(opt); }
-    }
-
-    function saveEvent() {
-      var clave = document.getElementById("event-day-select").value, desc = document.getElementById("event-desc-input").value.trim(), hora = document.getElementById("event-time-input").value, alerta = document.getElementById("event-alert-select").value, col = document.getElementById("event-color-select").value;
-      if(!desc || !hora) return alert("Escribí descripción y hora");
-      if (!user.eventos) user.eventos = {}; user.eventos[clave] = { desc: desc, hora: hora, alerta: alerta, color: col }; guardarTodo();
-      document.getElementById("event-desc-input").value = ""; document.getElementById("event-time-input").value = ""; renderEventsList(); showCalendar(); alert("¡Evento guardado!");
-    }
-
-    function renderEventsList() {
-      var listContainer = document.getElementById("events-list"); listContainer.innerHTML = "";
-      if (!user.eventos) user.eventos = {}; var keys = Object.keys(user.eventos);
-      if(keys.length === 0) { listContainer.innerHTML = '<span style="font-size: 10px; color: #777; grid-column: span 2;">No hay eventos aún.</span>'; return; }
-      for(var i=0; i<keys.length; i++) {
-        var ev = user.eventos[keys[i]], partes = keys[i].split("-"), dStr = partes[2] + " de " + mesesTexto[parseInt(partes[1])];
-        var card = document.createElement("div"); card.className = "event-mini-card"; card.innerHTML = `<div style="font-weight:bold; color:#95d5b2;">📅 ${dStr}</div><div><span style="color: ${ev.color};">■</span> <strong>${ev.hora}</strong> - ${ev.desc}</div>`;
-        listContainer.appendChild(card);
-      }
-    }
-
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log(err)); }); }
-
-    function pedirPermisoNotificaciones() {
-      if ('Notification' in window) {
-        Notification.requestPermission().then((permission) => {
-          if (permission === 'granted') {
-            document.getElementById("btnAvisos").classList.add("hidden");
-            document.getElementById("statusNotifActive").classList.remove("hidden");
-            alert('🔔 ¡Notificaciones activadas!');
-            if (navigator.serviceWorker.controller) { 
-              navigator.serviceWorker.ready.then((reg) => { 
-                reg.showNotification('Marea Grande', { body: '¡Sistema activo! Te avisaremos de tus actividades.', icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png' }); 
-              }); 
-            }
-          } else alert('⚠️ Notificaciones denegadas en el navegador.');
-        });
-      }
-    }
-
-    function verificarAlertasEnVivo() {
-      if (Notification.permission !== 'granted') return;
-      var ahora = new Date(), diaSemana = ahora.getDay(), horaStr = (ahora.getHours() < 10 ? "0" : "") + ahora.getHours() + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
-      if (user.agendaLibre && user.agendaLibre[diaSemana]) {
-        for (var i = 0; i < user.agendaLibre[diaSemana].length; i++) {
-          if (user.agendaLibre[diaSemana][i].alerta !== "0" && user.agendaLibre[diaSemana][i].hora === horaStr) {
-            navigator.serviceWorker.ready.then((reg) => { reg.showNotification('⏰ ¡Próxima actividad!', { body: 'Arranca: ' + user.agendaLibre[diaSemana][i].actividad, icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png' }); });
-          }
-        }
-      }
-    }
-
-    let deferredPrompt; const btnInstalar = document.getElementById('btnInstalar');
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-    function descargarApp() { 
-      if (deferredPrompt) { 
-        deferredPrompt.prompt(); 
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            btnInstalar.classList.add("hidden");
-          }
-        });
-      } else { 
-        alert("📱 Para instalar:\n1. Tocá compartir o tres puntos en tu navegador.\n2. Seleccioná 'Agregar a la pantalla principal'."); 
-      } 
-    }
-  </script>
-</body>
-</html>
+    function setupEventDays
