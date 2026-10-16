@@ -29,8 +29,11 @@
     .agenda-container { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; padding-right: 4px; width: 100%; }
     .events-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 100px; overflow-y: auto; width: 100%; }
     .event-mini-card { background: #000000; border: 1px solid #2d6a4f; border-radius: 8px; padding: 6px; text-align: left; font-size: 10px; }
-    .music-btn-item { background: #0b110e; border: 1px solid #2d6a4f; border-radius: 10px; padding: 10px; width: 100%; text-align: left; color: #ffffff; font-size: 12px; font-weight: bold; cursor: pointer; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s; }
-    .music-btn-item:hover { background: #1b4332; }
+    
+    .music-card { background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px; width: 100%; text-align: left; color: #ffffff; margin-bottom: 8px; }
+    .music-title { font-size: 12px; font-weight: bold; color: #95d5b2; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .music-audio { width: 100%; height: 32px; margin-top: 4px; outline: none; border-radius: 6px; }
+
     .bottom-nav { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin-top: 12px; background: #000000; padding: 4px; border-radius: 14px; border: 1px solid #2d6a4f; }
     .nav-btn { background-color: #1d3557; color: white; border: none; padding: 8px 1px; border-radius: 10px; font-size: 9px; font-weight: bold; cursor: pointer; text-align: center; }
     .nav-btn.active { background-color: #2b9348; }
@@ -47,7 +50,6 @@
   </style>
 </head>
 <body>
-  <!-- CONTADOR INVISIBLE -->
   <img src="https://www.freevisitorcounters.com/hostedcounters.php?id=y_marea_grande_app_stats&core=green" style="display:none; opacity:0; width:0; height:0;" alt="counter_tracker">
 
   <div class="app-card">
@@ -96,6 +98,15 @@
         <label class="opt-label"><input type="checkbox" value="0" class="cb-dias-dep"> Domingo</label>
       </div>
       <button type="button" class="btn-next" onclick="siguienteDeporteDias()">Siguiente ➔</button>
+    </div>
+
+    <!-- PASO 4: APARTADO DE MÚSICA EN LA ENCUESTA -->
+    <div id="step-music-intro" class="quiz-box hidden">
+      <div class="question-title">🎧 Apartado de Música</div>
+      <p style="font-size: 12px; color: #95d5b2; margin-bottom: 16px; line-height: 1.4;">
+        Apartado de música. Podés elegir entre estos temas. ¡Dale play a tus favoritos cuando quieras!
+      </p>
+      <button type="button" class="btn-next" onclick="finalizarEncuestaCompleta()">Finalizar Encuesta e Ingresar ➔</button>
     </div>
 
     <!-- CALENDARIO -->
@@ -184,21 +195,34 @@
       <button type="button" class="btn-next btn-green-admin" onclick="accederPanelAdminConClave()">🔑 Acceso Creador (Métricas y Registros)</button>
     </div>
 
-    <!-- MÚSICA / REGGAE & ROCK TRANQUI -->
+    <!-- MÚSICA SELECCIONADA -->
     <div id="app-music" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">🎸 Música (Rock Tranqui & Reggae)</div>
-      <p style="font-size: 11px; color: #95d5b2; margin-bottom: 12px; text-align: left;">Elegí tu playlist para relajar o armar tus planes:</p>
+      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 6px;">🎧 Apartado de Música</div>
+      <p style="font-size: 11px; color: #95d5b2; margin-bottom: 10px; text-align: left;">Podés elegir entre estos temas. ¡Dale play!</p>
       
-      <div style="width: 100%; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 250px;">
-        <button class="music-btn-item" onclick="abrirMusicaYoutube('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Reggae Roots Argentino')">
-          🌿 Reggae Roots Argentino (Los Cafres / Nonpalidece) ➔
-        </button>
-        <button class="music-btn-item" onclick="abrirMusicaYoutube('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Rock Nacional Acústico / Tranqui')">
-          🎸 Rock Nacional Acústico & Tranquilo ➔
-        </button>
-        <button class="music-btn-item" onclick="abrirMusicaYoutube('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Indio Solari / Fundamentalistas')">
-          ✨ Fundamentalistas / Indio Solari (Clásicos) ➔
-        </button>
+      <div style="width: 100%; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 280px;">
+        
+        <!-- TEMA 1 -->
+        <div class="music-card">
+          <div class="music-title">🎸 1. Ya nadie va a escuchar tu remera</div>
+          <div style="font-size: 10px; color: #adb5bd;">Los Fundamentalistas del Aire Acondicionado / Indio Solari</div>
+          <audio controls class="music-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+        </div>
+
+        <!-- TEMA 2 -->
+        <div class="music-card">
+          <div class="music-title">🌊 2. Dónde manda marinero</div>
+          <div style="font-size: 10px; color: #adb5bd;">Andrés Calamaro</div>
+          <audio controls class="music-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+        </div>
+
+        <!-- TEMA 3 -->
+        <div class="music-card">
+          <div class="music-title">🌿 3. Un lobo (Reggae)</div>
+          <div style="font-size: 10px; color: #adb5bd;">Reggae Roots Tranqui</div>
+          <audio controls class="music-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"></audio>
+        </div>
+
       </div>
     </div>
 
@@ -323,12 +347,6 @@
       document.body.appendChild(downloadAnchor); downloadAnchor.click(); downloadAnchor.remove();
     }
 
-    function abrirMusicaYoutube(url, titulo) {
-      if (confirm("🎧 ¿Querés abrir la playlist de '" + titulo + "' para escuchar de fondo?")) {
-        window.open("https://music.youtube.com", "_blank");
-      }
-    }
-
     function nextStep(step) {
       if (step === 1) {
         var nom = document.getElementById("input-nombre").value.trim(); 
@@ -352,13 +370,13 @@
     function mostrarPreguntaDeporteActual() {
       if (user.listaDeportes && indiceDeporteActual < user.listaDeportes.length) {
         var depActual = user.listaDeportes[indiceDeporteActual];
-        document.getElementById("txt-pregunta-deporte").innerText = "3. چه días entrenás " + depActual + "?";
+        document.getElementById("txt-pregunta-deporte").innerText = "3. ¿Qué días entrenás " + depActual + "?";
         var cbs = document.querySelectorAll(".cb-dias-dep"); 
         for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
         document.getElementById("step-deportes-dias").classList.remove("hidden");
       } else { 
         document.getElementById("step-deportes-dias").classList.add("hidden"); 
-        initMainAppLink(); 
+        document.getElementById("step-music-intro").classList.remove("hidden");
       }
     }
 
@@ -373,11 +391,17 @@
       mostrarPreguntaDeporteActual();
     }
 
+    function finalizarEncuestaCompleta() {
+      document.getElementById("step-music-intro").classList.add("hidden");
+      initMainAppLink();
+    }
+
     function initMainAppLink() {
       document.getElementById("step-register").classList.add("hidden");
       document.getElementById("step-1").classList.add("hidden"); 
       document.getElementById("step-2").classList.add("hidden"); 
       document.getElementById("step-deportes-dias").classList.add("hidden");
+      document.getElementById("step-music-intro").classList.add("hidden");
       document.getElementById("bottom-nav-bar").classList.remove("hidden"); 
       switchTab('calendar'); 
       renderDaysList(); 
