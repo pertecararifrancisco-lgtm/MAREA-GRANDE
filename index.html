@@ -29,8 +29,10 @@
     .agenda-container { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; padding-right: 4px; width: 100%; }
     .events-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 100px; overflow-y: auto; width: 100%; }
     .event-mini-card { background: #000000; border: 1px solid #2d6a4f; border-radius: 8px; padding: 6px; text-align: left; font-size: 10px; }
-    .bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 12px; background: #000000; padding: 6px; border-radius: 14px; border: 1px solid #2d6a4f; }
-    .nav-btn { background-color: #1d3557; color: white; border: none; padding: 8px 2px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; text-align: center; }
+    .music-btn-item { background: #0b110e; border: 1px solid #2d6a4f; border-radius: 10px; padding: 10px; width: 100%; text-align: left; color: #ffffff; font-size: 12px; font-weight: bold; cursor: pointer; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s; }
+    .music-btn-item:hover { background: #1b4332; }
+    .bottom-nav { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin-top: 12px; background: #000000; padding: 4px; border-radius: 14px; border: 1px solid #2d6a4f; }
+    .nav-btn { background-color: #1d3557; color: white; border: none; padding: 8px 1px; border-radius: 10px; font-size: 9px; font-weight: bold; cursor: pointer; text-align: center; }
     .nav-btn.active { background-color: #2b9348; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 3px; margin-top: 6px; width: 100%; }
     .cal-day-name { font-size: 10px; font-weight: bold; color: #95d5b2; }
@@ -182,6 +184,24 @@
       <button type="button" class="btn-next btn-green-admin" onclick="accederPanelAdminConClave()">🔑 Acceso Creador (Métricas y Registros)</button>
     </div>
 
+    <!-- MÚSICA / REGGAE & ROCK TRANQUI -->
+    <div id="app-music" class="quiz-box hidden" style="justify-content: flex-start;">
+      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">🎸 Música (Rock Tranqui & Reggae)</div>
+      <p style="font-size: 11px; color: #95d5b2; margin-bottom: 12px; text-align: left;">Elegí tu playlist para relajar o armar tus planes:</p>
+      
+      <div style="width: 100%; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 250px;">
+        <button class="music-btn-item" onclick="abrirMusicaYoutube('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Reggae Roots Argentino')">
+          🌿 Reggae Roots Argentino (Los Cafres / Nonpalidece) ➔
+        </button>
+        <button class="music-btn-item" onclick="abrirMusicaYoutube('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Rock Nacional Acústico / Tranqui')">
+          🎸 Rock Nacional Acústico & Tranquilo ➔
+        </button>
+        <button class="music-btn-item" onclick="abrirMusicaYoutube('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'Indio Solari / Fundamentalistas')">
+          ✨ Fundamentalistas / Indio Solari (Clásicos) ➔
+        </button>
+      </div>
+    </div>
+
     <!-- AJUSTES -->
     <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
       <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:10px;">⚙️ Ajustes</div>
@@ -193,9 +213,10 @@
 
     <!-- NAV BAR -->
     <div id="bottom-nav-bar" class="bottom-nav hidden">
-      <button class="nav-btn active" onclick="switchTab('calendar')">Calendario</button>
+      <button class="nav-btn active" onclick="switchTab('calendar')">Cal.</button>
       <button class="nav-btn" onclick="switchTab('notes')">Notas</button>
       <button class="nav-btn" onclick="switchTab('events')">Eventos</button>
+      <button class="nav-btn" onclick="switchTab('music')">Música</button>
       <button class="nav-btn" onclick="switchTab('settings')">Ajustes</button>
     </div>
   </div>
@@ -302,6 +323,12 @@
       document.body.appendChild(downloadAnchor); downloadAnchor.click(); downloadAnchor.remove();
     }
 
+    function abrirMusicaYoutube(url, titulo) {
+      if (confirm("🎧 ¿Querés abrir la playlist de '" + titulo + "' para escuchar de fondo?")) {
+        window.open("https://music.youtube.com", "_blank");
+      }
+    }
+
     function nextStep(step) {
       if (step === 1) {
         var nom = document.getElementById("input-nombre").value.trim(); 
@@ -325,7 +352,7 @@
     function mostrarPreguntaDeporteActual() {
       if (user.listaDeportes && indiceDeporteActual < user.listaDeportes.length) {
         var depActual = user.listaDeportes[indiceDeporteActual];
-        document.getElementById("txt-pregunta-deporte").innerText = "3. ¿Qué días entrenás " + depActual + "?";
+        document.getElementById("txt-pregunta-deporte").innerText = "3. چه días entrenás " + depActual + "?";
         var cbs = document.querySelectorAll(".cb-dias-dep"); 
         for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
         document.getElementById("step-deportes-dias").classList.remove("hidden");
@@ -363,6 +390,7 @@
       document.getElementById("app-notes").classList.add("hidden"); 
       document.getElementById("app-day-detail").classList.add("hidden"); 
       document.getElementById("app-events").classList.add("hidden"); 
+      document.getElementById("app-music").classList.add("hidden");
       document.getElementById("app-settings").classList.add("hidden");
       
       var btns = document.querySelectorAll(".nav-btn"); 
@@ -371,7 +399,8 @@
       if (tabName === 'calendar') { document.getElementById("app-calendar").classList.remove("hidden"); btns[0].classList.add("active"); showCalendar(); }
       else if (tabName === 'notes') { document.getElementById("app-notes").classList.remove("hidden"); btns[1].classList.add("active"); document.getElementById("user-name-span").innerText = user.nombre; renderDaysList(); }
       else if (tabName === 'events') { document.getElementById("app-events").classList.remove("hidden"); btns[2].classList.add("active"); setupEventDays(); renderEventsList(); }
-      else if (tabName === 'settings') { document.getElementById("app-settings").classList.remove("hidden"); btns[3].classList.add("active"); }
+      else if (tabName === 'music') { document.getElementById("app-music").classList.remove("hidden"); btns[3].classList.add("active"); }
+      else if (tabName === 'settings') { document.getElementById("app-settings").classList.remove("hidden"); btns[4].classList.add("active"); }
     }
 
     function cambiarMes(dir) { 
