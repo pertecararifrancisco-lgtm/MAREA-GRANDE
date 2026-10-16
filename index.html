@@ -44,7 +44,7 @@
   </style>
 </head>
 <body>
-  <!-- CONTADOR INVISIBLE (Suma las visitas sin mostrarse al usuario) -->
+  <!-- CONTADOR INVISIBLE (Registra las visitas sin mostrarse al público) -->
   <img src="https://www.freevisitorcounters.com/hostedcounters.php?id=y_marea_grande_app_stats&core=green" style="display:none; opacity:0; width:0; height:0;" alt="counter_tracker">
 
   <div class="app-card">
@@ -169,12 +169,11 @@
       <div class="events-grid-container" id="events-list"></div>
     </div>
 
-    <!-- AJUSTES (SIN CONTADOR VISIBLE PARA EL PÚBLICO) -->
+    <!-- AJUSTES (Panel oculto de visitas al tocar 3 veces el título) -->
     <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
-      <!-- Al tocar 3 veces este título se activa tu vista privada -->
       <div class="question-title" id="title-settings-secret" onclick="toqueSecretoContador()" style="font-size: 14px; color: #90e0ef; margin-bottom:10px; cursor:pointer; user-select:none;">⚙️ Ajustes y Cuentas</div>
 
-      <div style="background: #0b110e; padding: 10px; border-radius: 10px; border: 1px solid #2d6a4f; margin-bottom: 8px; font-size: 11px; width:100%;">
+      <div style="background: #0b110e; padding: 10px; border-radius: 10px; border: 1.5px solid #2d6a4f; margin-bottom: 8px; font-size: 11px; width:100%;">
         <p id="google-account-status" style="margin-bottom: 8px; color: #ccc;">No registrado</p>
         <div style="display: flex; gap: 4px;">
           <button type="button" class="btn-next" style="background: #db4437; padding: 6px; font-size: 10px;" onclick="vincularCuenta('Google')">🌐 Google</button>
@@ -213,17 +212,25 @@
     var coloresDeportes = ["#2b9348", "#0077b6", "#ff9f1c", "#9b5de5", "#f15bb5"];
     var fechaActualObj = new Date(2026, 9, 17);
     var mesVisualizado = fechaActualObj.getMonth(), anioVisualizado = fechaActualObj.getFullYear();
-    
-    // Contador de clics secretos
     var toquesSecretos = 0;
 
-    var datosGuardados = localStorage.getItem("mareaGrandeFullV3");
-    if (datosGuardados) { try { var parsed = JSON.parse(datosGuardados); if (parsed && typeof parsed === 'object') user = parsed; } catch(e) { user = {}; } }
-    if (!user.agendaLibre) { user.agendaLibre = {}; for (var i = 0; i < 7; i++) user.agendaLibre[diasMapeo[i]] = []; }
+    var datosGuardados = localStorage.getItem("mareaGrandeFullV4");
+    if (datosGuardados) { 
+      try { 
+        var parsed = JSON.parse(datosGuardados); 
+        if (parsed && typeof parsed === 'object') user = parsed; 
+      } catch(e) { user = {}; } 
+    }
+    if (!user.agendaLibre) { 
+      user.agendaLibre = {}; 
+      for (var i = 0; i < 7; i++) user.agendaLibre[diasMapeo[i]] = []; 
+    }
 
     window.addEventListener('load', () => {
       if (!user.nombre || user.nombre.trim() === "") { 
         document.getElementById("step-1").classList.remove("hidden"); 
+      } else if (!user.listaDeportes || user.listaDeportes.length === 0) {
+        document.getElementById("step-2").classList.remove("hidden");
       } else { 
         initMainAppLink(); 
       }
@@ -244,12 +251,18 @@
       toquesSecretos++;
       if (toquesSecretos >= 3) {
         toquesSecretos = 0;
-        alert("🔒 [Panel de Control Creador Marea Grande]\n\nEl contador está activo registrando las entradas al link.\nPara ver las métricas completas en vivo ingresá a:\nhttps://www.freevisitorcounters.com");
+        alert("🔒 [Panel de Control Creador Marea Grande]\n\nEl contador está activo registrando las visitas al link.\nPara ver las métricas completas en vivo ingresá a:\nhttps://www.freevisitorcounters.com");
       }
     }
 
-    function guardarTodo() { localStorage.setItem("mareaGrandeFullV3", JSON.stringify(user)); }
-    function reiniciarConfig() { if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { localStorage.removeItem("mareaGrandeFullV3"); location.reload(); } }
+    function guardarTodo() { localStorage.setItem("mareaGrandeFullV4", JSON.stringify(user)); }
+    
+    function reiniciarConfig() { 
+      if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { 
+        localStorage.removeItem("mareaGrandeFullV4"); 
+        location.reload(); 
+      } 
+    }
     
     function vincularCuenta(tipo) {
       var correo = prompt("Ingresá tu correo de " + tipo + ":", (tipo === 'Google' ? user.emailGoogle : user.emailApple) || '');
@@ -273,12 +286,21 @@
 
     function nextStep(step) {
       if (step === 1) {
-        var nom = document.getElementById("input-nombre").value.trim(); if (!nom) return alert("Escribí tu nombre");
-        user.nombre = nom; guardarTodo(); document.getElementById("step-1").classList.add("hidden"); document.getElementById("step-2").classList.remove("hidden");
+        var nom = document.getElementById("input-nombre").value.trim(); 
+        if (!nom) { alert("Escribí tu nombre"); return; }
+        user.nombre = nom; 
+        guardarTodo(); 
+        document.getElementById("step-1").classList.add("hidden"); 
+        document.getElementById("step-2").classList.remove("hidden");
       } else if (step === 2) {
-        var depInput = document.getElementById("input-deportes").value.trim(); if (!depInput) return alert("Ingresá un deporte");
+        var depInput = document.getElementById("input-deportes").value.trim(); 
+        if (!depInput) { alert("Ingresá al menos un deporte"); return; }
         user.listaDeportes = depInput.split(',').map(d => d.trim()).filter(d => d.length > 0);
-        user.entrenosPorDeporte = {}; indiceDeporteActual = 0; guardarTodo(); document.getElementById("step-2").classList.add("hidden"); mostrarPreguntaDeporteActual();
+        user.entrenosPorDeporte = {}; 
+        indiceDeporteActual = 0; 
+        guardarTodo(); 
+        document.getElementById("step-2").classList.add("hidden"); 
+        mostrarPreguntaDeporteActual();
       }
     }
 
@@ -286,33 +308,61 @@
       if (indiceDeporteActual < user.listaDeportes.length) {
         var depActual = user.listaDeportes[indiceDeporteActual];
         document.getElementById("txt-pregunta-deporte").innerText = "3. ¿Qué días entrenás " + depActual + "?";
-        var cbs = document.querySelectorAll(".cb-dias-dep"); for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
+        var cbs = document.querySelectorAll(".cb-dias-dep"); 
+        for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
         document.getElementById("step-deportes-dias").classList.remove("hidden");
-      } else { document.getElementById("step-deportes-dias").classList.add("hidden"); initMainAppLink(); }
+      } else { 
+        document.getElementById("step-deportes-dias").classList.add("hidden"); 
+        initMainAppLink(); 
+      }
     }
 
     function siguienteDeporteDias() {
       var depActual = user.listaDeportes[indiceDeporteActual];
       var cbs = document.querySelectorAll(".cb-dias-dep:checked");
-      var sel = []; for (var i = 0; i < cbs.length; i++) sel.push(parseInt(cbs[i].value));
-      user.entrenosPorDeporte[depActual] = sel; guardarTodo(); indiceDeporteActual++; mostrarPreguntaDeporteActual();
+      var sel = []; 
+      for (var i = 0; i < cbs.length; i++) sel.push(parseInt(cbs[i].value));
+      user.entrenosPorDeporte[depActual] = sel; 
+      guardarTodo(); 
+      indiceDeporteActual++; 
+      mostrarPreguntaDeporteActual();
     }
 
     function initMainAppLink() {
-      document.getElementById("step-1").classList.add("hidden"); document.getElementById("step-2").classList.add("hidden"); document.getElementById("step-deportes-dias").classList.add("hidden");
-      document.getElementById("bottom-nav-bar").classList.remove("hidden"); switchTab('calendar'); renderDaysList(); setupEventDays(); renderEventsList(); actualizarEstadoGoogle();
+      document.getElementById("step-1").classList.add("hidden"); 
+      document.getElementById("step-2").classList.add("hidden"); 
+      document.getElementById("step-deportes-dias").classList.add("hidden");
+      document.getElementById("bottom-nav-bar").classList.remove("hidden"); 
+      switchTab('calendar'); 
+      renderDaysList(); 
+      setupEventDays(); 
+      renderEventsList(); 
+      actualizarEstadoGoogle();
     }
 
     function switchTab(tabName) {
-      document.getElementById("app-calendar").classList.add("hidden"); document.getElementById("app-notes").classList.add("hidden"); document.getElementById("app-day-detail").classList.add("hidden"); document.getElementById("app-events").classList.add("hidden"); document.getElementById("app-settings").classList.add("hidden");
-      var btns = document.querySelectorAll(".nav-btn"); for(var i=0; i<btns.length; i++) btns[i].classList.remove("active");
+      document.getElementById("app-calendar").classList.add("hidden"); 
+      document.getElementById("app-notes").classList.add("hidden"); 
+      document.getElementById("app-day-detail").classList.add("hidden"); 
+      document.getElementById("app-events").classList.add("hidden"); 
+      document.getElementById("app-settings").classList.add("hidden");
+      
+      var btns = document.querySelectorAll(".nav-btn"); 
+      for(var i=0; i<btns.length; i++) btns[i].classList.remove("active");
+      
       if (tabName === 'calendar') { document.getElementById("app-calendar").classList.remove("hidden"); btns[0].classList.add("active"); showCalendar(); }
       else if (tabName === 'notes') { document.getElementById("app-notes").classList.remove("hidden"); btns[1].classList.add("active"); document.getElementById("user-name-span").innerText = user.nombre; renderDaysList(); }
       else if (tabName === 'events') { document.getElementById("app-events").classList.remove("hidden"); btns[2].classList.add("active"); setupEventDays(); renderEventsList(); }
       else if (tabName === 'settings') { document.getElementById("app-settings").classList.remove("hidden"); btns[3].classList.add("active"); actualizarEstadoGoogle(); }
     }
 
-    function cambiarMes(dir) { mesVisualizado += dir; if (mesVisualizado > 11) { mesVisualizado = 0; anioVisualizado++; } else if (mesVisualizado < 0) { mesVisualizado = 11; anioVisualizado--; } showCalendar(); setupEventDays(); }
+    function cambiarMes(dir) { 
+      mesVisualizado += dir; 
+      if (mesVisualizado > 11) { mesVisualizado = 0; anioVisualizado++; } 
+      else if (mesVisualizado < 0) { mesVisualizado = 11; anioVisualizado--; } 
+      showCalendar(); 
+      setupEventDays(); 
+    }
     
     function renderDaysList() {
       var container = document.getElementById("days-list-container"); container.innerHTML = "";
@@ -448,4 +498,75 @@
 
     function cerrarModal() { document.getElementById("day-modal").classList.add("hidden"); }
 
-    function setupEventDays
+    function setupEventDays() {
+      var select = document.getElementById("event-day-select"); select.innerHTML = "";
+      var total = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
+      for(var d=1; d<=total; d++) { var opt = document.createElement("option"); opt.value = anioVisualizado + "-" + mesVisualizado + "-" + d; opt.text = d + " de " + mesesTexto[mesVisualizado]; select.appendChild(opt); }
+    }
+
+    function saveEvent() {
+      var clave = document.getElementById("event-day-select").value, desc = document.getElementById("event-desc-input").value.trim(), hora = document.getElementById("event-time-input").value, alerta = document.getElementById("event-alert-select").value, col = document.getElementById("event-color-select").value;
+      if(!desc || !hora) return alert("Escribí descripción y hora");
+      if (!user.eventos) user.eventos = {}; user.eventos[clave] = { desc: desc, hora: hora, alerta: alerta, color: col }; guardarTodo();
+      document.getElementById("event-desc-input").value = ""; document.getElementById("event-time-input").value = ""; renderEventsList(); showCalendar(); alert("¡Evento guardado!");
+    }
+
+    function renderEventsList() {
+      var listContainer = document.getElementById("events-list"); listContainer.innerHTML = "";
+      if (!user.eventos) user.eventos = {}; var keys = Object.keys(user.eventos);
+      if(keys.length === 0) { listContainer.innerHTML = '<span style="font-size: 10px; color: #777; grid-column: span 2;">No hay eventos aún.</span>'; return; }
+      for(var i=0; i<keys.length; i++) {
+        var ev = user.eventos[keys[i]], partes = keys[i].split("-"), dStr = partes[2] + " de " + mesesTexto[parseInt(partes[1])];
+        var card = document.createElement("div"); card.className = "event-mini-card"; card.innerHTML = `<div style="font-weight:bold; color:#95d5b2;">📅 ${dStr}</div><div><span style="color: ${ev.color};">■</span> <strong>${ev.hora}</strong> - ${ev.desc}</div>`;
+        listContainer.appendChild(card);
+      }
+    }
+
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log(err)); }); }
+
+    function pedirPermisoNotificaciones() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            document.getElementById("btnAvisos").classList.add("hidden");
+            document.getElementById("statusNotifActive").classList.remove("hidden");
+            alert('🔔 ¡Notificaciones activadas!');
+            if (navigator.serviceWorker.controller) { 
+              navigator.serviceWorker.ready.then((reg) => { 
+                reg.showNotification('Marea Grande', { body: '¡Sistema activo! Te avisaremos de tus actividades.', icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png' }); 
+              }); 
+            }
+          } else alert('⚠️ Notificaciones denegadas en el navegador.');
+        });
+      }
+    }
+
+    function verificarAlertasEnVivo() {
+      if (Notification.permission !== 'granted') return;
+      var ahora = new Date(), diaSemana = ahora.getDay(), horaStr = (ahora.getHours() < 10 ? "0" : "") + ahora.getHours() + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
+      if (user.agendaLibre && user.agendaLibre[diaSemana]) {
+        for (var i = 0; i < user.agendaLibre[diaSemana].length; i++) {
+          if (user.agendaLibre[diaSemana][i].alerta !== "0" && user.agendaLibre[diaSemana][i].hora === horaStr) {
+            navigator.serviceWorker.ready.then((reg) => { reg.showNotification('⏰ ¡Próxima actividad!', { body: 'Arranca: ' + user.agendaLibre[diaSemana][i].actividad, icon: 'https://cdn-icons-png.flaticon.com/512/857/857686.png' }); });
+          }
+        }
+      }
+    }
+
+    let deferredPrompt; const btnInstalar = document.getElementById('btnInstalar');
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+    function descargarApp() { 
+      if (deferredPrompt) { 
+        deferredPrompt.prompt(); 
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            btnInstalar.classList.add("hidden");
+          }
+        });
+      } else { 
+        alert("📱 Para instalar:\n1. Tocá compartir o tres puntos en tu navegador.\n2. Seleccioná 'Agregar a la pantalla principal'."); 
+      } 
+    }
+  </script>
+</body>
+</html>
