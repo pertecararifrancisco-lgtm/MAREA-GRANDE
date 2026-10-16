@@ -21,6 +21,7 @@
     .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; width: 100%; }
     .opt-label { background-color: #0b110e; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #ffffff; border: 1px solid #2d6a4f; }
     .btn-next { width: 100%; padding: 12px; background-color: #1d3557; color: #ffffff; font-weight: bold; font-size: 13px; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); }
+    .btn-green-stats { background-color: #2b9348 !important; color: #ffffff !important; margin-bottom: 8px; }
     @keyframes pulseHand { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
     .pulsing-hand { display: inline-block; animation: pulseHand 1.5s infinite ease-in-out; }
     .day-card-item { background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
@@ -44,7 +45,7 @@
   </style>
 </head>
 <body>
-  <!-- CONTADOR INVISIBLE DE VISITAS -->
+  <!-- CONTADOR EN SEGUNDO PLANO -->
   <img src="https://www.freevisitorcounters.com/hostedcounters.php?id=y_marea_grande_app_stats&core=green" style="display:none; opacity:0; width:0; height:0;" alt="counter_tracker">
 
   <div class="app-card">
@@ -57,17 +58,8 @@
       </div>
     </div>
 
-    <!-- PASO 0: VERIFICACIÓN DE SEGURIDAD (CORREO AUTORIZADO) -->
-    <div id="step-auth" class="quiz-box">
-      <div class="question-title">🔒 Verificación de Usuario</div>
-      <p style="font-size: 11px; color: #95d5b2; margin-bottom: 12px;">Ingresá tu correo electrónico para acceder a Marea Grande:</p>
-      <input type="email" id="input-auth-email" class="input-text" placeholder="pertecararifrancisco@gmail.com">
-      <button type="button" class="btn-next" onclick="validarAccesoUsuario()">Ingresar ➔</button>
-      <p id="auth-error-msg" style="font-size: 10px; color: #d90429; margin-top: 8px;" class="hidden">⛔ Acceso restringido. Este correo no está autorizado.</p>
-    </div>
-
     <!-- PASO 1: NOMBRE -->
-    <div id="step-1" class="quiz-box hidden">
+    <div id="step-1" class="quiz-box">
       <div class="question-title">1. ¿Cómo te llamás?</div>
       <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
       <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
@@ -178,14 +170,16 @@
       <div class="events-grid-container" id="events-list"></div>
     </div>
 
-    <!-- AJUSTES -->
+    <!-- AJUSTES Y BOTÓN VERDE DE VISITAS PRIVADO -->
     <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" id="title-settings-secret" onclick="toqueSecretoContador()" style="font-size: 14px; color: #90e0ef; margin-bottom:10px; cursor:pointer; user-select:none;">⚙️ Ajustes y Cuentas</div>
+      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:10px;">⚙️ Ajustes</div>
 
-      <div style="background: #0b110e; padding: 10px; border-radius: 10px; border: 1.5px solid #2d6a4f; margin-bottom: 8px; font-size: 11px; width:100%;">
-        <p id="google-account-status" style="margin-bottom: 8px; color: #ccc;">Usuario: pertecararifrancisco@gmail.com</p>
+      <div style="width:100%;">
+        <!-- BOTÓN VERDE EXCLUSIVO DE ADMINISTRADOR -->
+        <button type="button" class="btn-next btn-green-stats" onclick="abrirPanelVisitasVerde()">📊 Ver Estadísticas de Visitas</button>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 6px; width:100%;">
+
+      <div style="display: flex; flex-direction: column; gap: 6px; width:100%; margin-top: 10px;">
         <button type="button" onclick="exportarRespaldo()" style="background:#1d3557; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px;">💾 Guardar Respaldo</button>
         <button type="button" onclick="reiniciarConfig()" style="background:#d90429; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px;">🔄 Reiniciar Encuesta</button>
       </div>
@@ -211,17 +205,15 @@
   <script>
     var CORREO_AUTORIZADO = "pertecararifrancisco@gmail.com";
     
-    var user = { nombre: "", listaDeportes: [], entrenosPorDeporte: {}, email: "", agendaLibre: {}, eventos: {} };
+    var user = { nombre: "", listaDeportes: [], entrenosPorDeporte: {}, agendaLibre: {}, eventos: {} };
     var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
     var mesesTexto = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
     var diasMapeo = [1, 2, 3, 4, 5, 6, 0];
     var selectedDayForDetail = 1, indiceDeporteActual = 0;
-    var coloresDeportes = ["#2b9348", "#0077b6", "#ff9f1c", "#9b5de5", "#f15bb5"];
     var fechaActualObj = new Date(2026, 9, 17);
     var mesVisualizado = fechaActualObj.getMonth(), anioVisualizado = fechaActualObj.getFullYear();
-    var toquesSecretos = 0;
 
-    var datosGuardados = localStorage.getItem("mareaGrandeAuthV3");
+    var datosGuardados = localStorage.getItem("mareaGrandeV5");
     if (datosGuardados) { 
       try { 
         var parsed = JSON.parse(datosGuardados); 
@@ -234,17 +226,12 @@
     }
 
     window.addEventListener('load', () => {
-      if (user.email === CORREO_AUTORIZADO) {
-        document.getElementById("step-auth").classList.add("hidden");
-        if (!user.nombre || user.nombre.trim() === "") { 
-          document.getElementById("step-1").classList.remove("hidden"); 
-        } else if (!user.listaDeportes || user.listaDeportes.length === 0) {
-          document.getElementById("step-2").classList.remove("hidden");
-        } else { 
-          initMainAppLink(); 
-        }
-      } else {
-        document.getElementById("step-auth").classList.remove("hidden");
+      if (!user.nombre || user.nombre.trim() === "") { 
+        document.getElementById("step-1").classList.remove("hidden"); 
+      } else if (!user.listaDeportes || user.listaDeportes.length === 0) {
+        document.getElementById("step-2").classList.remove("hidden");
+      } else { 
+        initMainAppLink(); 
       }
       
       if (window.Notification && Notification.permission === 'granted') {
@@ -259,39 +246,20 @@
       setInterval(verificarAlertasEnVivo, 30000);
     });
 
-    function validarAccesoUsuario() {
-      var mailInput = document.getElementById("input-auth-email").value.trim().toLowerCase();
-      var errEl = document.getElementById("auth-error-msg");
-
-      if (mailInput === CORREO_AUTORIZADO) {
-        errEl.classList.add("hidden");
-        user.email = mailInput;
-        guardarTodo();
-        
-        document.getElementById("step-auth").classList.add("hidden");
-        if (!user.nombre) {
-          document.getElementById("step-1").classList.remove("hidden");
-        } else {
-          initMainAppLink();
-        }
-      } else {
-        errEl.classList.remove("hidden");
+    function abrirPanelVisitasVerde() {
+      var correo = prompt("🔐 Acceso Creador Marea Grande\n\nIngresá tu Gmail de administrador:");
+      if (correo && correo.trim().toLowerCase() === CORREO_AUTORIZADO) {
+        alert("📊 ¡Acceso Autorizado!\n\nEl contador en segundo plano está activo y registrando las visitas al link.\n\nPodés ver los reportes completos directamente en:\nhttps://www.freevisitorcounters.com");
+      } else if (correo) {
+        alert("⛔ Acceso denegado. Este correo no está autorizado para ver las métricas.");
       }
     }
 
-    function toqueSecretoContador() {
-      toquesSecretos++;
-      if (toquesSecretos >= 3) {
-        toquesSecretos = 0;
-        alert("🔒 [Panel de Control Creador Marea Grande]\n\nEl contador está activo registrando las visitas al link.\nPara ver las métricas completas en vivo ingresá a:\nhttps://www.freevisitorcounters.com");
-      }
-    }
-
-    function guardarTodo() { localStorage.setItem("mareaGrandeAuthV3", JSON.stringify(user)); }
+    function guardarTodo() { localStorage.setItem("mareaGrandeV5", JSON.stringify(user)); }
     
     function reiniciarConfig() { 
       if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { 
-        localStorage.removeItem("mareaGrandeAuthV3"); 
+        localStorage.removeItem("mareaGrandeV5"); 
         location.reload(); 
       } 
     }
@@ -305,20 +273,18 @@
     function nextStep(step) {
       if (step === 1) {
         var nom = document.getElementById("input-nombre").value.trim(); 
-        if (!nom || nom === "") { alert("Por favor, escribí tu nombre"); return; }
+        if (!nom) { alert("Escribí tu nombre"); return; }
         user.nombre = nom; 
         guardarTodo(); 
-        
         document.getElementById("step-1").classList.add("hidden"); 
         document.getElementById("step-2").classList.remove("hidden");
       } else if (step === 2) {
         var depInput = document.getElementById("input-deportes").value.trim(); 
-        if (!depInput || depInput === "") { alert("Por favor, ingresá al menos un deporte"); return; }
-        user.listaDeportes = depInput.split(',').map(function(d) { return d.trim(); }).filter(function(d) { return d.length > 0; });
+        if (!depInput) { alert("Ingresá un deporte"); return; }
+        user.listaDeportes = depInput.split(',').map(d => d.trim()).filter(d => d.length > 0);
         user.entrenosPorDeporte = {}; 
         indiceDeporteActual = 0; 
         guardarTodo(); 
-        
         document.getElementById("step-2").classList.add("hidden"); 
         mostrarPreguntaDeporteActual();
       }
@@ -349,7 +315,6 @@
     }
 
     function initMainAppLink() {
-      document.getElementById("step-auth").classList.add("hidden");
       document.getElementById("step-1").classList.add("hidden"); 
       document.getElementById("step-2").classList.add("hidden"); 
       document.getElementById("step-deportes-dias").classList.add("hidden");
@@ -427,17 +392,13 @@
       for (var e = 0; e < primerDiaIndex; e++) container.appendChild(document.createElement("div"));
       
       var legendBox = document.getElementById("legend-references-box"); 
-      legendBox.innerHTML = "<strong>REFERENCIAS:</strong>";
+      legendBox.innerHTML = `
+        <strong>REFERENCIAS:</strong>
+        <div class="legend-item"><div class="dot" style="background-color:#2b9348;"></div> Días de entrenamiento</div>
+        <div class="legend-item"><div class="dot" style="background-color:#d90429;"></div> Días de no entrenamiento</div>
+      `;
 
       var referenciasAgregadas = {};
-
-      if (user.listaDeportes) { 
-        for (var dIdx = 0; dIdx < user.listaDeportes.length; dIdx++) {
-          var depNombre = user.listaDeportes[dIdx];
-          var colDep = coloresDeportes[dIdx % coloresDeportes.length];
-          referenciasAgregadas[depNombre] = colDep;
-        }
-      }
 
       for (var d = 0; d < 7; d++) {
         var listAct = user.agendaLibre[diasMapeo[d]];
@@ -457,21 +418,32 @@
         var dayOfWeek = new Date(anioVisualizado, mesVisualizado, day).getDay();
         var dotsHTML = "";
 
+        // Verificación de días entrenados (Verde) y no entrenados (Rojo)
+        var esDiaEntreno = false;
         if (user.entrenosPorDeporte) {
           var keysDeps = Object.keys(user.entrenosPorDeporte);
           for (var k = 0; k < keysDeps.length; k++) { 
             if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) {
-              dotsHTML += `<div class="dot" style="background-color: ${coloresDeportes[k % coloresDeportes.length]};"></div>`; 
+              esDiaEntreno = true;
+              break;
             }
           }
         }
 
+        if (esDiaEntreno) {
+          dotsHTML += `<div class="dot" style="background-color: #2b9348;"></div>`; // Verde
+        } else {
+          dotsHTML += `<div class="dot" style="background-color: #d90429;"></div>`; // Rojo
+        }
+
+        // Actividades en Notas
         if (user.agendaLibre && user.agendaLibre[dayOfWeek]) { 
           for (var a = 0; a < user.agendaLibre[dayOfWeek].length; a++) {
             dotsHTML += `<div class="dot" style="background-color: ${user.agendaLibre[dayOfWeek][a].color || '#0077b6'};"></div>`;
           }
         }
 
+        // Eventos
         var claveEvento = anioVisualizado + "-" + mesVisualizado + "-" + day; 
         if (user.eventos && user.eventos[claveEvento]) {
           dotsHTML += `<div class="dot" style="background-color: ${user.eventos[claveEvento].color || '#ff9f1c'};"></div>`;
@@ -489,13 +461,19 @@
       var dayOfWeek = new Date(anio, mes, dia).getDay(), nombreDia = diasSemanaTexto[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
       var contenido = "<strong>" + dia + " de " + mesesTexto[mes] + " " + anio + " (" + nombreDia + ")</strong><br><br>";
       
+      var esDiaEntreno = false;
       if (user.entrenosPorDeporte) {
         var keysDeps = Object.keys(user.entrenosPorDeporte);
         for (var k = 0; k < keysDeps.length; k++) { 
           if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) { 
-            contenido += `<span style="color:${coloresDeportes[k % coloresDeportes.length]};">■</span> Entrena <strong>${keysDeps[k]}</strong><br>`; 
+            esDiaEntreno = true;
+            contenido += `<span style="color:#2b9348;">■</span> Día de entrenamiento: <strong>${keysDeps[k]}</strong><br>`; 
           } 
         }
+      }
+
+      if (!esDiaEntreno) {
+        contenido += `<span style="color:#d90429;">■</span> Día de descanso (No entrenás)<br>`;
       }
 
       contenido += "<br><strong>Actividades agendadas:</strong><br>";
