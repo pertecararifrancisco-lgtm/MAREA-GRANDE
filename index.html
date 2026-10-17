@@ -29,13 +29,11 @@
     .agenda-container { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; padding-right: 4px; width: 100%; }
     .events-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 100px; overflow-y: auto; width: 100%; }
     .event-mini-card { background: #000000; border: 1px solid #2d6a4f; border-radius: 8px; padding: 6px; text-align: left; font-size: 10px; }
-    
-    .music-card { background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px; width: 100%; text-align: left; color: #ffffff; margin-bottom: 8px; }
-    .music-title { font-size: 12px; font-weight: bold; color: #95d5b2; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-    .music-audio { width: 100%; height: 32px; margin-top: 4px; outline: none; border-radius: 6px; }
 
-    .bottom-nav { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin-top: 12px; background: #000000; padding: 4px; border-radius: 14px; border: 1px solid #2d6a4f; }
-    .nav-btn { background-color: #1d3557; color: white; border: none; padding: 8px 1px; border-radius: 10px; font-size: 9px; font-weight: bold; cursor: pointer; text-align: center; }
+    .audio-player-box { width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 8px; margin-bottom: 10px; text-align: left; }
+
+    .bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 12px; background: #000000; padding: 6px; border-radius: 14px; border: 1px solid #2d6a4f; }
+    .nav-btn { background-color: #1d3557; color: white; border: none; padding: 8px 2px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; text-align: center; }
     .nav-btn.active { background-color: #2b9348; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 3px; margin-top: 6px; width: 100%; }
     .cal-day-name { font-size: 10px; font-weight: bold; color: #95d5b2; }
@@ -50,6 +48,9 @@
   </style>
 </head>
 <body>
+  <!-- REPRODUCTOR DE AUDIO AUTOPLAY DE ENTRADA -->
+  <audio id="main-bg-music" autoplay loop style="display:none;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
   <img src="https://www.freevisitorcounters.com/hostedcounters.php?id=y_marea_grande_app_stats&core=green" style="display:none; opacity:0; width:0; height:0;" alt="counter_tracker">
 
   <div class="app-card">
@@ -100,17 +101,13 @@
       <button type="button" class="btn-next" onclick="siguienteDeporteDias()">Siguiente ➔</button>
     </div>
 
-    <!-- PASO 4: APARTADO DE MÚSICA EN LA ENCUESTA -->
-    <div id="step-music-intro" class="quiz-box hidden">
-      <div class="question-title">🎧 Apartado de Música</div>
-      <p style="font-size: 12px; color: #95d5b2; margin-bottom: 16px; line-height: 1.4;">
-        Apartado de música. Podés elegir entre estos temas. ¡Dale play a tus favoritos cuando quieras!
-      </p>
-      <button type="button" class="btn-next" onclick="finalizarEncuestaCompleta()">Finalizar Encuesta e Ingresar ➔</button>
-    </div>
-
     <!-- CALENDARIO -->
     <div id="app-calendar" class="quiz-box hidden" style="justify-content: flex-start;">
+      <div class="audio-player-box">
+        <div style="font-size: 10px; color: #95d5b2; font-weight: bold; margin-bottom: 2px;">🎶 Sonando: Ya nadie va a escuchar tu remera (En Vivo)</div>
+        <audio controls autoplay loop style="width:100%; height:28px;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+      </div>
+
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
         <button onclick="cambiarMes(-1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">◀</button>
         <div class="question-title" id="txt-mes-anio" style="font-size: 14px; color: #90e0ef; margin-bottom: 0;">Octubre 2026</div>
@@ -195,31 +192,25 @@
       <button type="button" class="btn-next btn-green-admin" onclick="accederPanelAdminConClave()">🔑 Acceso Creador (Métricas y Registros)</button>
     </div>
 
-    <!-- MÚSICA SELECCIONADA -->
-    <div id="app-music" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 6px;">🎧 Apartado de Música</div>
-      <p style="font-size: 11px; color: #95d5b2; margin-bottom: 10px; text-align: left;">Podés elegir entre estos temas. ¡Dale play!</p>
+    <!-- PÁGINA DIRECTA DE ADMINISTRADOR/CREADOR -->
+    <div id="app-admin-panel" class="quiz-box hidden" style="justify-content: flex-start; text-align: left;">
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:10px;">
+        <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:0;">📊 Panel Creador Marea Grande</div>
+        <button type="button" class="btn-head" onclick="switchTab('events')">⬅ Salir</button>
+      </div>
       
-      <div style="width: 100%; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 280px;">
-        
-        <div class="music-card">
-          <div class="music-title">🎸 1. Ya nadie va a escuchar tu remera</div>
-          <div style="font-size: 10px; color: #adb5bd;">Los Fundamentalistas del Aire Acondicionado / Indio Solari</div>
-          <audio controls class="music-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+      <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px; margin-bottom: 10px;">
+        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">📧 Gmails Registrados de Usuarios:</div>
+        <div id="admin-mails-container" style="font-size: 10px; color: #ddd; max-height: 120px; overflow-y: auto; background: #000; padding: 6px; border-radius: 6px;">
+          Sin registros aún.
         </div>
+      </div>
 
-        <div class="music-card">
-          <div class="music-title">🌊 2. Dónde manda marinero</div>
-          <div style="font-size: 10px; color: #adb5bd;">Andrés Calamaro</div>
-          <audio controls class="music-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
-        </div>
-
-        <div class="music-card">
-          <div class="music-title">🌿 3. Un lobo (Reggae)</div>
-          <div style="font-size: 10px; color: #adb5bd;">Reggae Roots Tranqui</div>
-          <audio controls class="music-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"></audio>
-        </div>
-
+      <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px;">
+        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">🌐 Contador de Visitas en Vivo:</div>
+        <a href="https://www.freevisitorcounters.com" target="_blank" style="display: inline-block; background: #2b9348; color: #fff; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; width: 100%; text-align: center;">
+          Ver Estadísticas de Visitas ➔
+        </a>
       </div>
     </div>
 
@@ -237,7 +228,6 @@
       <button class="nav-btn active" onclick="switchTab('calendar')">Cal.</button>
       <button class="nav-btn" onclick="switchTab('notes')">Notas</button>
       <button class="nav-btn" onclick="switchTab('events')">Eventos</button>
-      <button class="nav-btn" onclick="switchTab('music')">Música</button>
       <button class="nav-btn" onclick="switchTab('settings')">Ajustes</button>
     </div>
   </div>
@@ -251,7 +241,7 @@
   </div>
 
   <script>
-    var CLAVE_ADMIN = "perte1100";
+    var CLAVE_ADMIN = "Perro TM 100";
     var user = { gmail: "", nombre: "", listaDeportes: [], entrenosPorDeporte: {}, agendaLibre: {}, eventos: {} };
     var listaUsuariosRegistrados = [];
     var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
@@ -280,11 +270,8 @@
     }
 
     window.addEventListener('load', () => {
-      // REGISTRO DE SERVICE WORKER PARA SEGUNDO PLANO
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').then((reg) => {
-          console.log('SW Registrado correctamente:', reg);
-        }).catch(err => console.log('Error al registrar SW:', err));
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW err:', err));
       }
 
       if (!user.gmail || user.gmail.trim() === "") {
@@ -328,8 +315,19 @@
     function accederPanelAdminConClave() {
       var pass = prompt("🔐 Panel Creador Marea Grande\n\nIngresá la contraseña de administrador:");
       if (pass === CLAVE_ADMIN) {
-        var listaMailsText = listaUsuariosRegistrados.length > 0 ? listaUsuariosRegistrados.join("\n- ") : "Ninguno registrado aún.";
-        alert("📊 ¡Acceso Concedido Creador!\n\n📧 Usuarios registrados con Gmail:\n- " + listaMailsText + "\n\n🌐 Ver visitas en vivo:\nhttps://www.freevisitorcounters.com");
+        var container = document.getElementById("admin-mails-container");
+        if (listaUsuariosRegistrados.length > 0) {
+          container.innerHTML = "• " + listaUsuariosRegistrados.join("<br>• ");
+        } else {
+          container.innerHTML = "Sin registros aún.";
+        }
+        
+        document.getElementById("app-calendar").classList.add("hidden");
+        document.getElementById("app-notes").classList.add("hidden");
+        document.getElementById("app-day-detail").classList.add("hidden");
+        document.getElementById("app-events").classList.add("hidden");
+        document.getElementById("app-settings").classList.add("hidden");
+        document.getElementById("app-admin-panel").classList.remove("hidden");
       } else if (pass !== null) {
         alert("⛔ Contraseña incorrecta. Acceso denegado.");
       }
@@ -379,7 +377,7 @@
         document.getElementById("step-deportes-dias").classList.remove("hidden");
       } else { 
         document.getElementById("step-deportes-dias").classList.add("hidden"); 
-        document.getElementById("step-music-intro").classList.remove("hidden");
+        initMainAppLink(); 
       }
     }
 
@@ -394,17 +392,11 @@
       mostrarPreguntaDeporteActual();
     }
 
-    function finalizarEncuestaCompleta() {
-      document.getElementById("step-music-intro").classList.add("hidden");
-      initMainAppLink();
-    }
-
     function initMainAppLink() {
       document.getElementById("step-register").classList.add("hidden");
       document.getElementById("step-1").classList.add("hidden"); 
       document.getElementById("step-2").classList.add("hidden"); 
       document.getElementById("step-deportes-dias").classList.add("hidden");
-      document.getElementById("step-music-intro").classList.add("hidden");
       document.getElementById("bottom-nav-bar").classList.remove("hidden"); 
       switchTab('calendar'); 
       renderDaysList(); 
@@ -417,7 +409,7 @@
       document.getElementById("app-notes").classList.add("hidden"); 
       document.getElementById("app-day-detail").classList.add("hidden"); 
       document.getElementById("app-events").classList.add("hidden"); 
-      document.getElementById("app-music").classList.add("hidden");
+      document.getElementById("app-admin-panel").classList.add("hidden");
       document.getElementById("app-settings").classList.add("hidden");
       
       var btns = document.querySelectorAll(".nav-btn"); 
@@ -426,8 +418,7 @@
       if (tabName === 'calendar') { document.getElementById("app-calendar").classList.remove("hidden"); btns[0].classList.add("active"); showCalendar(); }
       else if (tabName === 'notes') { document.getElementById("app-notes").classList.remove("hidden"); btns[1].classList.add("active"); document.getElementById("user-name-span").innerText = user.nombre; renderDaysList(); }
       else if (tabName === 'events') { document.getElementById("app-events").classList.remove("hidden"); btns[2].classList.add("active"); setupEventDays(); renderEventsList(); }
-      else if (tabName === 'music') { document.getElementById("app-music").classList.remove("hidden"); btns[3].classList.add("active"); }
-      else if (tabName === 'settings') { document.getElementById("app-settings").classList.remove("hidden"); btns[4].classList.add("active"); }
+      else if (tabName === 'settings') { document.getElementById("app-settings").classList.remove("hidden"); btns[3].classList.add("active"); }
     }
 
     function cambiarMes(dir) { 
