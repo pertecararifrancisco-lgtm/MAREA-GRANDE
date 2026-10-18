@@ -5,6 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Marea Grande - Planificador Deportivo</title>
+  <!-- SDK de EmailJS para envío de Mails -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init("PiXM2u-_PJy9jfMLh"); // Tu Public Key
+    })();
+  </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background: #000000 !important; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; color: white; }
@@ -30,8 +37,6 @@
     .events-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 100px; overflow-y: auto; width: 100%; }
     .event-mini-card { background: #000000; border: 1px solid #2d6a4f; border-radius: 8px; padding: 6px; text-align: left; font-size: 10px; }
 
-    .audio-player-box { width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 8px; margin-bottom: 10px; text-align: left; }
-
     .bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 12px; background: #000000; padding: 6px; border-radius: 14px; border: 1px solid #2d6a4f; }
     .nav-btn { background-color: #1d3557; color: white; border: none; padding: 8px 2px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; text-align: center; }
     .nav-btn.active { background-color: #2b9348; }
@@ -48,8 +53,6 @@
   </style>
 </head>
 <body>
-  <!-- REPRODUCTOR DE AUDIO AUTOPLAY DE ENTRADA -->
-  <audio id="main-bg-music" autoplay loop style="display:none;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
   <img src="https://www.freevisitorcounters.com/hostedcounters.php?id=y_marea_grande_app_stats&core=green" style="display:none; opacity:0; width:0; height:0;" alt="counter_tracker">
 
@@ -103,11 +106,6 @@
 
     <!-- CALENDARIO -->
     <div id="app-calendar" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="audio-player-box">
-        <div style="font-size: 10px; color: #95d5b2; font-weight: bold; margin-bottom: 2px;">🎶 Sonando: Ya nadie va a escuchar tu remera (En Vivo)</div>
-        <audio controls autoplay loop style="width:100%; height:28px;" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-      </div>
-
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
         <button onclick="cambiarMes(-1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">◀</button>
         <div class="question-title" id="txt-mes-anio" style="font-size: 14px; color: #90e0ef; margin-bottom: 0;">Octubre 2026</div>
@@ -125,7 +123,7 @@
     <div id="app-notes" class="quiz-box hidden" style="justify-content: flex-start;">
       <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">📝 Notas y Actividades</div>
       <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.3; text-align: left;">
-        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Elegí un día para agendar actividades.
+        ¡Hola <span id="user-name-span">Fran</span>! <span class="pulsing-hand">👋</span> Seleccioná un día para agendar actividades con sus **horas** específicas.
       </div>
       <div class="agenda-container" id="days-list-container"></div>
     </div>
@@ -138,7 +136,8 @@
       </div>
       <div style="width:100%; margin-bottom: 6px;">
         <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Rugby, Gimnasio..." style="margin-bottom: 6px;">
-        <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+        <div style="display: flex; gap: 4px; margin-bottom: 6px; align-items: center;">
+          <span style="font-size: 11px; color: #95d5b2; font-weight: bold;">Hora:</span>
           <input type="time" id="activity-time-input" class="input-text" style="margin-bottom: 0;">
           <select id="activity-color-select" class="input-select" style="margin-bottom: 0;">
             <option value="#2b9348">Verde</option>
@@ -154,22 +153,23 @@
           </select>
         </div>
         <select id="activity-alert-select" class="input-select" style="margin-bottom: 6px;">
-          <option value="0">🔔 A la hora elegida</option>
-          <option value="30">⏰ 30 minutos antes</option>
+          <option value="0">🔔 A la hora exacta</option>
+          <option value="30">⏰ 30 min antes</option>
           <option value="60">⏰ 1 hora antes</option>
         </select>
         <button type="button" class="btn-next" onclick="agregarActividadDia()" style="padding: 8px;">Agregar Actividad</button>
       </div>
-      <div class="agenda-container" id="day-activities-list" style="max-height: 90px; background: #000; padding: 4px; border-radius: 8px; border: 1px solid #2d6a4f;"></div>
+      <div class="agenda-container" id="day-activities-list" style="max-height: 110px; background: #000; padding: 6px; border-radius: 8px; border: 1px solid #2d6a4f;"></div>
     </div>
 
     <!-- EVENTOS -->
     <div id="app-events" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef; margin-bottom:8px;">¡Agenda tu evento!</div>
+      <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef; margin-bottom:8px;">¡Agendá tu evento!</div>
       <div style="width:100%; margin-bottom: 6px;">
         <select id="event-day-select" class="input-select" style="margin-bottom: 4px;"></select>
         <input type="text" id="event-desc-input" class="input-text" placeholder="Ej. Partido, casamiento..." style="margin-bottom: 4px;">
-        <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+        <div style="display: flex; gap: 4px; margin-bottom: 4px; align-items: center;">
+          <span style="font-size: 11px; color: #95d5b2; font-weight: bold;">Hora:</span>
           <input type="time" id="event-time-input" class="input-text" style="margin-bottom: 0;">
           <select id="event-alert-select" class="input-select" style="margin-bottom: 0;">
             <option value="0">🔔 A la hora elegida</option>
@@ -296,6 +296,22 @@
       setInterval(verificarAlertasEnVivo, 10000);
     });
 
+    function enviarEmailNotificacion(asunto, mensaje) {
+      if (typeof emailjs !== 'undefined') {
+        var templateParams = {
+          subject: asunto,
+          message: mensaje,
+          to_email: user.gmail || "pertecararifrancisco@gmail.com"
+        };
+        emailjs.send('service_ymz4ddf', 'template_49d79k8', templateParams)
+          .then(function(response) {
+            console.log('Correo enviado con éxito!', response.status, response.text);
+          }, function(error) {
+            console.log('Error al enviar correo:', error);
+          });
+      }
+    }
+
     function registrarUsuarioGmail() {
       var mail = document.getElementById("input-user-gmail").value.trim().toLowerCase();
       if (!mail || mail.indexOf("@gmail.com") === -1) {
@@ -308,6 +324,7 @@
         localStorage.setItem("mareaGrandeRegistrosGmail", JSON.stringify(listaUsuariosRegistrados));
       }
       guardarTodo();
+      enviarEmailNotificacion("Marea Grande - Nuevo Registro", "Se registró el usuario con Gmail: " + mail);
       document.getElementById("step-register").classList.add("hidden");
       document.getElementById("step-1").classList.remove("hidden");
     }
@@ -449,8 +466,10 @@
       user.agendaLibre[selectedDayForDetail].sort((a, b) => a.hora.localeCompare(b.hora)); 
       guardarTodo();
       
-      var textoAviso = alertSel === "0" ? "a la hora elegida (" + hora + ")" : (alertSel === "30" ? "30 minutos antes" : "1 hora antes");
-      alert("✅ ¡Actividad Agendada!\n\nSe guardó '" + nom + "'. Te enviaremos un aviso " + textoAviso + ".");
+      var textoAviso = alertSel === "0" ? "a las Hora: " + hora + " hs" : (alertSel === "30" ? "30 min antes" : "1 hora antes");
+      alert("✅ ¡Actividad Agendada!\n\nSe guardó '" + nom + "'. Te avisaremos (" + textoAviso + ").");
+
+      enviarEmailNotificacion("Marea Grande - Nueva Actividad", "Actividad: " + nom + "\nHora: " + hora + " hs");
 
       document.getElementById("activity-name-input").value = ""; 
       document.getElementById("activity-time-input").value = ""; 
@@ -462,7 +481,7 @@
       var lista = user.agendaLibre[selectedDayForDetail]; if (!lista || lista.length === 0) { container.innerHTML = '<span style="font-size: 10px; color: #777;">No hay actividades.</span>'; return; }
       for (var i = 0; i < lista.length; i++) {
         var row = document.createElement("div"); row.style.display = "flex"; row.style.justifyContent = "space-between"; row.style.fontSize = "11px"; row.style.color = "#fff";
-        row.innerHTML = `<span><span style="color:${lista[i].color};">■</span> <strong>${lista[i].hora}</strong> - ${lista[i].actividad}</span><button onclick="eliminarActividad(${selectedDayForDetail}, ${i})" style="background:#d90429; color:#fff; border:none; border-radius:4px; font-size:9px;">X</button>`;
+        row.innerHTML = `<span><span style="color:${lista[i].color};">■</span> <strong>Hora: ${lista[i].hora} hs</strong> - ${lista[i].actividad}</span><button onclick="eliminarActividad(${selectedDayForDetail}, ${i})" style="background:#d90429; color:#fff; border:none; border-radius:4px; font-size:9px; padding:2px 6px;">X</button>`;
         container.appendChild(row);
       }
     }
@@ -481,8 +500,8 @@
       var legendBox = document.getElementById("legend-references-box"); 
       legendBox.innerHTML = `
         <strong>REFERENCIAS:</strong>
-        <div class="legend-item"><div class="dot" style="background-color:#2b9348;"></div> Días de entrenamiento</div>
-        <div class="legend-item"><div class="dot" style="background-color:#d90429;"></div> Días de descanso</div>
+        <div class="legend-item"><div class="dot" style="background-color:#2b9348;"></div> Entrenamientos</div>
+        <div class="legend-item"><div class="dot" style="background-color:#d90429;"></div> Descanso</div>
       `;
 
       var referenciasAgregadas = {};
@@ -564,13 +583,13 @@
       var lista = user.agendaLibre && user.agendaLibre[dayOfWeek];
       if (lista && lista.length > 0) { 
         for (var i = 0; i < lista.length; i++) {
-          contenido += "- <span style='color: " + (lista[i].color || '#2b9348') + ";'>■</span> " + lista[i].hora + ": " + lista[i].actividad + "<br>"; 
+          contenido += "- <span style='color: " + (lista[i].color || '#2b9348') + ";'>■</span> <strong>Hora: " + lista[i].hora + " hs</strong>: " + lista[i].actividad + "<br>"; 
         }
       } else contenido += "<em>Sin actividades agendadas.</em><br>";
 
       var claveEvento = anio + "-" + mes + "-" + dia; 
       if (user.eventos && user.eventos[claveEvento]) {
-        contenido += "<br>🎉 <strong>Evento (" + user.eventos[claveEvento].hora + "):</strong> " + user.eventos[claveEvento].desc;
+        contenido += "<br>🎉 <strong>Evento (Hora: " + user.eventos[claveEvento].hora + " hs):</strong> " + user.eventos[claveEvento].desc;
       }
 
       document.getElementById("modal-title").innerText = "Detalle del Día " + dia; 
@@ -593,8 +612,10 @@
       user.eventos[clave] = { desc: desc, hora: hora, alerta: alerta, color: col, notificado: false }; 
       guardarTodo();
 
-      var textoAviso = alerta === "0" ? "a la hora elegida (" + hora + ")" : (alerta === "30" ? "30 minutos antes" : "1 hora antes");
-      alert("🎉 ¡Evento Agendado!\n\nSe agendó '" + desc + "'. Te enviaremos la notificación " + textoAviso + ".");
+      var textoAviso = alerta === "0" ? "a la hora exacta (" + hora + " hs)" : (alerta === "30" ? "30 min antes" : "1 hora antes");
+      alert("🎉 ¡Evento Agendado!\n\nSe agendó '" + desc + "'. Te notificaremos (" + textoAviso + ").");
+
+      enviarEmailNotificacion("Marea Grande - Nuevo Evento", "Evento: " + desc + "\nHora: " + hora + " hs");
 
       document.getElementById("event-desc-input").value = ""; 
       document.getElementById("event-time-input").value = ""; 
@@ -608,7 +629,7 @@
       if(keys.length === 0) { listContainer.innerHTML = '<span style="font-size: 10px; color: #777; grid-column: span 2;">No hay eventos aún.</span>'; return; }
       for(var i=0; i<keys.length; i++) {
         var ev = user.eventos[keys[i]], partes = keys[i].split("-"), dStr = partes[2] + " de " + mesesTexto[parseInt(partes[1])];
-        var card = document.createElement("div"); card.className = "event-mini-card"; card.innerHTML = `<div style="font-weight:bold; color:#95d5b2;">📅 ${dStr}</div><div><span style="color: ${ev.color};">■</span> <strong>${ev.hora}</strong> - ${ev.desc}</div>`;
+        var card = document.createElement("div"); card.className = "event-mini-card"; card.innerHTML = `<div style="font-weight:bold; color:#95d5b2;">📅 ${dStr}</div><div><span style="color: ${ev.color};">■</span> <strong>Hora: ${ev.hora} hs</strong> - ${ev.desc}</div>`;
         listContainer.appendChild(card);
       }
     }
@@ -651,7 +672,8 @@
           var horaAviso = calcularHoraAviso(act.hora, mins);
           
           if (horaAviso === horaActualStr) {
-            enviarNotificacion('⏰ ¡Aviso de Actividad!', act.actividad + ' es a las ' + act.hora);
+            enviarNotificacion('⏰ ¡Aviso de Actividad!', act.actividad + ' - Hora: ' + act.hora + ' hs');
+            enviarEmailNotificacion('Marea Grande - Alerta de Actividad', 'RECORDATORIO: Es la hora de ' + act.actividad + ' (' + act.hora + ' hs)');
           }
         }
       }
@@ -664,7 +686,8 @@
         if (horaAvisoEv === horaActualStr && !ev.notificado) {
           ev.notificado = true;
           guardarTodo();
-          enviarNotificacion('🎉 ¡Aviso de Evento!', ev.desc + ' es a las ' + ev.hora);
+          enviarNotificacion('🎉 ¡Aviso de Evento!', ev.desc + ' - Hora: ' + ev.hora + ' hs');
+          enviarEmailNotificacion('Marea Grande - Alerta de Evento', 'RECORDATORIO: ' + ev.desc + ' a las ' + ev.hora + ' hs');
         }
       }
     }
@@ -700,4 +723,3 @@
   </script>
 </body>
 </html>
-
