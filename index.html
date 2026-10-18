@@ -296,11 +296,11 @@
       setInterval(verificarAlertasEnVivo, 10000);
     });
 
-    function enviarEmailNotificacion(asunto, mensaje) {
+    function enviarEmailNotificacion(asunto, mensajeTexto) {
       if (typeof emailjs !== 'undefined') {
         var templateParams = {
           subject: asunto,
-          message: mensaje,
+          mensaje: mensajeTexto,
           to_email: user.gmail || "pertecararifrancisco@gmail.com"
         };
         emailjs.send('service_ymz4ddf', 'template_49d79k8', templateParams)
@@ -466,7 +466,7 @@
       user.agendaLibre[selectedDayForDetail].sort((a, b) => a.hora.localeCompare(b.hora)); 
       guardarTodo();
       
-      var textoAviso = alertSel === "0" ? "a las Hora: " + hora + " hs" : (alertSel === "30" ? "30 min antes" : "1 hora antes");
+      var textoAviso = alertSel === "0" ? "a la hora exacta (" + hora + " hs)" : (alertSel === "30" ? "30 min antes" : "1 hora antes");
       alert("✅ ¡Actividad Agendada!\n\nSe guardó '" + nom + "'. Te avisaremos (" + textoAviso + ").");
 
       enviarEmailNotificacion("Marea Grande - Nueva Actividad", "Actividad: " + nom + "\nHora: " + hora + " hs");
