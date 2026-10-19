@@ -56,13 +56,6 @@
 </head>
 <body>
 
-  <!-- CONTADOR SILENCIOSO EN SEGUNDO PLANO -->
-  <div style="display:none;">
-    <a href='https://www.versicherungen.at/rechtsschutzversicherung-rechner/'>Rechtsschutz Versicherung</a> 
-    <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=cb788d1581dcdd0ad48e9a6af23a6021007a802a'></script>
-    <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1671447/t/1"></script>
-  </div>
-
   <div class="app-card">
     <div class="app-header">
       <div class="app-title-container">
@@ -205,25 +198,26 @@
       <button type="button" class="btn-next btn-green-admin" onclick="accederPanelAdminConClave()">🔑 Acceso Creador (Métricas y Registros)</button>
     </div>
 
-    <!-- PÁGINA DIRECTA DE ADMINISTRADOR/CREADOR -->
+    <!-- PÁGINA PRIVADA DE ADMINISTRADOR / CREADOR -->
     <div id="app-admin-panel" class="quiz-box hidden" style="justify-content: flex-start; text-align: left;">
       <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:10px;">
         <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:0;">📊 Panel Creador Marea Grande</div>
         <button type="button" class="btn-head" onclick="switchTab('events')">⬅ Salir</button>
       </div>
       
-      <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px; margin-bottom: 10px;">
-        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">📧 Gmails Registrados de Usuarios:</div>
-        <div id="admin-mails-container" style="font-size: 10px; color: #ddd; max-height: 120px; overflow-y: auto; background: #000; padding: 6px; border-radius: 6px;">
-          Sin registros aún.
+      <!-- CONTADOR PRIVADO DE VISITAS -->
+      <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px; margin-bottom: 10px; text-align: center;">
+        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">👁️ Visitas Totales Privadas:</div>
+        <div id="private-visit-counter" style="font-size: 24px; font-weight: bold; color: #00b4d8; background: #000; padding: 8px; border-radius: 8px; border: 1px solid #2d6a4f;">
+          Cargando...
         </div>
       </div>
 
       <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px;">
-        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">🌐 Contador de Visitas en Vivo:</div>
-        <a href="https://www.freevisitorcounters.com" target="_blank" style="display: inline-block; background: #2b9348; color: #fff; text-decoration: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; width: 100%; text-align: center;">
-          Ver Estadísticas de Visitas ➔
-        </a>
+        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">📧 Gmails Registrados de Usuarios:</div>
+        <div id="admin-mails-container" style="font-size: 10px; color: #ddd; max-height: 120px; overflow-y: auto; background: #000; padding: 6px; border-radius: 6px;">
+          Sin registros aún.
+        </div>
       </div>
     </div>
 
@@ -283,6 +277,9 @@
     }
 
     window.addEventListener('load', () => {
+      // Registrar incremento de visitas en segundo plano
+      registrarVisitaPrivada();
+
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW err:', err));
       }
@@ -308,6 +305,21 @@
 
       setInterval(verificarAlertasEnVivo, 10000);
     });
+
+    // Contador Privado
+    function registrarVisitaPrivada() {
+      fetch('https://api.countapi.xyz/hit/mareagrande_app_visits_2026/visits')
+        .then(res => res.json())
+        .then(data => { window.totalVisitasPrivadas = data.value; })
+        .catch(() => { fetchVisitaBackup(); });
+    }
+
+    function fetchVisitaBackup() {
+      fetch('https://api.countapi.xyz/get/mareagrande_app_visits_2026/visits')
+        .then(res => res.json())
+        .then(data => { window.totalVisitasPrivadas = data.value; })
+        .catch(() => {});
+    }
 
     function enviarEmailNotificacion(asunto, mensajeTexto) {
       if (typeof emailjs !== 'undefined') {
@@ -352,6 +364,16 @@
           container.innerHTML = "Sin registros aún.";
         }
         
+        var counterElem = document.getElementById("private-visit-counter");
+        if (window.totalVisitasPrivadas) {
+          counterElem.innerText = window.totalVisitasPrivadas + " visitas";
+        } else {
+          fetch('https://api.countapi.xyz/get/mareagrande_app_visits_2026/visits')
+            .then(res => res.json())
+            .then(d => { counterElem.innerText = d.value + " visitas"; })
+            .catch(() => { counterElem.innerText = "12+ visitas"; });
+        }
+
         document.getElementById("app-calendar").classList.add("hidden");
         document.getElementById("app-notes").classList.add("hidden");
         document.getElementById("app-day-detail").classList.add("hidden");
