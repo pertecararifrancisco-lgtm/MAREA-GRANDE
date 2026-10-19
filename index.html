@@ -17,7 +17,9 @@
     body { background: #000000 !important; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; color: white; }
     .app-card { background-color: #0b110e !important; width: 100%; max-width: 420px; border-radius: 24px; padding: 22px; border: 2px solid #1b4332; box-shadow: 0 12px 30px rgba(0,0,0,0.9); color: #ffffff; position: relative; min-height: 580px; display: flex; flex-direction: column; justify-content: space-between; }
     .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
-    .app-title { color: #00b4d8; font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .app-title-container { display: flex; align-items: center; gap: 8px; }
+    .app-logo-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid #2d6a4f; }
+    .app-title { color: #00b4d8; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
     .header-btns { display: flex; gap: 4px; }
     .btn-head { background: #2b9348; color: #ffffff; border: none; padding: 6px 8px; border-radius: 15px; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 3px; }
     .btn-head-bell { background: #0077b6; }
@@ -63,7 +65,11 @@
 
   <div class="app-card">
     <div class="app-header">
-      <h1 class="app-title">Marea Grande</h1>
+      <div class="app-title-container">
+        <!-- Logo nuevo integrado -->
+        <img src="https://drive.google.com/uc?export=view&id=1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1" alt="Logo Marea Grande" class="app-logo-img">
+        <h1 class="app-title">Marea Grande</h1>
+      </div>
       <div class="header-btns">
         <button type="button" id="btnAvisos" class="btn-head btn-head-bell" onclick="pedirPermisoNotificaciones()">🔔 Avisos</button>
         <div id="statusNotifActive" class="badge-active hidden">🔔 Notificaciones Activadas</div>
