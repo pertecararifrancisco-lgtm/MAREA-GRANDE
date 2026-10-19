@@ -1,19 +1,23 @@
-
 {
   "name": "Marea Grande",
   "short_name": "Marea Grande",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#0b110e",
+  "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icono.png",
+      "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ]
 }
-
