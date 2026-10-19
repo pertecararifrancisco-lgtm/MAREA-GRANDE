@@ -59,7 +59,7 @@
   <div class="app-card">
     <div class="app-header">
       <div class="app-title-container">
-        <!-- Tu logo real integrado -->
+        <!-- Logo real de Marea Grande -->
         <img src="https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1" alt="Logo Marea Grande" class="app-logo-img">
         <h1 class="app-title">Marea Grande</h1>
       </div>
@@ -257,6 +257,7 @@
     var selectedDayForDetail = 1, indiceDeporteActual = 0;
     var fechaActualObj = new Date();
     var mesVisualizado = fechaActualObj.getMonth(), anioVisualizado = fechaActualObj.getFullYear();
+    let deferredPrompt = null;
 
     var datosGuardados = localStorage.getItem("mareaGrandeV6");
     if (datosGuardados) { 
@@ -276,8 +277,13 @@
       for (var i = 0; i < 7; i++) user.agendaLibre[diasMapeo[i]] = []; 
     }
 
+    // Capturar el evento automático de instalación de Chrome
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
     window.addEventListener('load', () => {
-      // Registrar incremento de visitas en segundo plano
       registrarVisitaPrivada();
 
       if ('serviceWorker' in navigator) {
@@ -306,7 +312,26 @@
       setInterval(verificarAlertasEnVivo, 10000);
     });
 
-    // Contador Privado
+    // Descarga automatizada al presionar el botón
+    function descargarApp() { 
+      if (deferredPrompt) { 
+        deferredPrompt.prompt(); 
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById("btnInstalar").classList.add("hidden");
+          }
+          deferredPrompt = null;
+        });
+      } else { 
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+          alert("🍏 Para instalar en iPhone:\n\n1. Abrí esta página en SAFARI.\n2. Tocá el botón Compartir ↗️ (abajo).\n3. Seleccioná 'Agregar a inicio'.");
+        } else {
+          alert("📱 Para instalar en Android:\n\n1. Tocá los 3 puntos (⋮) arriba a la derecha en Chrome.\n2. Tocá 'Instalar aplicación' o 'Agregar a pantalla principal'.");
+        }
+      } 
+    }
+
     function registrarVisitaPrivada() {
       fetch('https://api.countapi.xyz/hit/mareagrande_app_visits_2026/visits')
         .then(res => res.json())
@@ -739,21 +764,6 @@
       } else if (window.Notification && Notification.permission === 'granted') {
         new Notification(titulo, { body: mensaje });
       }
-    }
-
-    let deferredPrompt; const btnInstalar = document.getElementById('btnInstalar');
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-    function descargarApp() { 
-      if (deferredPrompt) { 
-        deferredPrompt.prompt(); 
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            btnInstalar.classList.add("hidden");
-          }
-        });
-      } else { 
-        alert("📱 Para instalar:\n1. Tocá compartir o los tres puntos en tu navegador.\n2. Seleccioná 'Agregar a la pantalla principal' o 'Instalar aplicación' para tener el icono flotante."); 
-      } 
     }
   </script>
 </body>
