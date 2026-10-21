@@ -95,9 +95,36 @@
       <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
     </div>
 
-    <!-- PASO 3: DÍAS DE ENTRENO -->
+    <!-- PASO 3: DÍAS Y COLOR DE ENTRENO POR DEPORTE -->
     <div id="step-deportes-dias" class="quiz-box hidden">
       <div class="question-title" id="txt-pregunta-deporte">3. ¿Qué días entrenás?</div>
+      
+      <div style="width: 100%; margin-bottom: 10px; text-align: left;">
+        <span style="font-size: 11px; color: #95d5b2; font-weight: bold; display: block; margin-bottom: 4px;">Elegí el color para este deporte:</span>
+        <select id="input-deporte-color" class="input-select" style="margin-bottom: 8px;">
+          <option value="#2b9348">Verde Clásico</option>
+          <option value="#0077b6">Azul Océano</option>
+          <option value="#d90429">Rojo Fuego</option>
+          <option value="#ff9f1c">Naranja Brillante</option>
+          <option value="#ff1493">Rosa Neón</option>
+          <option value="#9b5de5">Violeta Púrpura</option>
+          <option value="#ffee32">Amarillo Solar</option>
+          <option value="#00f5d4">Cian Turquesa</option>
+          <option value="#4361ee">Azul Rey</option>
+          <option value="#f72585">Fucsia Intenso</option>
+          <option value="#7209b7">Morado Oscuro</option>
+          <option value="#3a0ca3">Azul Índigo</option>
+          <option value="#4cc9f0">Celeste Pastel</option>
+          <option value="#52b788">Verde Menta</option>
+          <option value="#b5e48c">Verde Claro</option>
+          <option value="#f4a261">Salmón / Naranja Suave</option>
+          <option value="#e76f51">Terracota</option>
+          <option value="#ffffff">Blanco Puro</option>
+          <option value="#adb5bd">Gris Deportivo</option>
+          <option value="#ffd166">Amarillo Mostaza</option>
+        </select>
+      </div>
+
       <div class="options-grid" id="grid-dias-deporte">
         <label class="opt-label"><input type="checkbox" value="1" class="cb-dias-dep"> Lunes</label>
         <label class="opt-label"><input type="checkbox" value="2" class="cb-dias-dep"> Martes</label>
@@ -250,7 +277,7 @@
   <script>
     var CLAVE_ADMIN = "Perro TM 100";
     var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ7g-q_GlJhZ-YUh8spE4XtUGPkiT8b6Cg-B7xkae4QvjMgLPrcd5DX1bBfNJiygrC/exec";
-    var user = { gmail: "", nombre: "", listaDeportes: [], entrenosPorDeporte: {}, agendaLibre: {}, eventos: {} };
+    var user = { gmail: "", nombre: "", listaDeportes: [], entrenosPorDeporte: {}, coloresDeporte: {}, agendaLibre: {}, eventos: {} };
     var listaUsuariosRegistrados = [];
     var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
     var mesesTexto = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -267,6 +294,8 @@
         if (parsed && typeof parsed === 'object') user = parsed; 
       } catch(e) { user = {}; } 
     }
+
+    if (!user.coloresDeporte) user.coloresDeporte = {};
 
     var registrosPrevios = localStorage.getItem("mareaGrandeRegistrosGmail");
     if (registrosPrevios) {
@@ -384,7 +413,6 @@
       }
       guardarTodo();
       
-      // Envía al Google Sheets y al EmailJS en simultáneo
       registrarEnGoogleSheets(mail);
       enviarEmailNotificacion("Marea Grande - Nuevo Registro", "Se registró el usuario con Gmail: " + mail);
 
@@ -451,6 +479,7 @@
         if (!depInput) { alert("Ingresá un deporte"); return; }
         user.listaDeportes = depInput.split(',').map(d => d.trim()).filter(d => d.length > 0);
         user.entrenosPorDeporte = {}; 
+        user.coloresDeporte = {};
         indiceDeporteActual = 0; 
         guardarTodo(); 
         document.getElementById("step-2").classList.add("hidden"); 
@@ -473,10 +502,12 @@
 
     function siguienteDeporteDias() {
       var depActual = user.listaDeportes[indiceDeporteActual];
+      var colorSeleccionado = document.getElementById("input-deporte-color").value;
       var cbs = document.querySelectorAll(".cb-dias-dep:checked");
       var sel = []; 
       for (var i = 0; i < cbs.length; i++) sel.push(parseInt(cbs[i].value));
       user.entrenosPorDeporte[depActual] = sel; 
+      user.coloresDeporte[depActual] = colorSeleccionado;
       guardarTodo(); 
       indiceDeporteActual++; 
       mostrarPreguntaDeporteActual();
@@ -571,14 +602,19 @@
       for (var e = 0; e < primerDiaIndex; e++) container.appendChild(document.createElement("div"));
       
       var legendBox = document.getElementById("legend-references-box"); 
-      legendBox.innerHTML = `
-        <strong>REFERENCIAS:</strong>
-        <div class="legend-item"><div class="dot" style="background-color:#2b9348;"></div> Entrenamientos</div>
-        <div class="legend-item"><div class="dot" style="background-color:#d90429;"></div> Descanso</div>
-      `;
+      legendBox.innerHTML = `<strong>REFERENCIAS:</strong>`;
+
+      if (user.entrenosPorDeporte) {
+        var keysDeps = Object.keys(user.entrenosPorDeporte);
+        for (var k = 0; k < keysDeps.length; k++) {
+          var depNombre = keysDeps[k];
+          var depColor = (user.coloresDeporte && user.coloresDeporte[depNombre]) ? user.coloresDeporte[depNombre] : '#2b9348';
+          legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:${depColor};"></div> Entreno: ${depNombre}</div>`;
+        }
+      }
+      legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:#d90429;"></div> Descanso</div>`;
 
       var referenciasAgregadas = {};
-
       for (var d = 0; d < 7; d++) {
         var listAct = user.agendaLibre[diasMapeo[d]];
         if (listAct) {
@@ -597,19 +633,21 @@
         var dayOfWeek = new Date(anioVisualizado, mesVisualizado, day).getDay();
         var dotsHTML = "";
 
-        var esDiaEntreno = false;
+        var entrenandoHoy = [];
         if (user.entrenosPorDeporte) {
           var keysDeps = Object.keys(user.entrenosPorDeporte);
           for (var k = 0; k < keysDeps.length; k++) { 
             if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) {
-              esDiaEntreno = true;
-              break;
+              entrenandoHoy.push(keysDeps[k]);
             }
           }
         }
 
-        if (esDiaEntreno) {
-          dotsHTML += `<div class="dot" style="background-color: #2b9348;"></div>`;
+        if (entrenandoHoy.length > 0) {
+          for (var et = 0; et < entrenandoHoy.length; et++) {
+            var colDep = (user.coloresDeporte && user.coloresDeporte[entrenandoHoy[et]]) ? user.coloresDeporte[entrenandoHoy[et]] : '#2b9348';
+            dotsHTML += `<div class="dot" style="background-color: ${colDep};"></div>`;
+          }
         } else {
           dotsHTML += `<div class="dot" style="background-color: #d90429;"></div>`;
         }
@@ -637,18 +675,19 @@
       var dayOfWeek = new Date(anio, mes, dia).getDay(), nombreDia = diasSemanaTexto[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
       var contenido = "<strong>" + dia + " de " + mesesTexto[mes] + " " + anio + " (" + nombreDia + ")</strong><br><br>";
       
-      var esDiaEntreno = false;
+      var hayEntreno = false;
       if (user.entrenosPorDeporte) {
         var keysDeps = Object.keys(user.entrenosPorDeporte);
         for (var k = 0; k < keysDeps.length; k++) { 
           if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) { 
-            esDiaEntreno = true;
-            contenido += `<span style="color:#2b9348;">■</span> Día de entrenamiento: <strong>${keysDeps[k]}</strong><br>`; 
+            hayEntreno = true;
+            var colDep = (user.coloresDeporte && user.coloresDeporte[keysDeps[k]]) ? user.coloresDeporte[keysDeps[k]] : '#2b9348';
+            contenido += `<span style="color:${colDep};">■</span> Entreno: <strong>${keysDeps[k]}</strong><br>`; 
           } 
         }
       }
 
-      if (!esDiaEntreno) {
+      if (!hayEntreno) {
         contenido += `<span style="color:#d90429;">■</span> Día de descanso<br>`;
       }
 
