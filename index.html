@@ -1,822 +1,304 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Marea Grande - Planificador Deportivo</title>
-  <!-- SDK de EmailJS para envío de Mails -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  <script type="text/javascript">
-    (function(){
-      emailjs.init("PiXM2u-_PJy9jfMLh"); // Tu Public Key
-    })();
-  </script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #000000 !important; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; color: white; }
-    .app-card { background-color: #0b110e !important; width: 100%; max-width: 420px; border-radius: 24px; padding: 22px; border: 2px solid #1b4332; box-shadow: 0 12px 30px rgba(0,0,0,0.9); color: #ffffff; position: relative; min-height: 580px; display: flex; flex-direction: column; justify-content: space-between; }
-    .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
-    .app-title-container { display: flex; align-items: center; gap: 8px; }
-    .app-logo-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid #2d6a4f; }
-    .app-title { color: #00b4d8; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-    .header-btns { display: flex; gap: 4px; }
-    .btn-head { background: #2b9348; color: #ffffff; border: none; padding: 6px 8px; border-radius: 15px; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 3px; }
-    .btn-head-bell { background: #0077b6; }
-    .badge-active { background: #1b4332; color: #95d5b2; border: 1px solid #2d6a4f; padding: 5px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; }
-    .quiz-box { background-color: #132a13 !important; border-radius: 18px; padding: 20px; color: #ffffff; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); border: 1px solid #2d6a4f; }
-    .question-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #95d5b2; }
-    .input-text, .input-select { width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid #2d6a4f; font-size: 13px; margin-bottom: 6px; outline: none; background: #000000; color: #ffffff; text-align: center; }
-    .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; width: 100%; }
-    .opt-label { background-color: #0b110e; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #ffffff; border: 1px solid #2d6a4f; }
-    .btn-next { width: 100%; padding: 12px; background-color: #1d3557; color: #ffffff; font-weight: bold; font-size: 13px; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); }
-    .btn-green-admin { background-color: #2b9348 !important; margin-top: 10px; }
-    @keyframes pulseHand { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
-    .pulsing-hand { display: inline-block; animation: pulseHand 1.5s infinite ease-in-out; }
-    .day-card-item { background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
-    .day-card-title { font-size: 14px; font-weight: bold; color: #95d5b2; display: flex; justify-content: space-between; align-items: center; }
-    .agenda-container { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; padding-right: 4px; width: 100%; }
-    .events-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 100px; overflow-y: auto; width: 100%; }
-    .event-mini-card { background: #000000; border: 1px solid #2d6a4f; border-radius: 8px; padding: 6px; text-align: left; font-size: 10px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marea Grande</title>
+    
+    <!-- Vinculación clave con el Manifest para PWABuilder / APK -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b110e">
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #0b110e;
+            --card-bg: #16221c;
+            --accent-green: #25d366;
+            --text-light: #f1f1f1;
+            --text-muted: #a0a0a0;
+            --border-color: #2a3b32;
+        }
 
-    .bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 12px; background: #000000; padding: 6px; border-radius: 14px; border: 1px solid #2d6a4f; }
-    .nav-btn { background-color: #1d3557; color: white; border: none; padding: 8px 2px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; text-align: center; }
-    .nav-btn.active { background-color: #2b9348; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 3px; margin-top: 6px; width: 100%; }
-    .cal-day-name { font-size: 10px; font-weight: bold; color: #95d5b2; }
-    .cal-day { padding: 6px 0; font-size: 10px; font-weight: bold; background-color: #0b110e; border-radius: 6px; display: flex; flex-direction: column; align-items: center; color: #ffffff; border: 1px solid #1b4332; cursor: pointer; }
-    .dot-container { display: flex; gap: 2px; margin-top: 2px; flex-wrap: wrap; justify-content: center; max-width: 25px; }
-    .dot { width: 5px; height: 5px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
-    .legend-box { margin-top: 8px; background-color: #0b110e; padding: 6px; border-radius: 8px; font-size: 10px; display: flex; flex-direction: column; gap: 3px; border: 1px solid #1b4332; width: 100%; text-align: left; max-height: 90px; overflow-y: auto; }
-    .legend-item { display: flex; align-items: center; gap: 5px; }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-card { background: #0b110e; border: 2px solid #2d6a4f; padding: 18px; border-radius: 16px; width: 90%; max-width: 350px; color: #fff; }
-    .hidden { display: none !important; }
-  </style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+        }
+
+        /* Header con Logo Oficial */
+        header {
+            width: 100%;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-green);
+        }
+
+        .brand-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        main {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--accent-green);
+        }
+
+        /* Formulario de Registro Gmail */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        input[type="email"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: #080d0a;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input[type="email"]:focus, input[type="text"]:focus {
+            border-color: var(--accent-green);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--accent-green);
+            color: #000;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        /* Selección de Deportes y 20 Colores */
+        .sport-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .color-option {
+            width: 100%;
+            height: 35px;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .color-option.selected {
+            border-color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        /* Alerta de estado */
+        #status-msg {
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
-  <div class="app-card">
-    <div class="app-header">
-      <div class="app-title-container">
-        <!-- LOGO OFICIAL MAREA GRANDE (OLA + TABLA DE SURF) -->
-        <img src="https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1" alt="Logo Marea Grande" class="app-logo-img">
-        <h1 class="app-title">Marea Grande</h1>
-      </div>
-      <div class="header-btns">
-        <button type="button" id="btnAvisos" class="btn-head btn-head-bell" onclick="pedirPermisoNotificaciones()">🔔 Avisos</button>
-        <div id="statusNotifActive" class="badge-active hidden">🔔 Activadas</div>
-        <button type="button" id="btnInstalar" class="btn-head" onclick="descargarApp()">📥 Descargar</button>
-      </div>
-    </div>
-
-    <!-- PASO 0: MENSAJE DE BIENVENIDA Y REGISTRO GMAIL -->
-    <div id="step-register" class="quiz-box">
-      <div class="question-title">🌊 ¡Bienvenido a Marea Grande!</div>
-      <p style="font-size: 11px; color: #95d5b2; margin-bottom: 12px; line-height: 1.4;">
-        Esta aplicación es Marea y servirá para organizar tu semana y tener una semana y mes más ordenado. <span class="pulsing-hand">🚀</span>
-      </p>
-      <input type="email" id="input-user-gmail" class="input-text" placeholder="Ingresá tu Gmail...">
-      <button type="button" class="btn-next" onclick="registrarUsuarioGmail()">Comenzar ahora ➔</button>
-    </div>
-
-    <!-- PASO 1: NOMBRE -->
-    <div id="step-1" class="quiz-box hidden">
-      <div class="question-title">1. ¿Cómo te llamás?</div>
-      <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
-      <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
-    </div>
-
-    <!-- PASO 2: DEPORTES -->
-    <div id="step-2" class="quiz-box hidden">
-      <div class="question-title">2. ¿Qué deporte/s o actividad/es hacés?</div>
-      <input type="text" id="input-deportes" class="input-text" placeholder="Ej. Rugby, fútbol, gimnasio...">
-      <div style="font-size: 9px; color: #adb5bd; margin-bottom: 12px; font-style: italic;">* Si hacés dos o más, separalas con coma.</div>
-      <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
-    </div>
-
-    <!-- PASO 3: DÍAS Y COLOR DE ENTRENO POR DEPORTE -->
-    <div id="step-deportes-dias" class="quiz-box hidden">
-      <div class="question-title" id="txt-pregunta-deporte">3. ¿Qué días entrenás?</div>
-      
-      <div style="width: 100%; margin-bottom: 10px; text-align: left;">
-        <span style="font-size: 11px; color: #95d5b2; font-weight: bold; display: block; margin-bottom: 4px;">Elegí el color para este deporte:</span>
-        <select id="input-deporte-color" class="input-select" style="margin-bottom: 8px;">
-          <option value="#2b9348">Verde Clásico</option>
-          <option value="#0077b6">Azul Océano</option>
-          <option value="#d90429">Rojo Fuego</option>
-          <option value="#ff9f1c">Naranja Brillante</option>
-          <option value="#ff1493">Rosa Neón</option>
-          <option value="#9b5de5">Violeta Púrpura</option>
-          <option value="#ffee32">Amarillo Solar</option>
-          <option value="#00f5d4">Cian Turquesa</option>
-          <option value="#4361ee">Azul Rey</option>
-          <option value="#f72585">Fucsia Intenso</option>
-          <option value="#7209b7">Morado Oscuro</option>
-          <option value="#3a0ca3">Azul Índigo</option>
-          <option value="#4cc9f0">Celeste Pastel</option>
-          <option value="#52b788">Verde Menta</option>
-          <option value="#b5e48c">Verde Claro</option>
-          <option value="#f4a261">Salmón / Naranja Suave</option>
-          <option value="#e76f51">Terracota</option>
-          <option value="#ffffff">Blanco Puro</option>
-          <option value="#adb5bd">Gris Deportivo</option>
-          <option value="#ffd166">Amarillo Mostaza</option>
-        </select>
-      </div>
-
-      <div class="options-grid" id="grid-dias-deporte">
-        <label class="opt-label"><input type="checkbox" value="1" class="cb-dias-dep"> Lunes</label>
-        <label class="opt-label"><input type="checkbox" value="2" class="cb-dias-dep"> Martes</label>
-        <label class="opt-label"><input type="checkbox" value="3" class="cb-dias-dep"> Miércoles</label>
-        <label class="opt-label"><input type="checkbox" value="4" class="cb-dias-dep"> Jueves</label>
-        <label class="opt-label"><input type="checkbox" value="5" class="cb-dias-dep"> Viernes</label>
-        <label class="opt-label"><input type="checkbox" value="6" class="cb-dias-dep"> Sábado</label>
-        <label class="opt-label"><input type="checkbox" value="0" class="cb-dias-dep"> Domingo</label>
-      </div>
-      <button type="button" class="btn-next" onclick="siguienteDeporteDias()">Siguiente ➔</button>
-    </div>
-
-    <!-- CALENDARIO -->
-    <div id="app-calendar" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
-        <button onclick="cambiarMes(-1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">◀</button>
-        <div class="question-title" id="txt-mes-anio" style="font-size: 14px; color: #90e0ef; margin-bottom: 0;">Octubre 2026</div>
-        <button onclick="cambiarMes(1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">▶</button>
-      </div>
-      <div class="question-title" id="txt-saludo" style="font-size: 13px; color: #95d5b2; margin-bottom: 6px;">Hola 👋</div>
-      <div class="cal-grid">
-        <div class="cal-day-name">Lu</div><div class="cal-day-name">Ma</div><div class="cal-day-name">Mi</div><div class="cal-day-name">Ju</div><div class="cal-day-name">Vi</div><div class="cal-day-name">Sá</div><div class="cal-day-name">Do</div>
-        <div id="cal-days" style="display: contents;"></div>
-      </div>
-      <div class="legend-box" id="legend-references-box"><strong>REFERENCIAS:</strong></div>
-    </div>
-
-    <!-- NOTAS -->
-    <div id="app-notes" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">📝 Notas y Actividades</div>
-      <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.3; text-align: left;">
-        ¡Hola <span id="user-name-span">Fran</span>! Seleccioná un día para agendar actividades con sus **horas** específicas.
-      </div>
-      <div class="agenda-container" id="days-list-container"></div>
-    </div>
-
-    <!-- DETALLE DÍA -->
-    <div id="app-day-detail" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
-        <span id="detail-day-title" style="font-size: 15px; font-weight:bold; color:#95d5b2;">Lunes</span>
-        <button type="button" class="btn-head" onclick="volverANotas()">⬅ Volver</button>
-      </div>
-      <div style="width:100%; margin-bottom: 6px;">
-        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Rugby, Gimnasio..." style="margin-bottom: 6px;">
-        <div style="display: flex; gap: 4px; margin-bottom: 6px; align-items: center;">
-          <span style="font-size: 11px; color: #95d5b2; font-weight: bold;">Hora:</span>
-          <input type="time" id="activity-time-input" class="input-text" style="margin-bottom: 0;">
-          <select id="activity-color-select" class="input-select" style="margin-bottom: 0;">
-            <option value="#2b9348">Verde</option>
-            <option value="#0077b6">Azul</option>
-            <option value="#d90429">Rojo</option>
-            <option value="#ff9f1c">Naranja</option>
-            <option value="#ff1493">Rosa</option>
-            <option value="#9b5de5">Violeta</option>
-            <option value="#ffee32">Amarillo</option>
-            <option value="#00f5d4">Cian</option>
-            <option value="#ffffff">Blanco</option>
-            <option value="#000000">Negro</option>
-          </select>
+    <header>
+        <div class="brand-container">
+            <img src="https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1" alt="Marea Grande Logo" class="brand-logo">
+            <span class="brand-title">Marea Grande</span>
         </div>
-        <select id="activity-alert-select" class="input-select" style="margin-bottom: 6px;">
-          <option value="0">🔔 A la hora exacta</option>
-          <option value="30">⏰ 30 min antes</option>
-          <option value="60">⏰ 1 hora antes</option>
-        </select>
-        <button type="button" class="btn-next" onclick="agregarActividadDia()" style="padding: 8px;">Agregar Actividad</button>
-      </div>
-      <div class="agenda-container" id="day-activities-list" style="max-height: 110px; background: #000; padding: 6px; border-radius: 8px; border: 1px solid #2d6a4f;"></div>
-    </div>
+    </header>
 
-    <!-- EVENTOS -->
-    <div id="app-events" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef; margin-bottom:8px;">¡Agendá tu evento!</div>
-      <div style="width:100%; margin-bottom: 6px;">
-        <select id="event-day-select" class="input-select" style="margin-bottom: 4px;"></select>
-        <input type="text" id="event-desc-input" class="input-text" placeholder="Ej. Partido, casamiento..." style="margin-bottom: 4px;">
-        <div style="display: flex; gap: 4px; margin-bottom: 4px; align-items: center;">
-          <span style="font-size: 11px; color: #95d5b2; font-weight: bold;">Hora:</span>
-          <input type="time" id="event-time-input" class="input-text" style="margin-bottom: 0;">
-          <select id="event-alert-select" class="input-select" style="margin-bottom: 0;">
-            <option value="0">🔔 A la hora elegida</option>
-            <option value="30">⏰ 30 min antes</option>
-            <option value="60">⏰ 1 hora antes</option>
-          </select>
-        </div>
-        <select id="event-color-select" class="input-select" style="margin-bottom: 6px;">
-          <option value="#ff9f1c">Naranja</option>
-          <option value="#0077b6">Azul</option>
-          <option value="#d90429">Rojo</option>
-          <option value="#ffee32">Amarillo</option>
-          <option value="#000000">Negro</option>
-        </select>
-        <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 7px;">Guardar Evento</button>
-      </div>
+    <main>
+        <!-- Tarjeta de Registro e Ingreso -->
+        <section class="card" id="auth-section">
+            <h2>Ingreso / Registro</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="user-email">Correo Electrónico (Gmail)</label>
+                    <input type="email" id="user-email" placeholder="ejemplo@gmail.com" required>
+                </div>
+                <button type="submit" class="btn" id="submit-btn">Ingresar a Marea Grande</button>
+            </form>
+            <div id="status-msg"></div>
+        </section>
 
-      <div class="events-grid-container" id="events-list"></div>
+        <!-- Configuración de Deportes (Encuesta) -->
+        <section class="card hidden" id="survey-section">
+            <h2>Configura tus Deportes y Colores</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                Ingresá tus deportes y elegí entre las 20 opciones de color para tu calendario:
+            </p>
 
-      <button type="button" class="btn-next btn-green-admin" onclick="accederPanelAdminConClave()">🔑 Acceso Creador (Métricas y Registros)</button>
-    </div>
+            <div id="sports-container">
+                <div class="input-group">
+                    <input type="text" class="sport-name-input" placeholder="Nombre del deporte (ej: Rugby, Surf)">
+                    <div class="color-picker-grid" id="color-grid">
+                        <!-- 20 Opciones de Colores -->
+                        <div class="color-option" style="background:#ff4757" data-color="#ff4757"></div>
+                        <div class="color-option" style="background:#2ed573" data-color="#2ed573"></div>
+                        <div class="color-option" style="background:#1e90ff" data-color="#1e90ff"></div>
+                        <div class="color-option" style="background:#ffa502" data-color="#ffa502"></div>
+                        <div class="color-option" style="background:#3742fa" data-color="#3742fa"></div>
+                        <div class="color-option" style="background:#9b59b6" data-color="#9b59b6"></div>
+                        <div class="color-option" style="background:#e84393" data-color="#e84393"></div>
+                        <div class="color-option" style="background:#00cec9" data-color="#00cec9"></div>
+                        <div class="color-option" style="background:#10ac84" data-color="#10ac84"></div>
+                        <div class="color-option" style="background:#ff6b6b" data-color="#ff6b6b"></div>
+                        <div class="color-option" style="background:#f1c40f" data-color="#f1c40f"></div>
+                        <div class="color-option" style="background:#e67e22" data-color="#e67e22"></div>
+                        <div class="color-option" style="background:#34495e" data-color="#34495e"></div>
+                        <div class="color-option" style="background:#00b894" data-color="#00b894"></div>
+                        <div class="color-option" style="background:#0984e3" data-color="#0984e3"></div>
+                        <div class="color-option" style="background:#6c5ce7" data-color="#6c5ce7"></div>
+                        <div class="color-option" style="background:#fd79a8" data-color="#fd79a8"></div>
+                        <div class="color-option" style="background:#d63031" data-color="#d63031"></div>
+                        <div class="color-option" style="background:#e17055" data-color="#e17055"></div>
+                        <div class="color-option" style="background:#2d3436" data-color="#2d3436"></div>
+                    </div>
+                </div>
+            </div>
 
-    <!-- PÁGINA PRIVADA DE ADMINISTRADOR / CREADOR -->
-    <div id="app-admin-panel" class="quiz-box hidden" style="justify-content: flex-start; text-align: left;">
-      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:10px;">
-        <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:0;">📊 Panel Creador Marea Grande</div>
-        <button type="button" class="btn-head" onclick="switchTab('events')">⬅ Salir</button>
-      </div>
-      
-      <!-- CONTADOR PRIVADO DE VISITAS -->
-      <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px; margin-bottom: 10px; text-align: center;">
-        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">👁️ Visitas Totales Privadas:</div>
-        <div id="private-visit-counter" style="font-size: 24px; font-weight: bold; color: #00b4d8; background: #000; padding: 8px; border-radius: 8px; border: 1px solid #2d6a4f;">
-          Cargando...
-        </div>
-      </div>
+            <button type="button" class="btn" id="save-survey-btn">Guardar Preferencias</button>
+        </section>
+    </main>
 
-      <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px;">
-        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">📧 Gmails Registrados de Usuarios:</div>
-        <div id="admin-mails-container" style="font-size: 10px; color: #ddd; max-height: 120px; overflow-y: auto; background: #000; padding: 6px; border-radius: 6px;">
-          Sin registros aún.
-        </div>
-      </div>
-    </div>
+    <script>
+        // Inicializar EmailJS
+        (function() {
+            emailjs.init("YOUR_PUBLIC_KEY"); // Reemplazar si usas EmailJS
+        })();
 
-    <!-- AJUSTES -->
-    <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:10px;">⚙️ Ajustes</div>
-      <div style="display: flex; flex-direction: column; gap: 6px; width:100%;">
-        <button type="button" onclick="exportarRespaldo()" style="background:#1d3557; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px;">💾 Guardar Respaldo</button>
-        <button type="button" onclick="reiniciarConfig()" style="background:#d90429; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px;">🔄 Reiniciar Encuesta</button>
-      </div>
-    </div>
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ7g-q_GlJhZ-YUh8spE4XtUGPkiT8b6Cg-B7xkae4QvjMgLPrcd5DX1bBfNJiygrC/exec";
 
-    <!-- NAV BAR -->
-    <div id="bottom-nav-bar" class="bottom-nav hidden">
-      <button class="nav-btn active" onclick="switchTab('calendar')">Cal.</button>
-      <button class="nav-btn" onclick="switchTab('notes')">Notas</button>
-      <button class="nav-btn" onclick="switchTab('events')">Eventos</button>
-      <button class="nav-btn" onclick="switchTab('settings')">Ajustes</button>
-    </div>
-  </div>
-
-  <div id="day-modal" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div id="modal-title" style="font-weight: bold; font-size: 15px; color: #95d5b2; margin-bottom: 6px;">Día</div>
-      <div id="modal-content" style="font-size: 12px; margin-bottom: 12px; color: #ddd;">Detalle...</div>
-      <button type="button" class="btn-next" onclick="cerrarModal()" style="padding: 8px;">Cerrar</button>
-    </div>
-  </div>
-
-  <script>
-    var CLAVE_ADMIN = "Perro TM 100";
-    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ7g-q_GlJhZ-YUh8spE4XtUGPkiT8b6Cg-B7xkae4QvjMgLPrcd5DX1bBfNJiygrC/exec";
-    var user = { gmail: "", nombre: "", listaDeportes: [], entrenosPorDeporte: {}, coloresDeporte: {}, agendaLibre: {}, eventos: {} };
-    var listaUsuariosRegistrados = [];
-    var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-    var mesesTexto = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    var diasMapeo = [1, 2, 3, 4, 5, 6, 0];
-    var selectedDayForDetail = 1, indiceDeporteActual = 0;
-    var fechaActualObj = new Date();
-    var mesVisualizado = fechaActualObj.getMonth(), anioVisualizado = fechaActualObj.getFullYear();
-    let deferredPrompt = null;
-
-    var datosGuardados = localStorage.getItem("mareaGrandeV6");
-    if (datosGuardados) { 
-      try { 
-        var parsed = JSON.parse(datosGuardados); 
-        if (parsed && typeof parsed === 'object') user = parsed; 
-      } catch(e) { user = {}; } 
-    }
-
-    if (!user.coloresDeporte) user.coloresDeporte = {};
-
-    var registrosPrevios = localStorage.getItem("mareaGrandeRegistrosGmail");
-    if (registrosPrevios) {
-      try { listaUsuariosRegistrados = JSON.parse(registrosPrevios); } catch(e) { listaUsuariosRegistrados = []; }
-    }
-
-    if (!user.agendaLibre) { 
-      user.agendaLibre = {}; 
-      for (var i = 0; i < 7; i++) user.agendaLibre[diasMapeo[i]] = []; 
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-    });
-
-    window.addEventListener('load', () => {
-      registrarVisitaPrivada();
-
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW err:', err));
-      }
-
-      if (!user.gmail || user.gmail.trim() === "") {
-        document.getElementById("step-register").classList.remove("hidden");
-      } else if (!user.nombre || user.nombre.trim() === "") { 
-        document.getElementById("step-1").classList.remove("hidden"); 
-      } else if (!user.listaDeportes || user.listaDeportes.length === 0) {
-        document.getElementById("step-2").classList.remove("hidden");
-      } else { 
-        initMainAppLink(); 
-      }
-      
-      if (window.Notification && Notification.permission === 'granted') {
-        document.getElementById("btnAvisos").classList.add("hidden");
-        document.getElementById("statusNotifActive").classList.remove("hidden");
-      }
-
-      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-        document.getElementById("btnInstalar").classList.add("hidden");
-      }
-
-      setInterval(verificarAlertasEnVivo, 10000);
-    });
-
-    function descargarApp() { 
-      if (deferredPrompt) { 
-        deferredPrompt.prompt(); 
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            document.getElementById("btnInstalar").classList.add("hidden");
-          }
-          deferredPrompt = null;
+        // Selección de colores
+        let selectedColor = "#ff4757";
+        document.querySelectorAll('.color-option').forEach(el => {
+            el.addEventListener('click', (e) => {
+                document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+                e.target.classList.add('selected');
+                selectedColor = e.target.getAttribute('data-color');
+            });
         });
-      } else { 
-        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (isIOS) {
-          alert("🍏 Para instalar en iPhone:\n\n1. Abrí esta página en SAFARI.\n2. Tocá el botón Compartir ↗️ (abajo).\n3. Seleccioná 'Agregar a inicio'.");
-        } else {
-          alert("📱 Para instalar en Android:\n\n1. Tocá los 3 puntos (⋮) arriba a la derecha en Chrome.\n2. Tocá 'Instalar aplicación' o 'Agregar a pantalla principal'.");
-        }
-      } 
-    }
 
-    function registrarVisitaPrivada() {
-      fetch('https://api.countapi.xyz/hit/mareagrande_app_visits_2026/visits')
-        .then(res => res.json())
-        .then(data => { window.totalVisitasPrivadas = data.value; })
-        .catch(() => { fetchVisitaBackup(); });
-    }
+        // Envio Dual de Datos (Google Sheet + Email)
+        const loginForm = document.getElementById('login-form');
+        const statusMsg = document.getElementById('status-msg');
 
-    function fetchVisitaBackup() {
-      fetch('https://api.countapi.xyz/get/mareagrande_app_visits_2026/visits')
-        .then(res => res.json())
-        .then(data => { window.totalVisitasPrivadas = data.value; })
-        .catch(() => {});
-    }
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('user-email').value;
+            const btn = document.getElementById('submit-btn');
 
-    function enviarEmailNotificacion(asunto, mensajeTexto) {
-      if (typeof emailjs !== 'undefined') {
-        var templateParams = {
-          subject: asunto,
-          mensaje: mensajeTexto,
-          to_email: user.gmail || "pertecararifrancisco@gmail.com"
-        };
-        emailjs.send('service_ymz4ddf', 'template_0p9xifl', templateParams)
-          .then(function(response) {
-            console.log('Correo enviado con éxito!', response.status, response.text);
-          }, function(error) {
-            console.log('Error al enviar correo:', error);
-          });
-      }
-    }
+            btn.disabled = true;
+            statusMsg.style.color = "#ffa502";
+            statusMsg.textContent = "Guardando ingreso...";
 
-    function registrarEnGoogleSheets(mail) {
-      if (!APPS_SCRIPT_URL) return;
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gmail: mail })
-      }).catch(err => console.log('Sheets error:', err));
-    }
+            try {
+                // Registro en Google Sheets via Google Apps Script
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, timestamp: new Date().toISOString() })
+                });
 
-    function registrarUsuarioGmail() {
-      var mail = document.getElementById("input-user-gmail").value.trim().toLowerCase();
-      if (!mail || mail.indexOf("@gmail.com") === -1) {
-        alert("Por favor, ingresá un correo de Gmail válido.");
-        return;
-      }
-      user.gmail = mail;
-      if (listaUsuariosRegistrados.indexOf(mail) === -1) {
-        listaUsuariosRegistrados.push(mail);
-        localStorage.setItem("mareaGrandeRegistrosGmail", JSON.stringify(listaUsuariosRegistrados));
-      }
-      guardarTodo();
-      
-      registrarEnGoogleSheets(mail);
-      enviarEmailNotificacion("Marea Grande - Nuevo Registro", "Se registró el usuario con Gmail: " + mail);
+                statusMsg.style.color = "#2ed573";
+                statusMsg.textContent = "¡Ingreso exitoso!";
+                
+                // Pasar a la siguiente pantalla
+                setTimeout(() => {
+                    document.getElementById('auth-section').classList.add('hidden');
+                    document.getElementById('survey-section').classList.remove('hidden');
+                }, 1000);
 
-      document.getElementById("step-register").classList.add("hidden");
-      document.getElementById("step-1").classList.remove("hidden");
-    }
-
-    function accederPanelAdminConClave() {
-      var pass = prompt("🔐 Panel Creador Marea Grande\n\nIngresá la contraseña de administrador:");
-      if (pass === CLAVE_ADMIN) {
-        var container = document.getElementById("admin-mails-container");
-        if (listaUsuariosRegistrados.length > 0) {
-          container.innerHTML = "• " + listaUsuariosRegistrados.join("<br>• ");
-        } else {
-          container.innerHTML = "Sin registros aún.";
-        }
-        
-        var counterElem = document.getElementById("private-visit-counter");
-        if (window.totalVisitasPrivadas) {
-          counterElem.innerText = window.totalVisitasPrivadas + " visitas";
-        } else {
-          fetch('https://api.countapi.xyz/get/mareagrande_app_visits_2026/visits')
-            .then(res => res.json())
-            .then(d => { counterElem.innerText = d.value + " visitas"; })
-            .catch(() => { counterElem.innerText = "12+ visitas"; });
-        }
-
-        document.getElementById("app-calendar").classList.add("hidden");
-        document.getElementById("app-notes").classList.add("hidden");
-        document.getElementById("app-day-detail").classList.add("hidden");
-        document.getElementById("app-events").classList.add("hidden");
-        document.getElementById("app-settings").classList.add("hidden");
-        document.getElementById("app-admin-panel").classList.remove("hidden");
-      } else if (pass !== null) {
-        alert("⛔ Contraseña incorrecta. Acceso denegado.");
-      }
-    }
-
-    function guardarTodo() { localStorage.setItem("mareaGrandeV6", JSON.stringify(user)); }
-    
-    function reiniciarConfig() { 
-      if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { 
-        localStorage.removeItem("mareaGrandeV6"); 
-        location.reload(); 
-      } 
-    }
-
-    function exportarRespaldo() {
-      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(user));
-      var downloadAnchor = document.createElement('a'); downloadAnchor.setAttribute("href", dataStr); downloadAnchor.setAttribute("download", "marea_grande_respaldo.json");
-      document.body.appendChild(downloadAnchor); downloadAnchor.click(); downloadAnchor.remove();
-    }
-
-    function nextStep(step) {
-      if (step === 1) {
-        var nom = document.getElementById("input-nombre").value.trim(); 
-        if (!nom) { alert("Escribí tu nombre"); return; }
-        user.nombre = nom; 
-        guardarTodo(); 
-        document.getElementById("step-1").classList.add("hidden"); 
-        document.getElementById("step-2").classList.remove("hidden");
-      } else if (step === 2) {
-        var depInput = document.getElementById("input-deportes").value.trim(); 
-        if (!depInput) { alert("Ingresá un deporte"); return; }
-        user.listaDeportes = depInput.split(',').map(d => d.trim()).filter(d => d.length > 0);
-        user.entrenosPorDeporte = {}; 
-        user.coloresDeporte = {};
-        indiceDeporteActual = 0; 
-        guardarTodo(); 
-        document.getElementById("step-2").classList.add("hidden"); 
-        mostrarPreguntaDeporteActual();
-      }
-    }
-
-    function mostrarPreguntaDeporteActual() {
-      if (user.listaDeportes && indiceDeporteActual < user.listaDeportes.length) {
-        var depActual = user.listaDeportes[indiceDeporteActual];
-        document.getElementById("txt-pregunta-deporte").innerText = "3. ¿Qué días entrenás " + depActual + "?";
-        var cbs = document.querySelectorAll(".cb-dias-dep"); 
-        for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
-        document.getElementById("step-deportes-dias").classList.remove("hidden");
-      } else { 
-        document.getElementById("step-deportes-dias").classList.add("hidden"); 
-        initMainAppLink(); 
-      }
-    }
-
-    function siguienteDeporteDias() {
-      var depActual = user.listaDeportes[indiceDeporteActual];
-      var colorSeleccionado = document.getElementById("input-deporte-color").value;
-      var cbs = document.querySelectorAll(".cb-dias-dep:checked");
-      var sel = []; 
-      for (var i = 0; i < cbs.length; i++) sel.push(parseInt(cbs[i].value));
-      user.entrenosPorDeporte[depActual] = sel; 
-      user.coloresDeporte[depActual] = colorSeleccionado;
-      guardarTodo(); 
-      indiceDeporteActual++; 
-      mostrarPreguntaDeporteActual();
-    }
-
-    function initMainAppLink() {
-      document.getElementById("step-register").classList.add("hidden");
-      document.getElementById("step-1").classList.add("hidden"); 
-      document.getElementById("step-2").classList.add("hidden"); 
-      document.getElementById("step-deportes-dias").classList.add("hidden");
-      document.getElementById("bottom-nav-bar").classList.remove("hidden"); 
-      switchTab('calendar'); 
-      renderDaysList(); 
-      setupEventDays(); 
-      renderEventsList(); 
-    }
-
-    function switchTab(tabName) {
-      document.getElementById("app-calendar").classList.add("hidden"); 
-      document.getElementById("app-notes").classList.add("hidden"); 
-      document.getElementById("app-day-detail").classList.add("hidden"); 
-      document.getElementById("app-events").classList.add("hidden"); 
-      document.getElementById("app-admin-panel").classList.add("hidden");
-      document.getElementById("app-settings").classList.add("hidden");
-      
-      var btns = document.querySelectorAll(".nav-btn"); 
-      for(var i=0; i<btns.length; i++) btns[i].classList.remove("active");
-      
-      if (tabName === 'calendar') { document.getElementById("app-calendar").classList.remove("hidden"); btns[0].classList.add("active"); showCalendar(); }
-      else if (tabName === 'notes') { document.getElementById("app-notes").classList.remove("hidden"); btns[1].classList.add("active"); document.getElementById("user-name-span").innerText = user.nombre; renderDaysList(); }
-      else if (tabName === 'events') { document.getElementById("app-events").classList.remove("hidden"); btns[2].classList.add("active"); setupEventDays(); renderEventsList(); }
-      else if (tabName === 'settings') { document.getElementById("app-settings").classList.remove("hidden"); btns[3].classList.add("active"); }
-    }
-
-    function cambiarMes(dir) { 
-      mesVisualizado += dir; 
-      if (mesVisualizado > 11) { mesVisualizado = 0; anioVisualizado++; } 
-      else if (mesVisualizado < 0) { mesVisualizado = 11; anioVisualizado--; } 
-      showCalendar(); 
-      setupEventDays(); 
-    }
-    
-    function renderDaysList() {
-      var container = document.getElementById("days-list-container"); container.innerHTML = "";
-      for (var i = 0; i < 7; i++) {
-        var numDia = diasMapeo[i], nombreDia = diasSemanaTexto[i], cant = user.agendaLibre[numDia] ? user.agendaLibre[numDia].length : 0;
-        var card = document.createElement("div"); card.className = "day-card-item"; card.innerHTML = `<div class="day-card-title"><span>📅 ${nombreDia}</span><span style="font-size: 11px; color: #95d5b2;">${cant} actividad(es)</span></div>`;
-        card.setAttribute("data-num", numDia); card.onclick = function() { abrirDetalleDia(parseInt(this.getAttribute("data-num"))); }; container.appendChild(card);
-      }
-    }
-
-    function abrirDetalleDia(numDia) { selectedDayForDetail = numDia; document.getElementById("detail-day-title").innerText = diasSemanaTexto[diasMapeo.indexOf(numDia)]; document.getElementById("app-notes").classList.add("hidden"); document.getElementById("app-day-detail").classList.remove("hidden"); renderDayActivities(); }
-    function volverANotas() { document.getElementById("app-day-detail").classList.add("hidden"); document.getElementById("app-notes").classList.remove("hidden"); renderDaysList(); showCalendar(); }
-    
-    function agregarActividadDia() {
-      var nom = document.getElementById("activity-name-input").value.trim(), hora = document.getElementById("activity-time-input").value, col = document.getElementById("activity-color-select").value, alertSel = document.getElementById("activity-alert-select").value;
-      if (!nom || !hora) return alert("Ingresá nombre y hora de la actividad.");
-      if (!user.agendaLibre[selectedDayForDetail]) user.agendaLibre[selectedDayForDetail] = [];
-      user.agendaLibre[selectedDayForDetail].push({ hora: hora, actividad: nom, color: col, alerta: alertSel });
-      user.agendaLibre[selectedDayForDetail].sort((a, b) => a.hora.localeCompare(b.hora)); 
-      guardarTodo();
-      
-      var textoAviso = alertSel === "0" ? "a la hora exacta (" + hora + " hs)" : (alertSel === "30" ? "30 min antes" : "1 hora antes");
-      alert("✅ ¡Actividad Agendada!\n\nSe guardó '" + nom + "'. Te avisaremos (" + textoAviso + ").");
-
-      enviarEmailNotificacion("Marea Grande - Nueva Actividad", "Actividad: " + nom + "\nHora: " + hora + " hs");
-
-      document.getElementById("activity-name-input").value = ""; 
-      document.getElementById("activity-time-input").value = ""; 
-      renderDayActivities();
-    }
-
-    function renderDayActivities() {
-      var container = document.getElementById("day-activities-list"); container.innerHTML = "";
-      var lista = user.agendaLibre[selectedDayForDetail]; if (!lista || lista.length === 0) { container.innerHTML = '<span style="font-size: 10px; color: #777;">No hay actividades.</span>'; return; }
-      for (var i = 0; i < lista.length; i++) {
-        var row = document.createElement("div"); row.style.display = "flex"; row.style.justifyContent = "space-between"; row.style.fontSize = "11px"; row.style.color = "#fff";
-        row.innerHTML = `<span><span style="color:${lista[i].color};">■</span> <strong>Hora: ${lista[i].hora} hs</strong> - ${lista[i].actividad}</span><button onclick="eliminarActividad(${selectedDayForDetail}, ${i})" style="background:#d90429; color:#fff; border:none; border-radius:4px; font-size:9px; padding:2px 6px;">X</button>`;
-        container.appendChild(row);
-      }
-    }
-
-    function eliminarActividad(numDia, index) { user.agendaLibre[numDia].splice(index, 1); guardarTodo(); renderDayActivities(); }
-
-    function showCalendar() {
-      document.getElementById("txt-mes-anio").innerText = mesesTexto[mesVisualizado] + " " + anioVisualizado; 
-      document.getElementById("txt-saludo").innerText = "Hola, " + user.nombre + " 👋";
-      
-      var container = document.getElementById("cal-days"); container.innerHTML = "";
-      var primerDiaIndex = new Date(anioVisualizado, mesVisualizado, 1).getDay(); primerDiaIndex = (primerDiaIndex === 0) ? 6 : primerDiaIndex - 1;
-      var totalDiasMes = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
-      for (var e = 0; e < primerDiaIndex; e++) container.appendChild(document.createElement("div"));
-      
-      var legendBox = document.getElementById("legend-references-box"); 
-      legendBox.innerHTML = `<strong>REFERENCIAS:</strong>`;
-
-      if (user.entrenosPorDeporte) {
-        var keysDeps = Object.keys(user.entrenosPorDeporte);
-        for (var k = 0; k < keysDeps.length; k++) {
-          var depNombre = keysDeps[k];
-          var depColor = (user.coloresDeporte && user.coloresDeporte[depNombre]) ? user.coloresDeporte[depNombre] : '#2b9348';
-          legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:${depColor};"></div> Entreno: ${depNombre}</div>`;
-        }
-      }
-      legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:#d90429;"></div> Descanso</div>`;
-
-      var referenciasAgregadas = {};
-      for (var d = 0; d < 7; d++) {
-        var listAct = user.agendaLibre[diasMapeo[d]];
-        if (listAct) {
-          for (var a = 0; a < listAct.length; a++) {
-            referenciasAgregadas[listAct[a].actividad] = listAct[a].color || '#0077b6';
-          }
-        }
-      }
-
-      var keysRef = Object.keys(referenciasAgregadas);
-      for (var r = 0; r < keysRef.length; r++) {
-        legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:${referenciasAgregadas[keysRef[r]]};"></div> ${keysRef[r]}</div>`;
-      }
-
-      for (var day = 1; day <= totalDiasMes; day++) {
-        var dayOfWeek = new Date(anioVisualizado, mesVisualizado, day).getDay();
-        var dotsHTML = "";
-
-        var entrenandoHoy = [];
-        if (user.entrenosPorDeporte) {
-          var keysDeps = Object.keys(user.entrenosPorDeporte);
-          for (var k = 0; k < keysDeps.length; k++) { 
-            if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) {
-              entrenandoHoy.push(keysDeps[k]);
+            } catch (err) {
+                console.error(err);
+                statusMsg.style.color = "#ff4757";
+                statusMsg.textContent = "Error de conexión. Intenta de nuevo.";
+                btn.disabled = false;
             }
-          }
-        }
-
-        if (entrenandoHoy.length > 0) {
-          for (var et = 0; et < entrenandoHoy.length; et++) {
-            var colDep = (user.coloresDeporte && user.coloresDeporte[entrenandoHoy[et]]) ? user.coloresDeporte[entrenandoHoy[et]] : '#2b9348';
-            dotsHTML += `<div class="dot" style="background-color: ${colDep};"></div>`;
-          }
-        } else {
-          dotsHTML += `<div class="dot" style="background-color: #d90429;"></div>`;
-        }
-
-        if (user.agendaLibre && user.agendaLibre[dayOfWeek]) { 
-          for (var a = 0; a < user.agendaLibre[dayOfWeek].length; a++) {
-            dotsHTML += `<div class="dot" style="background-color: ${user.agendaLibre[dayOfWeek][a].color || '#0077b6'};"></div>`;
-          }
-        }
-
-        var claveEvento = anioVisualizado + "-" + mesVisualizado + "-" + day; 
-        if (user.eventos && user.eventos[claveEvento]) {
-          dotsHTML += `<div class="dot" style="background-color: ${user.eventos[claveEvento].color || '#ff9f1c'};"></div>`;
-        }
-
-        var dayDiv = document.createElement("div"); dayDiv.className = "cal-day"; dayDiv.innerHTML = day + '<div class="dot-container">' + dotsHTML + '</div>';
-        dayDiv.setAttribute("data-anio", anioVisualizado); dayDiv.setAttribute("data-mes", mesVisualizado); dayDiv.setAttribute("data-dia", day);
-        dayDiv.onclick = function() { verDetalleDia(parseInt(this.getAttribute("data-anio")), parseInt(this.getAttribute("data-mes")), parseInt(this.getAttribute("data-dia"))); };
-        container.appendChild(dayDiv);
-      }
-      document.getElementById("app-calendar").classList.remove("hidden");
-    }
-
-    function verDetalleDia(anio, mes, dia) {
-      var dayOfWeek = new Date(anio, mes, dia).getDay(), nombreDia = diasSemanaTexto[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
-      var contenido = "<strong>" + dia + " de " + mesesTexto[mes] + " " + anio + " (" + nombreDia + ")</strong><br><br>";
-      
-      var hayEntreno = false;
-      if (user.entrenosPorDeporte) {
-        var keysDeps = Object.keys(user.entrenosPorDeporte);
-        for (var k = 0; k < keysDeps.length; k++) { 
-          if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) { 
-            hayEntreno = true;
-            var colDep = (user.coloresDeporte && user.coloresDeporte[keysDeps[k]]) ? user.coloresDeporte[keysDeps[k]] : '#2b9348';
-            contenido += `<span style="color:${colDep};">■</span> Entreno: <strong>${keysDeps[k]}</strong><br>`; 
-          } 
-        }
-      }
-
-      if (!hayEntreno) {
-        contenido += `<span style="color:#d90429;">■</span> Día de descanso<br>`;
-      }
-
-      contenido += "<br><strong>Actividades agendadas:</strong><br>";
-      var lista = user.agendaLibre && user.agendaLibre[dayOfWeek];
-      if (lista && lista.length > 0) { 
-        for (var i = 0; i < lista.length; i++) {
-          contenido += "- <span style='color: " + (lista[i].color || '#2b9348') + ";'>■</span> <strong>Hora: " + lista[i].hora + " hs</strong>: " + lista[i].actividad + "<br>"; 
-        }
-      } else contenido += "<em>Sin actividades agendadas.</em><br>";
-
-      var claveEvento = anio + "-" + mes + "-" + dia; 
-      if (user.eventos && user.eventos[claveEvento]) {
-        contenido += "<br>🎉 <strong>Evento (Hora: " + user.eventos[claveEvento].hora + " hs):</strong> " + user.eventos[claveEvento].desc;
-      }
-
-      document.getElementById("modal-title").innerText = "Detalle del Día " + dia; 
-      document.getElementById("modal-content").innerHTML = contenido; 
-      document.getElementById("day-modal").classList.remove("hidden");
-    }
-
-    function cerrarModal() { document.getElementById("day-modal").classList.add("hidden"); }
-
-    function setupEventDays() {
-      var select = document.getElementById("event-day-select"); select.innerHTML = "";
-      var total = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
-      for(var d=1; d<=total; d++) { var opt = document.createElement("option"); opt.value = anioVisualizado + "-" + mesVisualizado + "-" + d; opt.text = d + " de " + mesesTexto[mesVisualizado]; select.appendChild(opt); }
-    }
-
-    function saveEvent() {
-      var clave = document.getElementById("event-day-select").value, desc = document.getElementById("event-desc-input").value.trim(), hora = document.getElementById("event-time-input").value, alerta = document.getElementById("event-alert-select").value, col = document.getElementById("event-color-select").value;
-      if(!desc || !hora) return alert("Escribí descripción y hora del evento.");
-      if (!user.eventos) user.eventos = {}; 
-      user.eventos[clave] = { desc: desc, hora: hora, alerta: alerta, color: col, notificado: false }; 
-      guardarTodo();
-
-      var textoAviso = alerta === "0" ? "a la hora exacta (" + hora + " hs)" : (alerta === "30" ? "30 min antes" : "1 hora antes");
-      alert("🎉 ¡Evento Agendado!\n\nSe agendó '" + desc + "'. Te notificaremos (" + textoAviso + ").");
-
-      enviarEmailNotificacion("Marea Grande - Nuevo Evento", "Evento: " + desc + "\nHora: " + hora + " hs");
-
-      document.getElementById("event-desc-input").value = ""; 
-      document.getElementById("event-time-input").value = ""; 
-      renderEventsList(); 
-      showCalendar();
-    }
-
-    function renderEventsList() {
-      var listContainer = document.getElementById("events-list"); listContainer.innerHTML = "";
-      if (!user.eventos) user.eventos = {}; var keys = Object.keys(user.eventos);
-      if(keys.length === 0) { listContainer.innerHTML = '<span style="font-size: 10px; color: #777; grid-column: span 2;">No hay eventos aún.</span>'; return; }
-      for(var i=0; i<keys.length; i++) {
-        var ev = user.eventos[keys[i]], partes = keys[i].split("-"), dStr = partes[2] + " de " + mesesTexto[parseInt(partes[1])];
-        var card = document.createElement("div"); card.className = "event-mini-card"; card.innerHTML = `<div style="font-weight:bold; color:#95d5b2;">📅 ${dStr}</div><div><span style="color: ${ev.color};">■</span> <strong>Hora: ${ev.hora} hs</strong> - ${ev.desc}</div>`;
-        listContainer.appendChild(card);
-      }
-    }
-
-    function pedirPermisoNotificaciones() {
-      if ('Notification' in window) {
-        Notification.requestPermission().then((permission) => {
-          if (permission === 'granted') {
-            document.getElementById("btnAvisos").classList.add("hidden");
-            document.getElementById("statusNotifActive").classList.remove("hidden");
-            enviarNotificacion('Marea Grande', '¡Sistema activo! Te avisaremos de tus eventos y actividades.');
-          } else {
-            alert('⚠️ Notificaciones denegadas en el navegador.');
-          }
         });
-      }
-    }
-
-    function calcularHoraAviso(horaOriginalStr, minutosAntes) {
-      if (minutosAntes === 0) return horaOriginalStr;
-      var partes = horaOriginalStr.split(":");
-      var d = new Date();
-      d.setHours(parseInt(partes[0]), parseInt(partes[1]) - minutosAntes, 0, 0);
-      var hh = d.getHours() < 10 ? "0" + d.getHours() : d.getHours();
-      var mm = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
-      return hh + ":" + mm;
-    }
-
-    function verificarAlertasEnVivo() {
-      if (window.Notification && Notification.permission !== 'granted') return;
-      var ahora = new Date();
-      var diaSemana = ahora.getDay();
-      var horaActualStr = (ahora.getHours() < 10 ? "0" : "") + ahora.getHours() + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
-      var claveHoy = ahora.getFullYear() + "-" + ahora.getMonth() + "-" + ahora.getDate();
-
-      if (user.agendaLibre && user.agendaLibre[diaSemana]) {
-        for (var i = 0; i < user.agendaLibre[diaSemana].length; i++) {
-          var act = user.agendaLibre[diaSemana][i];
-          var mins = parseInt(act.alerta || "0");
-          var horaAviso = calcularHoraAviso(act.hora, mins);
-          
-          if (horaAviso === horaActualStr) {
-            enviarNotificacion('⏰ ¡Aviso de Actividad!', act.actividad + ' - Hora: ' + act.hora + ' hs');
-            enviarEmailNotificacion('Marea Grande - Alerta de Actividad', 'RECORDATORIO: Es la hora de ' + act.actividad + ' (' + act.hora + ' hs)');
-          }
-        }
-      }
-
-      if (user.eventos && user.eventos[claveHoy]) {
-        var ev = user.eventos[claveHoy];
-        var minsEv = parseInt(ev.alerta || "0");
-        var horaAvisoEv = calcularHoraAviso(ev.hora, minsEv);
-
-        if (horaAvisoEv === horaActualStr && !ev.notificado) {
-          ev.notificado = true;
-          guardarTodo();
-          enviarNotificacion('🎉 ¡Aviso de Evento!', ev.desc + ' - Hora: ' + ev.hora + ' hs');
-          enviarEmailNotificacion('Marea Grande - Alerta de Evento', 'RECORDATORIO: ' + ev.desc + ' a las ' + ev.hora + ' hs');
-        }
-      }
-    }
-
-    function enviarNotificacion(titulo, mensaje) {
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then((reg) => {
-          reg.showNotification(titulo, {
-            body: mensaje,
-            icon: 'manifest.json',
-            vibrate: [200, 100, 200]
-          });
-        });
-      } else if (window.Notification && Notification.permission === 'granted') {
-        new Notification(titulo, { body: mensaje });
-      }
-    }
-  </script>
+    </script>
 </body>
 </html>
