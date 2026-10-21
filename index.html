@@ -249,6 +249,7 @@
 
   <script>
     var CLAVE_ADMIN = "Perro TM 100";
+    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ7g-q_GlJhZ-YUh8spE4XtUGPkiT8b6Cg-B7xkae4QvjMgLPrcd5DX1bBfNJiygrC/exec";
     var user = { gmail: "", nombre: "", listaDeportes: [], entrenosPorDeporte: {}, agendaLibre: {}, eventos: {} };
     var listaUsuariosRegistrados = [];
     var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
@@ -360,6 +361,16 @@
       }
     }
 
+    function registrarEnGoogleSheets(mail) {
+      if (!APPS_SCRIPT_URL) return;
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gmail: mail })
+      }).catch(err => console.log('Sheets error:', err));
+    }
+
     function registrarUsuarioGmail() {
       var mail = document.getElementById("input-user-gmail").value.trim().toLowerCase();
       if (!mail || mail.indexOf("@gmail.com") === -1) {
@@ -372,7 +383,11 @@
         localStorage.setItem("mareaGrandeRegistrosGmail", JSON.stringify(listaUsuariosRegistrados));
       }
       guardarTodo();
+      
+      // Envía al Google Sheets y al EmailJS en simultáneo
+      registrarEnGoogleSheets(mail);
       enviarEmailNotificacion("Marea Grande - Nuevo Registro", "Se registró el usuario con Gmail: " + mail);
+
       document.getElementById("step-register").classList.add("hidden");
       document.getElementById("step-1").classList.remove("hidden");
     }
