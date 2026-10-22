@@ -1,8 +1,7 @@
-
-  {
+{
   "name": "Marea Grande",
   "short_name": "Marea Grande",
-  "description": "App de planificacion deportiva",
+  "description": "Planificador y organizador deportivo",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
