@@ -20,5 +20,13 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
   ]
 }
