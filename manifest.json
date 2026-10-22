@@ -1,7 +1,8 @@
-{
-  "name": "Marea Grande - Planificador Deportivo",
+
+  {
+  "name": "Marea Grande",
   "short_name": "Marea Grande",
-  "description": "Aplicación de planificación y organización deportiva para entrenamientos y eventos de Marea Grande.",
+  "description": "App de planificacion deportiva",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
