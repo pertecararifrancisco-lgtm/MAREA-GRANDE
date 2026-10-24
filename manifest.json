@@ -1,6 +1,7 @@
  {
   "name": "Marea Grande",
   "short_name": "Marea Grande",
+  "description": "Marea Grande es una agenda deportiva pensada para organizar tus partidos, entrenamientos y fechas importantes en un solo lugar. Con un calendario simple y claro, te ayuda a planificar tu rutina y tener toda tu programación a mano.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
