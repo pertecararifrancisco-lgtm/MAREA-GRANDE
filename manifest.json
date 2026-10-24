@@ -1,8 +1,9 @@
- {
+{
   "name": "Marea Grande",
   "short_name": "Marea Grande",
-  "description": "Marea Grande es una agenda deportiva pensada para organizar tus partidos, entrenamientos y fechas importantes en un solo lugar. Con un calendario simple y claro, te ayuda a planificar tu rutina y tener toda tu programación a mano.",
-  "start_url": "./index.html",
+  "description": "Marea Grande es una agenda deportiva pensada para organizar tus partidos, entrenamientos y fechas importantes en un solo lugar.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
@@ -15,13 +16,20 @@
       "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40P07iU1",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40P07iU1",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40P07iU1",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
+
