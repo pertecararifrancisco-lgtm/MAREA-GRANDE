@@ -5,16 +5,19 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
-  "categories": ["sports", "utilities"],
+  "categories": [
+    "sports",
+    "utilities"
+  ],
   "icons": [
     {
-      "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1",
+      "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40P07iU1",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1",
+      "src": "https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40P07iU1",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
