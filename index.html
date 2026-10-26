@@ -1,822 +1,1032 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Marea Grande - Planificador Deportivo</title>
-  <!-- SDK de EmailJS para envío de Mails -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  <script type="text/javascript">
-    (function(){
-      emailjs.init("PiXM2u-_PJy9jfMLh"); // Tu Public Key
-    })();
-  </script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #000000 !important; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; color: white; }
-    .app-card { background-color: #0b110e !important; width: 100%; max-width: 420px; border-radius: 24px; padding: 22px; border: 2px solid #1b4332; box-shadow: 0 12px 30px rgba(0,0,0,0.9); color: #ffffff; position: relative; min-height: 580px; display: flex; flex-direction: column; justify-content: space-between; }
-    .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
-    .app-title-container { display: flex; align-items: center; gap: 8px; }
-    .app-logo-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid #2d6a4f; }
-    .app-title { color: #00b4d8; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-    .header-btns { display: flex; gap: 4px; }
-    .btn-head { background: #2b9348; color: #ffffff; border: none; padding: 6px 8px; border-radius: 15px; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 3px; }
-    .btn-head-bell { background: #0077b6; }
-    .badge-active { background: #1b4332; color: #95d5b2; border: 1px solid #2d6a4f; padding: 5px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; }
-    .quiz-box { background-color: #132a13 !important; border-radius: 18px; padding: 20px; color: #ffffff; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); border: 1px solid #2d6a4f; }
-    .question-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #95d5b2; }
-    .input-text, .input-select { width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid #2d6a4f; font-size: 13px; margin-bottom: 6px; outline: none; background: #000000; color: #ffffff; text-align: center; }
-    .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; width: 100%; }
-    .opt-label { background-color: #0b110e; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #ffffff; border: 1px solid #2d6a4f; }
-    .btn-next { width: 100%; padding: 12px; background-color: #1d3557; color: #ffffff; font-weight: bold; font-size: 13px; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); }
-    .btn-green-admin { background-color: #2b9348 !important; margin-top: 10px; }
-    @keyframes pulseHand { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
-    .pulsing-hand { display: inline-block; animation: pulseHand 1.5s infinite ease-in-out; }
-    .day-card-item { background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
-    .day-card-title { font-size: 14px; font-weight: bold; color: #95d5b2; display: flex; justify-content: space-between; align-items: center; }
-    .agenda-container { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; padding-right: 4px; width: 100%; }
-    .events-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 100px; overflow-y: auto; width: 100%; }
-    .event-mini-card { background: #000000; border: 1px solid #2d6a4f; border-radius: 8px; padding: 6px; text-align: left; font-size: 10px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MAREA GRANDE</title>
+    <style>
+        :root {
+            --bg-deep: #041c14;
+            --bg-gradient: linear-gradient(145deg, #041c14 0%, #0a2e22 100%);
+            --header-teal: #004d40;
+            --card-bg: rgba(6, 38, 28, 0.9);
+            --card-border: rgba(0, 230, 118, 0.25);
+            --neon-green: #00e676;
+            --neon-green-glow: rgba(0, 230, 118, 0.4);
+            --accent-blue: #0288d1;
+            --absent-red: #ff5252;
+            --activity-purple: #ab47bc;
+            --text-light: #ffffff;
+            --text-muted: #a7f3d0;
+        }
 
-    .bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 12px; background: #000000; padding: 6px; border-radius: 14px; border: 1px solid #2d6a4f; }
-    .nav-btn { background-color: #1d3557; color: white; border: none; padding: 8px 2px; border-radius: 10px; font-size: 10px; font-weight: bold; cursor: pointer; text-align: center; }
-    .nav-btn.active { background-color: #2b9348; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 3px; margin-top: 6px; width: 100%; }
-    .cal-day-name { font-size: 10px; font-weight: bold; color: #95d5b2; }
-    .cal-day { padding: 6px 0; font-size: 10px; font-weight: bold; background-color: #0b110e; border-radius: 6px; display: flex; flex-direction: column; align-items: center; color: #ffffff; border: 1px solid #1b4332; cursor: pointer; }
-    .dot-container { display: flex; gap: 2px; margin-top: 2px; flex-wrap: wrap; justify-content: center; max-width: 25px; }
-    .dot { width: 5px; height: 5px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
-    .legend-box { margin-top: 8px; background-color: #0b110e; padding: 6px; border-radius: 8px; font-size: 10px; display: flex; flex-direction: column; gap: 3px; border: 1px solid #1b4332; width: 100%; text-align: left; max-height: 90px; overflow-y: auto; }
-    .legend-item { display: flex; align-items: center; gap: 5px; }
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-card { background: #0b110e; border: 2px solid #2d6a4f; padding: 18px; border-radius: 16px; width: 90%; max-width: 350px; color: #fff; }
-    .hidden { display: none !important; }
-  </style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-deep);
+            background-image: var(--bg-gradient);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* HEADER FLOTANTE */
+        header {
+            background: linear-gradient(135deg, var(--header-teal), #00251a);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--neon-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* ENCUESTA / ONBOARDING */
+        .survey-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-deep);
+            background-image: var(--bg-gradient);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .survey-card {
+            background: var(--card-bg);
+            border: 1px solid var(--neon-green);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .survey-step {
+            display: none;
+        }
+
+        .survey-step.active {
+            display: block;
+        }
+
+        .survey-title {
+            color: var(--neon-green);
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .survey-desc {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green-glow);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-neon {
+            background-color: var(--neon-green);
+            color: #041c14;
+            box-shadow: 0 0 15px var(--neon-green-glow);
+        }
+
+        .btn-google {
+            background-color: #ffffff;
+            color: #1f2937;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary-action {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px dashed var(--card-border);
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .days-checkbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .day-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .day-checkbox-item input {
+            accent-color: var(--neon-green);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        main {
+            flex: 1;
+            padding: 16px;
+            padding-bottom: 95px;
+            max-width: 450px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+        }
+
+        /* WIDGET DE RACHA */
+        .streak-badge {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(255, 87, 34, 0.2));
+            border: 1px solid #ff9800;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #ffe0b2;
+        }
+
+        /* BANNER PUSH */
+        .push-banner-home {
+            background: linear-gradient(135deg, var(--header-teal), var(--accent-blue));
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .push-banner-home button {
+            background-color: var(--neon-green);
+            color: #041c14;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* CALENDARIO Y FLECHAS */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            font-weight: 800;
+            color: var(--neon-green);
+            font-size: 1.05rem;
+        }
+
+        .nav-arrow-btn {
+            border: none;
+            background: none;
+            color: var(--neon-green);
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0 8px;
+            font-weight: bold;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+        }
+
+        .day-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding-bottom: 6px;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .day-cell.null-day {
+            opacity: 0.2;
+            cursor: not-allowed;
+            background: rgba(255,255,255,0.01);
+        }
+
+        .day-cell.attended {
+            background-color: var(--neon-green);
+            color: #041c14;
+            font-weight: bold;
+        }
+        .day-cell.attended::after {
+            content: "✓";
+            font-size: 0.55rem;
+            position: absolute;
+            bottom: 1px;
+        }
+
+        .day-cell.absent {
+            background-color: var(--absent-red);
+            color: white;
+            font-weight: bold;
+        }
+
+        .day-cell.fulfilled {
+            background-color: var(--accent-blue);
+            color: white;
+            font-weight: bold;
+        }
+
+        .day-cell.unfulfilled {
+            background-color: var(--activity-purple);
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            justify-content: center;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* CÍRCULO PROGRESO */
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .circle-outer {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: conic-gradient(#333 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.5s ease;
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.2);
+        }
+
+        .circle-inner {
+            width: 108px;
+            height: 108px;
+            border-radius: 50%;
+            background-color: var(--bg-deep);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle-percentage {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--neon-green);
+            line-height: 1;
+        }
+
+        .circle-desc {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-breakdown {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+        }
+
+        .month-pill {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .week-card-view {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav {
+            position: fixed;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
+            background: linear-gradient(135deg, rgba(0, 77, 64, 0.95), rgba(4, 28, 20, 0.95));
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            border: 1px solid var(--neon-green);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            opacity: 0.4;
+            text-decoration: none;
+            cursor: pointer;
+            width: 25%;
+            transition: opacity 0.2s;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            color: var(--neon-green);
+        }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="app-card">
-    <div class="app-header">
-      <div class="app-title-container">
-        <!-- LOGO OFICIAL MAREA GRANDE (OLA + TABLA DE SURF) -->
-        <img src="https://lh3.googleusercontent.com/d/1zP4JAojZF5PN3WjpcaD5n0Fr40PO7iU1" alt="Logo Marea Grande" class="app-logo-img">
-        <h1 class="app-title">Marea Grande</h1>
-      </div>
-      <div class="header-btns">
-        <button type="button" id="btnAvisos" class="btn-head btn-head-bell" onclick="pedirPermisoNotificaciones()">🔔 Avisos</button>
-        <div id="statusNotifActive" class="badge-active hidden">🔔 Activadas</div>
-        <button type="button" id="btnInstalar" class="btn-head" onclick="descargarApp()">📥 Descargar</button>
-      </div>
-    </div>
+    <!-- ONBOARDING -->
+    <div class="survey-overlay" id="survey-modal">
+        <div class="survey-card">
+            
+            <div class="survey-step active" id="step-1">
+                <div class="survey-title">MAREA 🌊 GRANDE</div>
+                <div class="survey-desc">
+                    Te damos la bienvenida a Marea Grande. Registrá tus asistencias, medí tu disciplina por ciclos reales y sumá rachas de constancia. ¡Vamos a construir tu mejor versión!
+                </div>
+                <button class="btn btn-neon" onclick="nextStep(2)">Continuar</button>
+            </div>
 
-    <!-- PASO 0: MENSAJE DE BIENVENIDA Y REGISTRO GMAIL -->
-    <div id="step-register" class="quiz-box">
-      <div class="question-title">🌊 ¡Bienvenido a Marea Grande!</div>
-      <p style="font-size: 11px; color: #95d5b2; margin-bottom: 12px; line-height: 1.4;">
-        Esta aplicación es Marea y servirá para organizar tu semana y tener una semana y mes más ordenado. <span class="pulsing-hand">🚀</span>
-      </p>
-      <input type="email" id="input-user-gmail" class="input-text" placeholder="Ingresá tu Gmail...">
-      <button type="button" class="btn-next" onclick="registrarUsuarioGmail()">Comenzar ahora ➔</button>
-    </div>
+            <div class="survey-step" id="step-2">
+                <div class="survey-title">Vincular Cuenta Google</div>
+                <p class="survey-desc">Ingresá tu correo para enlazar tu progreso.</p>
+                <div class="form-group">
+                    <input type="email" id="user-email" class="form-control" placeholder="tucorreo@gmail.com">
+                </div>
+                <button class="btn btn-google" onclick="linkUserGoogleAccount()">
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                    Vincular con Google
+                </button>
+            </div>
 
-    <!-- PASO 1: NOMBRE -->
-    <div id="step-1" class="quiz-box hidden">
-      <div class="question-title">1. ¿Cómo te llamás?</div>
-      <input type="text" id="input-nombre" class="input-text" placeholder="Ingresá tu nombre...">
-      <button type="button" class="btn-next" onclick="nextStep(1)">Siguiente</button>
-    </div>
+            <div class="survey-step" id="step-3">
+                <div class="survey-title">Perfil Deportivo</div>
+                <div class="form-group">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Nombre *</label>
+                    <input type="text" id="user-name" class="form-control" placeholder="Tu nombre">
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Deportes / Actividades</label>
+                    <input type="text" id="user-sports" class="form-control" placeholder="Ej: Rugby, Gimnasio">
+                </div>
+                <button class="btn btn-neon" onclick="validateAndGoStep4()">Siguiente →</button>
+            </div>
 
-    <!-- PASO 2: DEPORTES -->
-    <div id="step-2" class="quiz-box hidden">
-      <div class="question-title">2. ¿Qué deporte/s o actividad/es hacés?</div>
-      <input type="text" id="input-deportes" class="input-text" placeholder="Ej. Rugby, fútbol, gimnasio...">
-      <div style="font-size: 9px; color: #adb5bd; margin-bottom: 12px; font-style: italic;">* Si hacés dos o más, separalas con coma.</div>
-      <button type="button" class="btn-next" onclick="nextStep(2)">Siguiente</button>
-    </div>
+            <div class="survey-step" id="step-4">
+                <div class="survey-title">Días y Alertas Push</div>
+                <p class="survey-desc" style="margin-bottom:10px;">Seleccioná tus días de actividad y la hora para recibir tu aviso al día siguiente:</p>
 
-    <!-- PASO 3: DÍAS Y COLOR DE ENTRENO POR DEPORTE -->
-    <div id="step-deportes-dias" class="quiz-box hidden">
-      <div class="question-title" id="txt-pregunta-deporte">3. ¿Qué días entrenás?</div>
-      
-      <div style="width: 100%; margin-bottom: 10px; text-align: left;">
-        <span style="font-size: 11px; color: #95d5b2; font-weight: bold; display: block; margin-bottom: 4px;">Elegí el color para este deporte:</span>
-        <select id="input-deporte-color" class="input-select" style="margin-bottom: 8px;">
-          <option value="#2b9348">Verde Clásico</option>
-          <option value="#0077b6">Azul Océano</option>
-          <option value="#d90429">Rojo Fuego</option>
-          <option value="#ff9f1c">Naranja Brillante</option>
-          <option value="#ff1493">Rosa Neón</option>
-          <option value="#9b5de5">Violeta Púrpura</option>
-          <option value="#ffee32">Amarillo Solar</option>
-          <option value="#00f5d4">Cian Turquesa</option>
-          <option value="#4361ee">Azul Rey</option>
-          <option value="#f72585">Fucsia Intenso</option>
-          <option value="#7209b7">Morado Oscuro</option>
-          <option value="#3a0ca3">Azul Índigo</option>
-          <option value="#4cc9f0">Celeste Pastel</option>
-          <option value="#52b788">Verde Menta</option>
-          <option value="#b5e48c">Verde Claro</option>
-          <option value="#f4a261">Salmón / Naranja Suave</option>
-          <option value="#e76f51">Terracota</option>
-          <option value="#ffffff">Blanco Puro</option>
-          <option value="#adb5bd">Gris Deportivo</option>
-          <option value="#ffd166">Amarillo Mostaza</option>
-        </select>
-      </div>
+                <div class="form-group">
+                    <label style="font-size: 0.8rem; color: var(--neon-green); display: block; margin-bottom: 4px;">Hora de Notificación:</label>
+                    <input type="time" id="push-time-input" class="form-control" value="20:00">
+                </div>
 
-      <div class="options-grid" id="grid-dias-deporte">
-        <label class="opt-label"><input type="checkbox" value="1" class="cb-dias-dep"> Lunes</label>
-        <label class="opt-label"><input type="checkbox" value="2" class="cb-dias-dep"> Martes</label>
-        <label class="opt-label"><input type="checkbox" value="3" class="cb-dias-dep"> Miércoles</label>
-        <label class="opt-label"><input type="checkbox" value="4" class="cb-dias-dep"> Jueves</label>
-        <label class="opt-label"><input type="checkbox" value="5" class="cb-dias-dep"> Viernes</label>
-        <label class="opt-label"><input type="checkbox" value="6" class="cb-dias-dep"> Sábado</label>
-        <label class="opt-label"><input type="checkbox" value="0" class="cb-dias-dep"> Domingo</label>
-      </div>
-      <button type="button" class="btn-next" onclick="siguienteDeporteDias()">Siguiente ➔</button>
-    </div>
+                <div class="days-checkbox-list">
+                    <label class="day-checkbox-item"><input type="checkbox" value="1"> Lunes</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="2"> Martes</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="3"> Miércoles</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="4"> Jueves</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="5"> Viernes</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="6"> Sábado</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="0"> Domingo</label>
+                </div>
 
-    <!-- CALENDARIO -->
-    <div id="app-calendar" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;">
-        <button onclick="cambiarMes(-1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">◀</button>
-        <div class="question-title" id="txt-mes-anio" style="font-size: 14px; color: #90e0ef; margin-bottom: 0;">Octubre 2026</div>
-        <button onclick="cambiarMes(1)" style="background:#1d3557; color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:bold;">▶</button>
-      </div>
-      <div class="question-title" id="txt-saludo" style="font-size: 13px; color: #95d5b2; margin-bottom: 6px;">Hola 👋</div>
-      <div class="cal-grid">
-        <div class="cal-day-name">Lu</div><div class="cal-day-name">Ma</div><div class="cal-day-name">Mi</div><div class="cal-day-name">Ju</div><div class="cal-day-name">Vi</div><div class="cal-day-name">Sá</div><div class="cal-day-name">Do</div>
-        <div id="cal-days" style="display: contents;"></div>
-      </div>
-      <div class="legend-box" id="legend-references-box"><strong>REFERENCIAS:</strong></div>
-    </div>
+                <button class="btn btn-neon" onclick="finishSurvey()">¡Comenzar Marea Grande!</button>
+            </div>
 
-    <!-- NOTAS -->
-    <div id="app-notes" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom: 8px;">📝 Notas y Actividades</div>
-      <div id="notes-tutorial-msg" style="font-size: 11px; color: #95d5b2; background: #0b110e; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1.5px solid #2d6a4f; line-height: 1.3; text-align: left;">
-        ¡Hola <span id="user-name-span">Fran</span>! Seleccioná un día para agendar actividades con sus **horas** específicas.
-      </div>
-      <div class="agenda-container" id="days-list-container"></div>
-    </div>
-
-    <!-- DETALLE DÍA -->
-    <div id="app-day-detail" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:8px;">
-        <span id="detail-day-title" style="font-size: 15px; font-weight:bold; color:#95d5b2;">Lunes</span>
-        <button type="button" class="btn-head" onclick="volverANotas()">⬅ Volver</button>
-      </div>
-      <div style="width:100%; margin-bottom: 6px;">
-        <input type="text" id="activity-name-input" class="input-text" placeholder="Ej. Rugby, Gimnasio..." style="margin-bottom: 6px;">
-        <div style="display: flex; gap: 4px; margin-bottom: 6px; align-items: center;">
-          <span style="font-size: 11px; color: #95d5b2; font-weight: bold;">Hora:</span>
-          <input type="time" id="activity-time-input" class="input-text" style="margin-bottom: 0;">
-          <select id="activity-color-select" class="input-select" style="margin-bottom: 0;">
-            <option value="#2b9348">Verde</option>
-            <option value="#0077b6">Azul</option>
-            <option value="#d90429">Rojo</option>
-            <option value="#ff9f1c">Naranja</option>
-            <option value="#ff1493">Rosa</option>
-            <option value="#9b5de5">Violeta</option>
-            <option value="#ffee32">Amarillo</option>
-            <option value="#00f5d4">Cian</option>
-            <option value="#ffffff">Blanco</option>
-            <option value="#000000">Negro</option>
-          </select>
         </div>
-        <select id="activity-alert-select" class="input-select" style="margin-bottom: 6px;">
-          <option value="0">🔔 A la hora exacta</option>
-          <option value="30">⏰ 30 min antes</option>
-          <option value="60">⏰ 1 hora antes</option>
-        </select>
-        <button type="button" class="btn-next" onclick="agregarActividadDia()" style="padding: 8px;">Agregar Actividad</button>
-      </div>
-      <div class="agenda-container" id="day-activities-list" style="max-height: 110px; background: #000; padding: 6px; border-radius: 8px; border: 1px solid #2d6a4f;"></div>
     </div>
 
-    <!-- EVENTOS -->
-    <div id="app-events" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" id="txt-eventos-saludo" style="font-size: 14px; color: #90e0ef; margin-bottom:8px;">¡Agendá tu evento!</div>
-      <div style="width:100%; margin-bottom: 6px;">
-        <select id="event-day-select" class="input-select" style="margin-bottom: 4px;"></select>
-        <input type="text" id="event-desc-input" class="input-text" placeholder="Ej. Partido, casamiento..." style="margin-bottom: 4px;">
-        <div style="display: flex; gap: 4px; margin-bottom: 4px; align-items: center;">
-          <span style="font-size: 11px; color: #95d5b2; font-weight: bold;">Hora:</span>
-          <input type="time" id="event-time-input" class="input-text" style="margin-bottom: 0;">
-          <select id="event-alert-select" class="input-select" style="margin-bottom: 0;">
-            <option value="0">🔔 A la hora elegida</option>
-            <option value="30">⏰ 30 min antes</option>
-            <option value="60">⏰ 1 hora antes</option>
-          </select>
+    <!-- HEADER -->
+    <header>
+        MAREA 🌊 GRANDE
+    </header>
+
+    <!-- MAIN -->
+    <main>
+        <section id="tab-inicio" class="tab-content active">
+            <!-- WIDGET DE RACHA -->
+            <div class="streak-badge" id="streak-widget">
+                <span>🔥 Racha de Disciplina:</span>
+                <strong id="streak-count">0 días seguidos</strong>
+            </div>
+
+            <div class="push-banner-home" id="push-home-banner">
+                <div>
+                    <strong style="font-size: 0.85rem; display:block;">Notificaciones Inteligentes 🔔</strong>
+                    <span id="push-time-label" style="font-size: 0.75rem; opacity: 0.9;">Aviso post-actividad programado</span>
+                </div>
+                <button onclick="requestPushPermissionReal()">Permitir</button>
+            </div>
+
+            <div class="card">
+                <div class="calendar-header">
+                    <button class="nav-arrow-btn" onclick="changeMonth(-1)">‹</button>
+                    <span id="calendar-month-year">OCTUBRE 2026</span>
+                    <button class="nav-arrow-btn" onclick="changeMonth(1)">›</button>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="day-name">L</div>
+                    <div class="day-name">M</div>
+                    <div class="day-name">M</div>
+                    <div class="day-name">J</div>
+                    <div class="day-name">V</div>
+                    <div class="day-name">S</div>
+                    <div class="day-name">D</div>
+                </div>
+                <div class="calendar-grid" id="calendar-days"></div>
+
+                <div class="calendar-legend">
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--neon-green);"></div> Entrenó</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--absent-red);"></div> No fue</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue);"></div> Act. Cumplida</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--activity-purple);"></div> Act. No Cumplida</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="progress-container">
+                    <div class="circle-outer" id="progress-circle">
+                        <div class="circle-inner">
+                            <div class="circle-percentage" id="progress-percentage">0%</div>
+                        </div>
+                    </div>
+                    <p class="circle-desc" id="profile-welcome-desc">
+                        ESTADÍSTICAS GLOBALES (ESCALA 0%)
+                    </p>
+
+                    <div class="progress-breakdown">
+                        <div class="breakdown-row">
+                            <span style="color:var(--neon-green);">🟢 Asistencias a Entreno:</span>
+                            <strong id="pct-attended">0%</strong>
+                        </div>
+                        <div class="breakdown-row">
+                            <span style="color:var(--absent-red);">🔴 Faltas a Entreno:</span>
+                            <strong id="pct-absent">0%</strong>
+                        </div>
+                        <div class="breakdown-row">
+                            <span style="color:var(--accent-blue);">🔵 Actividades Cumplidas:</span>
+                            <strong id="pct-fulfilled">0%</strong>
+                        </div>
+                        <div class="breakdown-row">
+                            <span style="color:var(--activity-purple);">🟣 Act. No Cumplidas:</span>
+                            <strong id="pct-unfulfilled">0%</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: BALANCE CICLO Y SEMANAS -->
+        <section id="tab-historial" class="tab-content">
+            <h2 style="text-align:center; font-size:1.1rem; color:var(--neon-green); margin-bottom:14px;">BALANCE POR CICLOS Y SEMANAS</h2>
+            
+            <div class="card">
+                <div class="calendar-header" style="border-bottom: 1px solid var(--card-border); padding-bottom: 10px; margin-bottom: 14px;">
+                    <button class="nav-arrow-btn" onclick="changeMonth(-1)">‹</button>
+                    <span id="history-month-year-title">OCTUBRE 2026</span>
+                    <button class="nav-arrow-btn" onclick="changeMonth(1)">›</button>
+                </div>
+                
+                <div id="monthly-view-container"></div>
+            </div>
+        </section>
+
+        <!-- TAB 3: PUSH -->
+        <section id="tab-push" class="tab-content">
+            <h2 style="text-align:center; font-size:1.1rem; color:var(--neon-green); margin-bottom:14px;">GESTIÓN DE PUSH</h2>
+            <div class="card" style="text-align: center;">
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">
+                    Tus avisos están programados para el día posterior a tu actividad.
+                </p>
+                <button class="btn btn-neon" onclick="requestPushPermissionReal()">Activar Permisos Push</button>
+            </div>
+        </section>
+
+        <!-- TAB 4: ESTADÍSTICAS Y AJUSTES -->
+        <section id="tab-estadisticas" class="tab-content">
+            <h2 style="text-align:center; font-size:1.1rem; color:var(--neon-green); margin-bottom:14px;">PERFIL Y AJUSTES</h2>
+            <div class="card">
+                <p style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:10px;">CUENTA VINCULADA</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--card-border);">
+                    <span id="user-display-email" style="font-weight: 700; color: var(--neon-green);">usuario@gmail.com</span>
+                </div>
+                <p id="user-display-name" style="font-size: 0.85rem; font-weight: bold; margin-top: 8px;"></p>
+                <p id="user-display-sports" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;"></p>
+                
+                <button class="btn btn-secondary-action" style="margin-top: 20px;" onclick="resetSurvey()">
+                    🔄 Volver a hacer la encuesta inicial
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="nav-item active" onclick="switchTab('tab-inicio', this)">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </div>
-        <select id="event-color-select" class="input-select" style="margin-bottom: 6px;">
-          <option value="#ff9f1c">Naranja</option>
-          <option value="#0077b6">Azul</option>
-          <option value="#d90429">Rojo</option>
-          <option value="#ffee32">Amarillo</option>
-          <option value="#000000">Negro</option>
-        </select>
-        <button type="button" class="btn-next" onclick="saveEvent()" style="padding: 7px;">Guardar Evento</button>
-      </div>
-
-      <div class="events-grid-container" id="events-list"></div>
-
-      <button type="button" class="btn-next btn-green-admin" onclick="accederPanelAdminConClave()">🔑 Acceso Creador (Métricas y Registros)</button>
-    </div>
-
-    <!-- PÁGINA PRIVADA DE ADMINISTRADOR / CREADOR -->
-    <div id="app-admin-panel" class="quiz-box hidden" style="justify-content: flex-start; text-align: left;">
-      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:10px;">
-        <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:0;">📊 Panel Creador Marea Grande</div>
-        <button type="button" class="btn-head" onclick="switchTab('events')">⬅ Salir</button>
-      </div>
-      
-      <!-- CONTADOR PRIVADO DE VISITAS -->
-      <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px; margin-bottom: 10px; text-align: center;">
-        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">👁️ Visitas Totales Privadas:</div>
-        <div id="private-visit-counter" style="font-size: 24px; font-weight: bold; color: #00b4d8; background: #000; padding: 8px; border-radius: 8px; border: 1px solid #2d6a4f;">
-          Cargando...
+        <div class="nav-item" onclick="switchTab('tab-historial', this)">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
         </div>
-      </div>
-
-      <div style="width: 100%; background: #0b110e; border: 1px solid #2d6a4f; border-radius: 12px; padding: 10px;">
-        <div style="font-size: 11px; font-weight: bold; color: #95d5b2; margin-bottom: 6px;">📧 Gmails Registrados de Usuarios:</div>
-        <div id="admin-mails-container" style="font-size: 10px; color: #ddd; max-height: 120px; overflow-y: auto; background: #000; padding: 6px; border-radius: 6px;">
-          Sin registros aún.
+        <div class="nav-item" onclick="switchTab('tab-push', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
-      </div>
-    </div>
+        <div class="nav-item" onclick="switchTab('tab-estadisticas', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+    </nav>
 
-    <!-- AJUSTES -->
-    <div id="app-settings" class="quiz-box hidden" style="justify-content: flex-start;">
-      <div class="question-title" style="font-size: 14px; color: #90e0ef; margin-bottom:10px;">⚙️ Ajustes</div>
-      <div style="display: flex; flex-direction: column; gap: 6px; width:100%;">
-        <button type="button" onclick="exportarRespaldo()" style="background:#1d3557; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px;">💾 Guardar Respaldo</button>
-        <button type="button" onclick="reiniciarConfig()" style="background:#d90429; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px;">🔄 Reiniciar Encuesta</button>
-      </div>
-    </div>
+    <script>
+        let currentDate = new Date(2026, 9, 1);
+        let attendanceData = JSON.parse(localStorage.getItem('marea_attendance')) || {};
+        let scheduledDays = JSON.parse(localStorage.getItem('marea_scheduled_days')) || [];
+        let selectedMonthForWeeks = null;
 
-    <!-- NAV BAR -->
-    <div id="bottom-nav-bar" class="bottom-nav hidden">
-      <button class="nav-btn active" onclick="switchTab('calendar')">Cal.</button>
-      <button class="nav-btn" onclick="switchTab('notes')">Notas</button>
-      <button class="nav-btn" onclick="switchTab('events')">Eventos</button>
-      <button class="nav-btn" onclick="switchTab('settings')">Ajustes</button>
-    </div>
-  </div>
-
-  <div id="day-modal" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div id="modal-title" style="font-weight: bold; font-size: 15px; color: #95d5b2; margin-bottom: 6px;">Día</div>
-      <div id="modal-content" style="font-size: 12px; margin-bottom: 12px; color: #ddd;">Detalle...</div>
-      <button type="button" class="btn-next" onclick="cerrarModal()" style="padding: 8px;">Cerrar</button>
-    </div>
-  </div>
-
-  <script>
-    var CLAVE_ADMIN = "Perro TM 100";
-    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ7g-q_GlJhZ-YUh8spE4XtUGPkiT8b6Cg-B7xkae4QvjMgLPrcd5DX1bBfNJiygrC/exec";
-    var user = { gmail: "", nombre: "", listaDeportes: [], entrenosPorDeporte: {}, coloresDeporte: {}, agendaLibre: {}, eventos: {} };
-    var listaUsuariosRegistrados = [];
-    var diasSemanaTexto = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-    var mesesTexto = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    var diasMapeo = [1, 2, 3, 4, 5, 6, 0];
-    var selectedDayForDetail = 1, indiceDeporteActual = 0;
-    var fechaActualObj = new Date();
-    var mesVisualizado = fechaActualObj.getMonth(), anioVisualizado = fechaActualObj.getFullYear();
-    let deferredPrompt = null;
-
-    var datosGuardados = localStorage.getItem("mareaGrandeV6");
-    if (datosGuardados) { 
-      try { 
-        var parsed = JSON.parse(datosGuardados); 
-        if (parsed && typeof parsed === 'object') user = parsed; 
-      } catch(e) { user = {}; } 
-    }
-
-    if (!user.coloresDeporte) user.coloresDeporte = {};
-
-    var registrosPrevios = localStorage.getItem("mareaGrandeRegistrosGmail");
-    if (registrosPrevios) {
-      try { listaUsuariosRegistrados = JSON.parse(registrosPrevios); } catch(e) { listaUsuariosRegistrados = []; }
-    }
-
-    if (!user.agendaLibre) { 
-      user.agendaLibre = {}; 
-      for (var i = 0; i < 7; i++) user.agendaLibre[diasMapeo[i]] = []; 
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-    });
-
-    window.addEventListener('load', () => {
-      registrarVisitaPrivada();
-
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW err:', err));
-      }
-
-      if (!user.gmail || user.gmail.trim() === "") {
-        document.getElementById("step-register").classList.remove("hidden");
-      } else if (!user.nombre || user.nombre.trim() === "") { 
-        document.getElementById("step-1").classList.remove("hidden"); 
-      } else if (!user.listaDeportes || user.listaDeportes.length === 0) {
-        document.getElementById("step-2").classList.remove("hidden");
-      } else { 
-        initMainAppLink(); 
-      }
-      
-      if (window.Notification && Notification.permission === 'granted') {
-        document.getElementById("btnAvisos").classList.add("hidden");
-        document.getElementById("statusNotifActive").classList.remove("hidden");
-      }
-
-      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-        document.getElementById("btnInstalar").classList.add("hidden");
-      }
-
-      setInterval(verificarAlertasEnVivo, 10000);
-    });
-
-    function descargarApp() { 
-      if (deferredPrompt) { 
-        deferredPrompt.prompt(); 
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            document.getElementById("btnInstalar").classList.add("hidden");
-          }
-          deferredPrompt = null;
-        });
-      } else { 
-        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (isIOS) {
-          alert("🍏 Para instalar en iPhone:\n\n1. Abrí esta página en SAFARI.\n2. Tocá el botón Compartir ↗️ (abajo).\n3. Seleccioná 'Agregar a inicio'.");
-        } else {
-          alert("📱 Para instalar en Android:\n\n1. Tocá los 3 puntos (⋮) arriba a la derecha en Chrome.\n2. Tocá 'Instalar aplicación' o 'Agregar a pantalla principal'.");
-        }
-      } 
-    }
-
-    function registrarVisitaPrivada() {
-      fetch('https://api.countapi.xyz/hit/mareagrande_app_visits_2026/visits')
-        .then(res => res.json())
-        .then(data => { window.totalVisitasPrivadas = data.value; })
-        .catch(() => { fetchVisitaBackup(); });
-    }
-
-    function fetchVisitaBackup() {
-      fetch('https://api.countapi.xyz/get/mareagrande_app_visits_2026/visits')
-        .then(res => res.json())
-        .then(data => { window.totalVisitasPrivadas = data.value; })
-        .catch(() => {});
-    }
-
-    function enviarEmailNotificacion(asunto, mensajeTexto) {
-      if (typeof emailjs !== 'undefined') {
-        var templateParams = {
-          subject: asunto,
-          mensaje: mensajeTexto,
-          to_email: user.gmail || "pertecararifrancisco@gmail.com"
-        };
-        emailjs.send('service_ymz4ddf', 'template_0p9xifl', templateParams)
-          .then(function(response) {
-            console.log('Correo enviado con éxito!', response.status, response.text);
-          }, function(error) {
-            console.log('Error al enviar correo:', error);
-          });
-      }
-    }
-
-    function registrarEnGoogleSheets(mail) {
-      if (!APPS_SCRIPT_URL) return;
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gmail: mail })
-      }).catch(err => console.log('Sheets error:', err));
-    }
-
-    function registrarUsuarioGmail() {
-      var mail = document.getElementById("input-user-gmail").value.trim().toLowerCase();
-      if (!mail || mail.indexOf("@gmail.com") === -1) {
-        alert("Por favor, ingresá un correo de Gmail válido.");
-        return;
-      }
-      user.gmail = mail;
-      if (listaUsuariosRegistrados.indexOf(mail) === -1) {
-        listaUsuariosRegistrados.push(mail);
-        localStorage.setItem("mareaGrandeRegistrosGmail", JSON.stringify(listaUsuariosRegistrados));
-      }
-      guardarTodo();
-      
-      registrarEnGoogleSheets(mail);
-      enviarEmailNotificacion("Marea Grande - Nuevo Registro", "Se registró el usuario con Gmail: " + mail);
-
-      document.getElementById("step-register").classList.add("hidden");
-      document.getElementById("step-1").classList.remove("hidden");
-    }
-
-    function accederPanelAdminConClave() {
-      var pass = prompt("🔐 Panel Creador Marea Grande\n\nIngresá la contraseña de administrador:");
-      if (pass === CLAVE_ADMIN) {
-        var container = document.getElementById("admin-mails-container");
-        if (listaUsuariosRegistrados.length > 0) {
-          container.innerHTML = "• " + listaUsuariosRegistrados.join("<br>• ");
-        } else {
-          container.innerHTML = "Sin registros aún.";
-        }
-        
-        var counterElem = document.getElementById("private-visit-counter");
-        if (window.totalVisitasPrivadas) {
-          counterElem.innerText = window.totalVisitasPrivadas + " visitas";
-        } else {
-          fetch('https://api.countapi.xyz/get/mareagrande_app_visits_2026/visits')
-            .then(res => res.json())
-            .then(d => { counterElem.innerText = d.value + " visitas"; })
-            .catch(() => { counterElem.innerText = "12+ visitas"; });
-        }
-
-        document.getElementById("app-calendar").classList.add("hidden");
-        document.getElementById("app-notes").classList.add("hidden");
-        document.getElementById("app-day-detail").classList.add("hidden");
-        document.getElementById("app-events").classList.add("hidden");
-        document.getElementById("app-settings").classList.add("hidden");
-        document.getElementById("app-admin-panel").classList.remove("hidden");
-      } else if (pass !== null) {
-        alert("⛔ Contraseña incorrecta. Acceso denegado.");
-      }
-    }
-
-    function guardarTodo() { localStorage.setItem("mareaGrandeV6", JSON.stringify(user)); }
-    
-    function reiniciarConfig() { 
-      if (confirm("¿Querés reiniciar la app y modificar la encuesta?")) { 
-        localStorage.removeItem("mareaGrandeV6"); 
-        location.reload(); 
-      } 
-    }
-
-    function exportarRespaldo() {
-      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(user));
-      var downloadAnchor = document.createElement('a'); downloadAnchor.setAttribute("href", dataStr); downloadAnchor.setAttribute("download", "marea_grande_respaldo.json");
-      document.body.appendChild(downloadAnchor); downloadAnchor.click(); downloadAnchor.remove();
-    }
-
-    function nextStep(step) {
-      if (step === 1) {
-        var nom = document.getElementById("input-nombre").value.trim(); 
-        if (!nom) { alert("Escribí tu nombre"); return; }
-        user.nombre = nom; 
-        guardarTodo(); 
-        document.getElementById("step-1").classList.add("hidden"); 
-        document.getElementById("step-2").classList.remove("hidden");
-      } else if (step === 2) {
-        var depInput = document.getElementById("input-deportes").value.trim(); 
-        if (!depInput) { alert("Ingresá un deporte"); return; }
-        user.listaDeportes = depInput.split(',').map(d => d.trim()).filter(d => d.length > 0);
-        user.entrenosPorDeporte = {}; 
-        user.coloresDeporte = {};
-        indiceDeporteActual = 0; 
-        guardarTodo(); 
-        document.getElementById("step-2").classList.add("hidden"); 
-        mostrarPreguntaDeporteActual();
-      }
-    }
-
-    function mostrarPreguntaDeporteActual() {
-      if (user.listaDeportes && indiceDeporteActual < user.listaDeportes.length) {
-        var depActual = user.listaDeportes[indiceDeporteActual];
-        document.getElementById("txt-pregunta-deporte").innerText = "3. ¿Qué días entrenás " + depActual + "?";
-        var cbs = document.querySelectorAll(".cb-dias-dep"); 
-        for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
-        document.getElementById("step-deportes-dias").classList.remove("hidden");
-      } else { 
-        document.getElementById("step-deportes-dias").classList.add("hidden"); 
-        initMainAppLink(); 
-      }
-    }
-
-    function siguienteDeporteDias() {
-      var depActual = user.listaDeportes[indiceDeporteActual];
-      var colorSeleccionado = document.getElementById("input-deporte-color").value;
-      var cbs = document.querySelectorAll(".cb-dias-dep:checked");
-      var sel = []; 
-      for (var i = 0; i < cbs.length; i++) sel.push(parseInt(cbs[i].value));
-      user.entrenosPorDeporte[depActual] = sel; 
-      user.coloresDeporte[depActual] = colorSeleccionado;
-      guardarTodo(); 
-      indiceDeporteActual++; 
-      mostrarPreguntaDeporteActual();
-    }
-
-    function initMainAppLink() {
-      document.getElementById("step-register").classList.add("hidden");
-      document.getElementById("step-1").classList.add("hidden"); 
-      document.getElementById("step-2").classList.add("hidden"); 
-      document.getElementById("step-deportes-dias").classList.add("hidden");
-      document.getElementById("bottom-nav-bar").classList.remove("hidden"); 
-      switchTab('calendar'); 
-      renderDaysList(); 
-      setupEventDays(); 
-      renderEventsList(); 
-    }
-
-    function switchTab(tabName) {
-      document.getElementById("app-calendar").classList.add("hidden"); 
-      document.getElementById("app-notes").classList.add("hidden"); 
-      document.getElementById("app-day-detail").classList.add("hidden"); 
-      document.getElementById("app-events").classList.add("hidden"); 
-      document.getElementById("app-admin-panel").classList.add("hidden");
-      document.getElementById("app-settings").classList.add("hidden");
-      
-      var btns = document.querySelectorAll(".nav-btn"); 
-      for(var i=0; i<btns.length; i++) btns[i].classList.remove("active");
-      
-      if (tabName === 'calendar') { document.getElementById("app-calendar").classList.remove("hidden"); btns[0].classList.add("active"); showCalendar(); }
-      else if (tabName === 'notes') { document.getElementById("app-notes").classList.remove("hidden"); btns[1].classList.add("active"); document.getElementById("user-name-span").innerText = user.nombre; renderDaysList(); }
-      else if (tabName === 'events') { document.getElementById("app-events").classList.remove("hidden"); btns[2].classList.add("active"); setupEventDays(); renderEventsList(); }
-      else if (tabName === 'settings') { document.getElementById("app-settings").classList.remove("hidden"); btns[3].classList.add("active"); }
-    }
-
-    function cambiarMes(dir) { 
-      mesVisualizado += dir; 
-      if (mesVisualizado > 11) { mesVisualizado = 0; anioVisualizado++; } 
-      else if (mesVisualizado < 0) { mesVisualizado = 11; anioVisualizado--; } 
-      showCalendar(); 
-      setupEventDays(); 
-    }
-    
-    function renderDaysList() {
-      var container = document.getElementById("days-list-container"); container.innerHTML = "";
-      for (var i = 0; i < 7; i++) {
-        var numDia = diasMapeo[i], nombreDia = diasSemanaTexto[i], cant = user.agendaLibre[numDia] ? user.agendaLibre[numDia].length : 0;
-        var card = document.createElement("div"); card.className = "day-card-item"; card.innerHTML = `<div class="day-card-title"><span>📅 ${nombreDia}</span><span style="font-size: 11px; color: #95d5b2;">${cant} actividad(es)</span></div>`;
-        card.setAttribute("data-num", numDia); card.onclick = function() { abrirDetalleDia(parseInt(this.getAttribute("data-num"))); }; container.appendChild(card);
-      }
-    }
-
-    function abrirDetalleDia(numDia) { selectedDayForDetail = numDia; document.getElementById("detail-day-title").innerText = diasSemanaTexto[diasMapeo.indexOf(numDia)]; document.getElementById("app-notes").classList.add("hidden"); document.getElementById("app-day-detail").classList.remove("hidden"); renderDayActivities(); }
-    function volverANotas() { document.getElementById("app-day-detail").classList.add("hidden"); document.getElementById("app-notes").classList.remove("hidden"); renderDaysList(); showCalendar(); }
-    
-    function agregarActividadDia() {
-      var nom = document.getElementById("activity-name-input").value.trim(), hora = document.getElementById("activity-time-input").value, col = document.getElementById("activity-color-select").value, alertSel = document.getElementById("activity-alert-select").value;
-      if (!nom || !hora) return alert("Ingresá nombre y hora de la actividad.");
-      if (!user.agendaLibre[selectedDayForDetail]) user.agendaLibre[selectedDayForDetail] = [];
-      user.agendaLibre[selectedDayForDetail].push({ hora: hora, actividad: nom, color: col, alerta: alertSel });
-      user.agendaLibre[selectedDayForDetail].sort((a, b) => a.hora.localeCompare(b.hora)); 
-      guardarTodo();
-      
-      var textoAviso = alertSel === "0" ? "a la hora exacta (" + hora + " hs)" : (alertSel === "30" ? "30 min antes" : "1 hora antes");
-      alert("✅ ¡Actividad Agendada!\n\nSe guardó '" + nom + "'. Te avisaremos (" + textoAviso + ").");
-
-      enviarEmailNotificacion("Marea Grande - Nueva Actividad", "Actividad: " + nom + "\nHora: " + hora + " hs");
-
-      document.getElementById("activity-name-input").value = ""; 
-      document.getElementById("activity-time-input").value = ""; 
-      renderDayActivities();
-    }
-
-    function renderDayActivities() {
-      var container = document.getElementById("day-activities-list"); container.innerHTML = "";
-      var lista = user.agendaLibre[selectedDayForDetail]; if (!lista || lista.length === 0) { container.innerHTML = '<span style="font-size: 10px; color: #777;">No hay actividades.</span>'; return; }
-      for (var i = 0; i < lista.length; i++) {
-        var row = document.createElement("div"); row.style.display = "flex"; row.style.justifyContent = "space-between"; row.style.fontSize = "11px"; row.style.color = "#fff";
-        row.innerHTML = `<span><span style="color:${lista[i].color};">■</span> <strong>Hora: ${lista[i].hora} hs</strong> - ${lista[i].actividad}</span><button onclick="eliminarActividad(${selectedDayForDetail}, ${i})" style="background:#d90429; color:#fff; border:none; border-radius:4px; font-size:9px; padding:2px 6px;">X</button>`;
-        container.appendChild(row);
-      }
-    }
-
-    function eliminarActividad(numDia, index) { user.agendaLibre[numDia].splice(index, 1); guardarTodo(); renderDayActivities(); }
-
-    function showCalendar() {
-      document.getElementById("txt-mes-anio").innerText = mesesTexto[mesVisualizado] + " " + anioVisualizado; 
-      document.getElementById("txt-saludo").innerText = "Hola, " + user.nombre + " 👋";
-      
-      var container = document.getElementById("cal-days"); container.innerHTML = "";
-      var primerDiaIndex = new Date(anioVisualizado, mesVisualizado, 1).getDay(); primerDiaIndex = (primerDiaIndex === 0) ? 6 : primerDiaIndex - 1;
-      var totalDiasMes = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
-      for (var e = 0; e < primerDiaIndex; e++) container.appendChild(document.createElement("div"));
-      
-      var legendBox = document.getElementById("legend-references-box"); 
-      legendBox.innerHTML = `<strong>REFERENCIAS:</strong>`;
-
-      if (user.entrenosPorDeporte) {
-        var keysDeps = Object.keys(user.entrenosPorDeporte);
-        for (var k = 0; k < keysDeps.length; k++) {
-          var depNombre = keysDeps[k];
-          var depColor = (user.coloresDeporte && user.coloresDeporte[depNombre]) ? user.coloresDeporte[depNombre] : '#2b9348';
-          legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:${depColor};"></div> Entreno: ${depNombre}</div>`;
-        }
-      }
-      legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:#d90429;"></div> Descanso</div>`;
-
-      var referenciasAgregadas = {};
-      for (var d = 0; d < 7; d++) {
-        var listAct = user.agendaLibre[diasMapeo[d]];
-        if (listAct) {
-          for (var a = 0; a < listAct.length; a++) {
-            referenciasAgregadas[listAct[a].actividad] = listAct[a].color || '#0077b6';
-          }
-        }
-      }
-
-      var keysRef = Object.keys(referenciasAgregadas);
-      for (var r = 0; r < keysRef.length; r++) {
-        legendBox.innerHTML += `<div class="legend-item"><div class="dot" style="background-color:${referenciasAgregadas[keysRef[r]]};"></div> ${keysRef[r]}</div>`;
-      }
-
-      for (var day = 1; day <= totalDiasMes; day++) {
-        var dayOfWeek = new Date(anioVisualizado, mesVisualizado, day).getDay();
-        var dotsHTML = "";
-
-        var entrenandoHoy = [];
-        if (user.entrenosPorDeporte) {
-          var keysDeps = Object.keys(user.entrenosPorDeporte);
-          for (var k = 0; k < keysDeps.length; k++) { 
-            if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) {
-              entrenandoHoy.push(keysDeps[k]);
+        window.onload = function() {
+            if (localStorage.getItem('marea_survey_completed')) {
+                document.getElementById('survey-modal').style.display = 'none';
+                applyUserProfile();
             }
-          }
+            renderCalendar();
+            renderMonthlyHistory();
+            calculateStreak();
+        };
+
+        function nextStep(stepNumber) {
+            document.querySelectorAll('.survey-step').forEach(step => step.classList.remove('active'));
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
         }
 
-        if (entrenandoHoy.length > 0) {
-          for (var et = 0; et < entrenandoHoy.length; et++) {
-            var colDep = (user.coloresDeporte && user.coloresDeporte[entrenandoHoy[et]]) ? user.coloresDeporte[entrenandoHoy[et]] : '#2b9348';
-            dotsHTML += `<div class="dot" style="background-color: ${colDep};"></div>`;
-          }
-        } else {
-          dotsHTML += `<div class="dot" style="background-color: #d90429;"></div>`;
+        function linkUserGoogleAccount() {
+            const emailInput = document.getElementById('user-email').value.trim();
+            if (!emailInput || !emailInput.includes('@')) {
+                alert("Por favor ingresá un correo de Google válido.");
+                return;
+            }
+            localStorage.setItem('marea_user_email', emailInput);
+            alert("¡Cuenta " + emailInput + " vinculada con éxito!");
+            nextStep(3);
         }
 
-        if (user.agendaLibre && user.agendaLibre[dayOfWeek]) { 
-          for (var a = 0; a < user.agendaLibre[dayOfWeek].length; a++) {
-            dotsHTML += `<div class="dot" style="background-color: ${user.agendaLibre[dayOfWeek][a].color || '#0077b6'};"></div>`;
-          }
+        function validateAndGoStep4() {
+            const name = document.getElementById('user-name').value.trim();
+            if (!name) {
+                alert("Ingresar datos: por favor ingresá tu nombre para continuar.");
+                return;
+            }
+            nextStep(4);
         }
 
-        var claveEvento = anioVisualizado + "-" + mesVisualizado + "-" + day; 
-        if (user.eventos && user.eventos[claveEvento]) {
-          dotsHTML += `<div class="dot" style="background-color: ${user.eventos[claveEvento].color || '#ff9f1c'};"></div>`;
+        function finishSurvey() {
+            const name = document.getElementById('user-name').value.trim();
+            const sports = document.getElementById('user-sports').value.trim() || 'Entrenamiento General';
+            const pushTime = document.getElementById('push-time-input').value || '20:00';
+
+            const checkedBoxes = document.querySelectorAll('.days-checkbox-list input[type="checkbox"]:checked');
+            scheduledDays = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+
+            const registrationDate = new Date().toISOString().split('T')[0];
+
+            localStorage.setItem('marea_user_name', name);
+            localStorage.setItem('marea_user_sports', sports);
+            localStorage.setItem('marea_push_time', pushTime);
+            localStorage.setItem('marea_reg_date', registrationDate);
+            localStorage.setItem('marea_scheduled_days', JSON.stringify(scheduledDays));
+            localStorage.setItem('marea_survey_completed', 'true');
+
+            document.getElementById('survey-modal').style.display = 'none';
+            document.getElementById('push-time-label').innerText = `Aviso post-actividad a las ${pushTime} hs`;
+
+            applyUserProfile();
+            renderCalendar();
+            renderMonthlyHistory();
+            calculateStreak();
+            requestPushPermissionReal();
         }
 
-        var dayDiv = document.createElement("div"); dayDiv.className = "cal-day"; dayDiv.innerHTML = day + '<div class="dot-container">' + dotsHTML + '</div>';
-        dayDiv.setAttribute("data-anio", anioVisualizado); dayDiv.setAttribute("data-mes", mesVisualizado); dayDiv.setAttribute("data-dia", day);
-        dayDiv.onclick = function() { verDetalleDia(parseInt(this.getAttribute("data-anio")), parseInt(this.getAttribute("data-mes")), parseInt(this.getAttribute("data-dia"))); };
-        container.appendChild(dayDiv);
-      }
-      document.getElementById("app-calendar").classList.remove("hidden");
-    }
-
-    function verDetalleDia(anio, mes, dia) {
-      var dayOfWeek = new Date(anio, mes, dia).getDay(), nombreDia = diasSemanaTexto[dayOfWeek === 0 ? 6 : dayOfWeek - 1];
-      var contenido = "<strong>" + dia + " de " + mesesTexto[mes] + " " + anio + " (" + nombreDia + ")</strong><br><br>";
-      
-      var hayEntreno = false;
-      if (user.entrenosPorDeporte) {
-        var keysDeps = Object.keys(user.entrenosPorDeporte);
-        for (var k = 0; k < keysDeps.length; k++) { 
-          if (user.entrenosPorDeporte[keysDeps[k]] && user.entrenosPorDeporte[keysDeps[k]].indexOf(dayOfWeek) !== -1) { 
-            hayEntreno = true;
-            var colDep = (user.coloresDeporte && user.coloresDeporte[keysDeps[k]]) ? user.coloresDeporte[keysDeps[k]] : '#2b9348';
-            contenido += `<span style="color:${colDep};">■</span> Entreno: <strong>${keysDeps[k]}</strong><br>`; 
-          } 
+        function resetSurvey() {
+            if (confirm("¿Querés reiniciar la encuesta para volver a configurar tus datos?")) {
+                localStorage.removeItem('marea_survey_completed');
+                location.reload();
+            }
         }
-      }
 
-      if (!hayEntreno) {
-        contenido += `<span style="color:#d90429;">■</span> Día de descanso<br>`;
-      }
-
-      contenido += "<br><strong>Actividades agendadas:</strong><br>";
-      var lista = user.agendaLibre && user.agendaLibre[dayOfWeek];
-      if (lista && lista.length > 0) { 
-        for (var i = 0; i < lista.length; i++) {
-          contenido += "- <span style='color: " + (lista[i].color || '#2b9348') + ";'>■</span> <strong>Hora: " + lista[i].hora + " hs</strong>: " + lista[i].actividad + "<br>"; 
+        function requestPushPermissionReal() {
+            if (!("Notification" in window)) {
+                alert("Este navegador no soporta notificaciones push.");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    const time = localStorage.getItem('marea_push_time') || '20:00';
+                    alert(`¡Notificaciones activadas! Te avisaremos al día siguiente de tu actividad a las ${time} hs.`);
+                    localStorage.setItem('marea_push_allowed', 'true');
+                    document.getElementById('push-home-banner').style.display = 'none';
+                } else {
+                    alert("Permisos de notificación denegados.");
+                }
+            });
         }
-      } else contenido += "<em>Sin actividades agendadas.</em><br>";
 
-      var claveEvento = anio + "-" + mes + "-" + dia; 
-      if (user.eventos && user.eventos[claveEvento]) {
-        contenido += "<br>🎉 <strong>Evento (Hora: " + user.eventos[claveEvento].hora + " hs):</strong> " + user.eventos[claveEvento].desc;
-      }
-
-      document.getElementById("modal-title").innerText = "Detalle del Día " + dia; 
-      document.getElementById("modal-content").innerHTML = contenido; 
-      document.getElementById("day-modal").classList.remove("hidden");
-    }
-
-    function cerrarModal() { document.getElementById("day-modal").classList.add("hidden"); }
-
-    function setupEventDays() {
-      var select = document.getElementById("event-day-select"); select.innerHTML = "";
-      var total = new Date(anioVisualizado, mesVisualizado + 1, 0).getDate();
-      for(var d=1; d<=total; d++) { var opt = document.createElement("option"); opt.value = anioVisualizado + "-" + mesVisualizado + "-" + d; opt.text = d + " de " + mesesTexto[mesVisualizado]; select.appendChild(opt); }
-    }
-
-    function saveEvent() {
-      var clave = document.getElementById("event-day-select").value, desc = document.getElementById("event-desc-input").value.trim(), hora = document.getElementById("event-time-input").value, alerta = document.getElementById("event-alert-select").value, col = document.getElementById("event-color-select").value;
-      if(!desc || !hora) return alert("Escribí descripción y hora del evento.");
-      if (!user.eventos) user.eventos = {}; 
-      user.eventos[clave] = { desc: desc, hora: hora, alerta: alerta, color: col, notificado: false }; 
-      guardarTodo();
-
-      var textoAviso = alerta === "0" ? "a la hora exacta (" + hora + " hs)" : (alerta === "30" ? "30 min antes" : "1 hora antes");
-      alert("🎉 ¡Evento Agendado!\n\nSe agendó '" + desc + "'. Te notificaremos (" + textoAviso + ").");
-
-      enviarEmailNotificacion("Marea Grande - Nuevo Evento", "Evento: " + desc + "\nHora: " + hora + " hs");
-
-      document.getElementById("event-desc-input").value = ""; 
-      document.getElementById("event-time-input").value = ""; 
-      renderEventsList(); 
-      showCalendar();
-    }
-
-    function renderEventsList() {
-      var listContainer = document.getElementById("events-list"); listContainer.innerHTML = "";
-      if (!user.eventos) user.eventos = {}; var keys = Object.keys(user.eventos);
-      if(keys.length === 0) { listContainer.innerHTML = '<span style="font-size: 10px; color: #777; grid-column: span 2;">No hay eventos aún.</span>'; return; }
-      for(var i=0; i<keys.length; i++) {
-        var ev = user.eventos[keys[i]], partes = keys[i].split("-"), dStr = partes[2] + " de " + mesesTexto[parseInt(partes[1])];
-        var card = document.createElement("div"); card.className = "event-mini-card"; card.innerHTML = `<div style="font-weight:bold; color:#95d5b2;">📅 ${dStr}</div><div><span style="color: ${ev.color};">■</span> <strong>Hora: ${ev.hora} hs</strong> - ${ev.desc}</div>`;
-        listContainer.appendChild(card);
-      }
-    }
-
-    function pedirPermisoNotificaciones() {
-      if ('Notification' in window) {
-        Notification.requestPermission().then((permission) => {
-          if (permission === 'granted') {
-            document.getElementById("btnAvisos").classList.add("hidden");
-            document.getElementById("statusNotifActive").classList.remove("hidden");
-            enviarNotificacion('Marea Grande', '¡Sistema activo! Te avisaremos de tus eventos y actividades.');
-          } else {
-            alert('⚠️ Notificaciones denegadas en el navegador.');
-          }
-        });
-      }
-    }
-
-    function calcularHoraAviso(horaOriginalStr, minutosAntes) {
-      if (minutosAntes === 0) return horaOriginalStr;
-      var partes = horaOriginalStr.split(":");
-      var d = new Date();
-      d.setHours(parseInt(partes[0]), parseInt(partes[1]) - minutosAntes, 0, 0);
-      var hh = d.getHours() < 10 ? "0" + d.getHours() : d.getHours();
-      var mm = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
-      return hh + ":" + mm;
-    }
-
-    function verificarAlertasEnVivo() {
-      if (window.Notification && Notification.permission !== 'granted') return;
-      var ahora = new Date();
-      var diaSemana = ahora.getDay();
-      var horaActualStr = (ahora.getHours() < 10 ? "0" : "") + ahora.getHours() + ":" + (ahora.getMinutes() < 10 ? "0" : "") + ahora.getMinutes();
-      var claveHoy = ahora.getFullYear() + "-" + ahora.getMonth() + "-" + ahora.getDate();
-
-      if (user.agendaLibre && user.agendaLibre[diaSemana]) {
-        for (var i = 0; i < user.agendaLibre[diaSemana].length; i++) {
-          var act = user.agendaLibre[diaSemana][i];
-          var mins = parseInt(act.alerta || "0");
-          var horaAviso = calcularHoraAviso(act.hora, mins);
-          
-          if (horaAviso === horaActualStr) {
-            enviarNotificacion('⏰ ¡Aviso de Actividad!', act.actividad + ' - Hora: ' + act.hora + ' hs');
-            enviarEmailNotificacion('Marea Grande - Alerta de Actividad', 'RECORDATORIO: Es la hora de ' + act.actividad + ' (' + act.hora + ' hs)');
-          }
+        function applyUserProfile() {
+            const name = localStorage.getItem('marea_user_name') || 'Usuario';
+            const email = localStorage.getItem('marea_user_email') || 'usuario@gmail.com';
+            const sports = localStorage.getItem('marea_user_sports') || '';
+            
+            document.getElementById('user-display-name').innerText = name;
+            document.getElementById('user-display-email').innerText = email;
+            document.getElementById('user-display-sports').innerText = sports ? `Deportes: ${sports}` : '';
+            document.getElementById('profile-welcome-desc').innerText = `ESTADÍSTICAS GLOBALES - ${name.toUpperCase()}`;
         }
-      }
 
-      if (user.eventos && user.eventos[claveHoy]) {
-        var ev = user.eventos[claveHoy];
-        var minsEv = parseInt(ev.alerta || "0");
-        var horaAvisoEv = calcularHoraAviso(ev.hora, minsEv);
-
-        if (horaAvisoEv === horaActualStr && !ev.notificado) {
-          ev.notificado = true;
-          guardarTodo();
-          enviarNotificacion('🎉 ¡Aviso de Evento!', ev.desc + ' - Hora: ' + ev.hora + ' hs');
-          enviarEmailNotificacion('Marea Grande - Alerta de Evento', 'RECORDATORIO: ' + ev.desc + ' a las ' + ev.hora + ' hs');
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            if(tabId === 'tab-historial') {
+                selectedMonthForWeeks = null;
+                renderMonthlyHistory();
+            }
         }
-      }
-    }
 
-    function enviarNotificacion(titulo, mensaje) {
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then((reg) => {
-          reg.showNotification(titulo, {
-            body: mensaje,
-            icon: 'manifest.json',
-            vibrate: [200, 100, 200]
-          });
-        });
-      } else if (window.Notification && Notification.permission === 'granted') {
-        new Notification(titulo, { body: mensaje });
-      }
-    }
-  </script>
+        function calculateStreak() {
+            let streak = 0;
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth();
+            let day = today.getDate();
+
+            let startIndex = 0;
+            let todayKey = `${year}-${month}-${day}`;
+            if (!attendanceData[todayKey]) {
+                startIndex = 1;
+            }
+
+            for (let i = startIndex; i < 30; i++) {
+                let checkDate = new Date(year, month, day - i);
+                let key = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+                let st = attendanceData[key];
+                if (st === 'attended' || st === 'fulfilled') {
+                    streak++;
+                } else if (i > startIndex) {
+                    break;
+                }
+            }
+            document.getElementById('streak-count').innerText = `${streak} días seguidos`;
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const monthNames = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            document.getElementById('calendar-month-year').innerText = `${monthNames[month]} ${year}`;
+            document.getElementById('history-month-year-title').innerText = `${monthNames[month]} ${year}`;
+
+            const regDateStr = localStorage.getItem('marea_reg_date') || '2026-10-26';
+            const regDate = new Date(regDateStr);
+
+            let countAttended = 0;
+            let countAbsent = 0;
+            let countFulfilled = 0;
+            let countUnfulfilled = 0;
+            let validDaysCount = 0;
+
+            const grid = document.getElementById('calendar-days');
+            grid.innerHTML = '';
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'day-cell';
+                cell.innerText = day;
+                
+                const cellDate = new Date(year, month, day);
+                const dateKey = `${year}-${month}-${day}`;
+                const status = attendanceData[dateKey];
+
+                if (cellDate < regDate) {
+                    cell.classList.add('null-day');
+                } else {
+                    validDaysCount++;
+                    if (status === 'attended') {
+                        cell.classList.add('attended');
+                        countAttended++;
+                    } else if (status === 'absent') {
+                        cell.classList.add('absent');
+                        countAbsent++;
+                    } else if (status === 'fulfilled') {
+                        cell.classList.add('fulfilled');
+                        countFulfilled++;
+                    } else if (status === 'unfulfilled') {
+                        cell.classList.add('unfulfilled');
+                        countUnfulfilled++;
+                    }
+
+                    cell.onclick = function() {
+                        if (!attendanceData[dateKey]) attendanceData[dateKey] = 'attended';
+                        else if (attendanceData[dateKey] === 'attended') attendanceData[dateKey] = 'absent';
+                        else if (attendanceData[dateKey] === 'absent') attendanceData[dateKey] = 'fulfilled';
+                        else if (attendanceData[dateKey] === 'fulfilled') attendanceData[dateKey] = 'unfulfilled';
+                        else delete attendanceData[dateKey];
+                        
+                        localStorage.setItem('marea_attendance', JSON.stringify(attendanceData));
+                        renderCalendar();
+                        renderMonthlyHistory();
+                        calculateStreak();
+                    };
+                }
+
+                grid.appendChild(cell);
+            }
+
+            let pAttended = 0, pAbsent = 0, pFulfilled = 0, pUnfulfilled = 0;
+            if (validDaysCount > 0) {
+                pAttended = Math.round((countAttended / validDaysCount) * 100);
+                pAbsent = Math.round((countAbsent / validDaysCount) * 100);
+                pFulfilled = Math.round((countFulfilled / validDaysCount) * 100);
+                pUnfulfilled = Math.round((countUnfulfilled / validDaysCount) * 100);
+            }
+
+            document.getElementById('pct-attended').innerText = `${pAttended}%`;
+            document.getElementById('pct-absent').innerText = `${pAbsent}%`;
+            document.getElementById('pct-fulfilled').innerText = `${pFulfilled}%`;
+            document.getElementById('pct-unfulfilled').innerText = `${pUnfulfilled}%`;
+
+            const totalRecorded = countAttended + countAbsent + countFulfilled + countUnfulfilled;
+            const globalPct = pAttended + pFulfilled;
+            document.getElementById('progress-percentage').innerText = `${globalPct}%`;
+            document.getElementById('stat-current-pct').innerText = `${globalPct}%`;
+
+            let degAttended = (pAttended / 100) * 360;
+            let degAbsent = degAttended + (pAbsent / 100) * 360;
+            let degFulfilled = degAbsent + (pFulfilled / 100) * 360;
+            let degUnfulfilled = degFulfilled + (pUnfulfilled / 100) * 360;
+
+            const conicGrad = totalRecorded > 0 ? 
+                `conic-gradient(var(--neon-green) 0deg ${degAttended}deg, var(--absent-red) ${degAttended}deg ${degAbsent}deg, var(--accent-blue) ${degAbsent}deg ${degFulfilled}deg, var(--activity-purple) ${degFulfilled}deg ${degUnfulfilled}deg, rgba(255,255,255,0.1) ${degUnfulfilled}deg 360deg)` :
+                `conic-gradient(rgba(255,255,255,0.1) 0deg 360deg)`;
+
+            document.getElementById('progress-circle').style.background = conicGrad;
+        }
+
+        function renderMonthlyHistory() {
+            const container = document.getElementById('monthly-view-container');
+            container.innerHTML = '';
+
+            const regDateStr = localStorage.getItem('marea_reg_date') || '2026-10-26';
+            const regDate = new Date(regDateStr);
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "OCTUBRE", "Noviembre", "Diciembre"];
+            const year = currentDate.getFullYear();
+            const currentMonthIdx = currentDate.getMonth();
+
+            if (selectedMonthForWeeks !== null) {
+                const m = selectedMonthForWeeks;
+                const daysInM = new Date(year, m + 1, 0).getDate();
+
+                container.innerHTML = `
+                    <button class="btn btn-secondary-action" style="margin-bottom:12px;" onclick="selectedMonthForWeeks = null; renderMonthlyHistory();">← Volver a ciclos</button>
+                    <h3 style="color:var(--neon-green); text-align:center; margin-bottom:12px;">Semanas de ${monthNames[m]} ${year}</h3>
+                `;
+
+                const weeksRanges = [
+                    { name: "Semana 1", start: 1, end: 7 },
+                    { name: "Semana 2", start: 8, end: 14 },
+                    { name: "Semana 3", start: 15, end: 21 },
+                    { name: "Semana 4", start: 22, end: daysInM }
+                ];
+
+                weeksRanges.forEach(w => {
+                    let pos = 0;
+                    let tot = (w.end - w.start) + 1;
+                    for (let d = w.start; d <= w.end; d++) {
+                        const st = attendanceData[`${year}-${m}-${d}`];
+                        if (st === 'attended' || st === 'fulfilled') pos++;
+                    }
+                    const wPct = Math.round((pos / tot) * 100);
+
+                    const card = document.createElement('div');
+                    card.className = 'week-card-view';
+                    card.innerHTML = `<span><strong>${w.name}</strong> (Días ${w.start}-${w.end})</span><strong style="color:var(--neon-green);">${wPct}%</strong>`;
+                    container.appendChild(card);
+                });
+                return;
+            }
+
+            for (let m = 0; m < 12; m++) {
+                const daysInM = new Date(year, m + 1, 0).getDate();
+                let posCount = 0;
+                let totRecorded = 0;
+
+                let cycleStart = 1;
+                let cycleEnd = daysInM;
+                let cycleLabelSuffix = `(${daysInM} días)`;
+
+                if (m === regDate.getMonth() && year === regDate.getFullYear()) {
+                    cycleStart = regDate.getDate();
+                    let endDateObj = new Date(regDate);
+                    endDateObj.setDate(endDateObj.getDate() + 29);
+                    cycleEnd = endDateObj.getDate();
+                    cycleLabelSuffix = `(Ciclo 30 días)`;
+                }
+
+                for (let d = cycleStart; d <= cycleEnd; d++) {
+                    const st = attendanceData[`${year}-${m}-${d}`];
+                    if (st === 'attended' || st === 'fulfilled') posCount++;
+                    if (st) totRecorded++;
+                }
+
+                const cycleDaysTotal = (cycleEnd - cycleStart) + 1;
+                const cyclePct = Math.round((posCount / cycleDaysTotal) * 100);
+
+                const div = document.createElement('div');
+                div.className = 'month-pill' + (m === currentMonthIdx ? ' current' : '');
+
+                div.innerHTML = `
+                    <span>${monthNames[m]} ${cycleLabelSuffix}</span>
+                    <strong style="color:var(--neon-green);">${totRecorded > 0 ? cyclePct + '%' : '0% (Por Definirse)'}</strong>
+                `;
+
+                div.onclick = function() {
+                    selectedMonthForWeeks = m;
+                    renderMonthlyHistory();
+                };
+
+                container.appendChild(div);
+            }
+        }
+
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            selectedMonthForWeeks = null;
+            renderCalendar();
+            renderMonthlyHistory();
+        }
+    </script>
 </body>
 </html>
