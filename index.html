@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MAREA GRANDE</title>
+    <title>MAREA GRANDE - SEGUIMIENTO DEPORTIVO</title>
+    <!-- Librería jsPDF para descarga sólida local de PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --bg-deep: #041c14;
@@ -15,9 +17,9 @@
             --neon-green-glow: rgba(0, 230, 118, 0.4);
             --accent-blue: #0288d1;
             --absent-red: #ff5252;
-            --activity-purple: #ab47bc;
             --text-light: #ffffff;
             --text-muted: #a7f3d0;
+            --gold-pro: #ffd700;
         }
 
         * {
@@ -38,7 +40,6 @@
             overflow-x: hidden;
         }
 
-        /* HEADER FLOTANTE */
         header {
             background: linear-gradient(135deg, var(--header-teal), #00251a);
             color: white;
@@ -58,7 +59,63 @@
             gap: 8px;
         }
 
-        /* ENCUESTA / ONBOARDING */
+        /* CONTENEDOR VENTANA EMERGENTE TIPO TIKTOK */
+        .modal-tiktok-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-tiktok-card {
+            background: linear-gradient(135deg, #06261c, #00332a);
+            border: 2px solid var(--neon-green);
+            border-radius: 24px;
+            padding: 24px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 10px 30px var(--neon-green-glow);
+            text-align: center;
+        }
+
+        .tiktok-avatar { font-size: 3rem; margin-bottom: 10px; }
+        .tiktok-title { color: var(--neon-green); font-size: 1.3rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
+        .tiktok-msg { font-size: 0.95rem; line-height: 1.4; color: #e2e8f0; margin-bottom: 20px; }
+        
+        .tiktok-actions { display: flex; flex-direction: column; gap: 10px; }
+        .btn-yes { background-color: var(--neon-green); color: #041c14; font-weight: 900; }
+        .btn-no { background-color: var(--absent-red); color: white; font-weight: 900; }
+
+        /* CARTEL INFORMATIVO DEL DÍA */
+        .modal-info-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--neon-green);
+            border-radius: 20px;
+            padding: 22px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* ENCUESTA */
         .survey-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -82,13 +139,8 @@
             backdrop-filter: blur(10px);
         }
 
-        .survey-step {
-            display: none;
-        }
-
-        .survey-step.active {
-            display: block;
-        }
+        .survey-step { display: none; }
+        .survey-step.active { display: block; }
 
         .survey-title {
             color: var(--neon-green);
@@ -107,10 +159,7 @@
             text-align: center;
         }
 
-        .form-group {
-            margin-bottom: 14px;
-        }
-
+        .form-group { margin-bottom: 14px; }
         .form-control {
             width: 100%;
             padding: 12px 14px;
@@ -120,11 +169,6 @@
             color: white;
             font-size: 0.95rem;
             outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 10px var(--neon-green-glow);
         }
 
         .btn {
@@ -140,72 +184,18 @@
             letter-spacing: 0.5px;
         }
 
-        .btn-neon {
-            background-color: var(--neon-green);
-            color: #041c14;
-            box-shadow: 0 0 15px var(--neon-green-glow);
-        }
+        .btn-neon { background-color: var(--neon-green); color: #041c14; box-shadow: 0 0 15px var(--neon-green-glow); }
+        .btn-gold { background: linear-gradient(135deg, #ffd700, #ff8c00); color: #041c14; font-weight: 900; }
+        .btn-google { background-color: #ffffff; color: #1f2937; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-secondary-action { background-color: transparent; color: var(--text-muted); border: 1px dashed var(--card-border); margin-top: 10px; font-size: 0.85rem; }
 
-        .btn-google {
-            background-color: #ffffff;
-            color: #1f2937;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
+        .days-checkbox-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        .day-checkbox-item { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--card-border); cursor: pointer; font-size: 0.9rem; }
+        .day-checkbox-item input { accent-color: var(--neon-green); width: 18px; height: 18px; }
 
-        .btn-secondary-action {
-            background-color: transparent;
-            color: var(--text-muted);
-            border: 1px dashed var(--card-border);
-            margin-top: 10px;
-            font-size: 0.85rem;
-        }
-
-        .days-checkbox-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .day-checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid var(--card-border);
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .day-checkbox-item input {
-            accent-color: var(--neon-green);
-            width: 18px;
-            height: 18px;
-        }
-
-        /* CONTENIDO PRINCIPAL */
-        main {
-            flex: 1;
-            padding: 16px;
-            padding-bottom: 95px;
-            max-width: 450px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
+        main { flex: 1; padding: 16px; padding-bottom: 95px; max-width: 450px; margin: 0 auto; width: 100%; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         .card {
             background: var(--card-bg);
@@ -217,367 +207,156 @@
             backdrop-filter: blur(8px);
         }
 
-        /* WIDGET DE RACHA */
+        .exp-bar-bg { background: rgba(255,255,255,0.1); border-radius: 10px; height: 12px; width: 100%; overflow: hidden; margin: 8px 0; }
+        .exp-bar-fill { background: var(--neon-green); height: 100%; width: 0%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--neon-green); }
+
         .streak-badge {
             background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(255, 87, 34, 0.2));
-            border: 1px solid #ff9800;
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #ffe0b2;
+            border: 1px solid #ff9800; border-radius: 12px; padding: 10px 14px; margin-bottom: 16px;
+            display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; font-weight: bold; color: #ffe0b2;
         }
 
-        /* BANNER PUSH */
-        .push-banner-home {
-            background: linear-gradient(135deg, var(--header-teal), var(--accent-blue));
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-weight: 800; color: var(--neon-green); font-size: 1.05rem; }
+        .nav-arrow-btn { border: none; background: none; color: var(--neon-green); cursor: pointer; font-size: 1.5rem; padding: 0 8px; font-weight: bold; }
 
-        .push-banner-home button {
-            background-color: var(--neon-green);
-            color: #041c14;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        /* CALENDARIO Y FLECHAS */
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            font-weight: 800;
-            color: var(--neon-green);
-            font-size: 1.05rem;
-        }
-
-        .nav-arrow-btn {
-            border: none;
-            background: none;
-            color: var(--neon-green);
-            cursor: pointer;
-            font-size: 1.5rem;
-            padding: 0 8px;
-            font-weight: bold;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            text-align: center;
-        }
-
-        .day-name {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            padding-bottom: 6px;
-        }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+        .day-name { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); padding-bottom: 6px; }
 
         .day-cell {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-            background: rgba(255,255,255,0.05);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; user-select: none; background: rgba(255,255,255,0.05);
+            color: white; border: 1px solid rgba(255,255,255,0.05); position: relative;
         }
 
-        .day-cell.null-day {
-            opacity: 0.2;
-            cursor: not-allowed;
-            background: rgba(255,255,255,0.01);
-        }
+        .day-cell.null-day { opacity: 0.2; cursor: not-allowed; background: rgba(255,255,255,0.01); }
+        .day-cell.scheduled-training { border: 1px dashed var(--neon-green); }
 
-        .day-cell.attended {
-            background-color: var(--neon-green);
-            color: #041c14;
-            font-weight: bold;
-        }
-        .day-cell.attended::after {
-            content: "✓";
-            font-size: 0.55rem;
-            position: absolute;
-            bottom: 1px;
-        }
+        .day-cell.attended { background-color: var(--neon-green); color: #041c14; font-weight: bold; }
+        .day-cell.attended::after { content: "✓"; font-size: 0.55rem; position: absolute; bottom: 1px; }
+        .day-cell.absent { background-color: var(--absent-red); color: white; font-weight: bold; }
 
-        .day-cell.absent {
-            background-color: var(--absent-red);
-            color: white;
-            font-weight: bold;
-        }
+        .calendar-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; font-size: 0.7rem; color: var(--text-muted); justify-content: center; }
+        .legend-item { display: flex; align-items: center; gap: 4px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-        .day-cell.fulfilled {
-            background-color: var(--accent-blue);
-            color: white;
-            font-weight: bold;
-        }
-
-        .day-cell.unfulfilled {
-            background-color: var(--activity-purple);
-            color: white;
-            font-weight: bold;
-        }
-
-        .calendar-legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            justify-content: center;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        /* CÍRCULO PROGRESO */
-        .progress-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px 0;
-        }
-
+        .progress-container { display: flex; flex-direction: column; align-items: center; padding: 10px 0; }
         .circle-outer {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: conic-gradient(#333 0deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.5s ease;
-            box-shadow: 0 0 20px rgba(0, 230, 118, 0.2);
+            width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(#333 0deg);
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(0, 230, 118, 0.2);
         }
+        .circle-inner { width: 108px; height: 108px; border-radius: 50%; background-color: var(--bg-deep); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .circle-percentage { font-size: 1.6rem; font-weight: 900; color: var(--neon-green); line-height: 1; }
+        .circle-desc { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-align: center; margin-top: 14px; text-transform: uppercase; }
 
-        .circle-inner {
-            width: 108px;
-            height: 108px;
-            border-radius: 50%;
-            background-color: var(--bg-deep);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+        .progress-breakdown { margin-top: 12px; font-size: 0.75rem; width: 100%; display: flex; flex-direction: column; gap: 4px; }
+        .breakdown-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.03); border-radius: 6px; }
 
-        .circle-percentage {
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: var(--neon-green);
-            line-height: 1;
-        }
-
-        .circle-desc {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-align: center;
-            margin-top: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .progress-breakdown {
-            margin-top: 12px;
-            font-size: 0.75rem;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .breakdown-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px 8px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 6px;
-        }
+        .pdf-preview-card { background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); border: 1px dashed var(--gold-pro); border-radius: 14px; padding: 16px; margin-top: 12px; text-align: center; }
+        .pdf-thumbnail { background: #ffffff; color: #1a1a1a; border-radius: 8px; padding: 12px; margin: 10px 0; font-size: 0.8rem; text-align: left; }
 
         .month-pill {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            padding: 12px 14px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .week-card-view {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
+            padding: 12px 14px; border-radius: 10px; margin-bottom: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer;
         }
 
         nav {
-            position: fixed;
-            bottom: 20px;
-            left: 16px;
-            right: 16px;
+            position: fixed; bottom: 20px; left: 16px; right: 16px;
             background: linear-gradient(135deg, rgba(0, 77, 64, 0.95), rgba(4, 28, 20, 0.95));
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            border: 1px solid var(--neon-green);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
+            display: flex; justify-content: space-around; padding: 12px 0; border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); border: 1px solid var(--neon-green); backdrop-filter: blur(10px); z-index: 1000;
         }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: white;
-            opacity: 0.4;
-            text-decoration: none;
-            cursor: pointer;
-            width: 25%;
-            transition: opacity 0.2s;
-        }
-
-        .nav-item.active {
-            opacity: 1;
-            color: var(--neon-green);
-        }
-
-        .nav-item svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
-        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: white; opacity: 0.4; cursor: pointer; width: 25%; transition: opacity 0.2s; }
+        .nav-item.active { opacity: 1; color: var(--neon-green); }
+        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
     </style>
 </head>
 <body>
 
-    <!-- ONBOARDING -->
+    <!-- VENTANA EMERGENTE TIPO TIKTOK -->
+    <div class="modal-tiktok-overlay" id="tiktok-popup" style="display: none;">
+        <div class="modal-tiktok-card">
+            <div class="tiktok-avatar">⚡🏉</div>
+            <div class="tiktok-title">Control de Asistencia</div>
+            <div class="tiktok-msg" id="tiktok-msg-text">
+                Hoy tenías entrenamiento programado. ¿Fuiste a entrenar?
+            </div>
+            <div class="tiktok-actions">
+                <button class="btn btn-yes" onclick="answerTraining(true)">¡Sí, entrené! 🟢 (+15 EXP)</button>
+                <button class="btn btn-no" onclick="answerTraining(false)">No fui 🔴</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARTEL INFORMATIVO DEL DÍA -->
+    <div class="modal-info-overlay" id="info-popup" style="display: none;">
+        <div class="modal-info-card">
+            <div id="info-popup-icon" style="font-size: 2.5rem; margin-bottom: 8px;">ℹ️</div>
+            <div id="info-popup-title" style="color: var(--neon-green); font-size: 1.1rem; font-weight: 900; margin-bottom: 6px;">Detalle del Día</div>
+            <div id="info-popup-msg" style="font-size: 0.9rem; color: #e2e8f0; margin-bottom: 16px; line-height: 1.4;">Mensaje informativo</div>
+            <button class="btn btn-neon" onclick="closeInfoPopup()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- ENCUESTA -->
     <div class="survey-overlay" id="survey-modal">
         <div class="survey-card">
-            
             <div class="survey-step active" id="step-1">
                 <div class="survey-title">MAREA 🌊 GRANDE</div>
-                <div class="survey-desc">
-                    Te damos la bienvenida a Marea Grande. Registrá tus asistencias, medí tu disciplina por ciclos reales y sumá rachas de constancia. ¡Vamos a construir tu mejor versión!
-                </div>
+                <div class="survey-desc">Seguimiento deportivo proactivo con notificaciones interactivas y fichas Pro.</div>
                 <button class="btn btn-neon" onclick="nextStep(2)">Continuar</button>
             </div>
-
             <div class="survey-step" id="step-2">
-                <div class="survey-title">Vincular Cuenta Google</div>
-                <p class="survey-desc">Ingresá tu correo para enlazar tu progreso.</p>
-                <div class="form-group">
-                    <input type="email" id="user-email" class="form-control" placeholder="tucorreo@gmail.com">
-                </div>
-                <button class="btn btn-google" onclick="linkUserGoogleAccount()">
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-                    Vincular con Google
-                </button>
+                <div class="survey-title">Vincular Cuenta Gmail</div>
+                <p class="survey-desc">Ingresá tu correo para enlazar tus datos de atleta.</p>
+                <div class="form-group"><input type="email" id="user-email" class="form-control" placeholder="tucorreo@gmail.com"></div>
+                <button class="btn btn-google" onclick="linkUserGoogleAccount()">Vincular con Gmail</button>
             </div>
-
             <div class="survey-step" id="step-3">
                 <div class="survey-title">Perfil Deportivo</div>
-                <div class="form-group">
-                    <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Nombre *</label>
-                    <input type="text" id="user-name" class="form-control" placeholder="Tu nombre">
-                </div>
-                <div class="form-group">
-                    <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Deportes / Actividades</label>
-                    <input type="text" id="user-sports" class="form-control" placeholder="Ej: Rugby, Gimnasio">
-                </div>
+                <div class="form-group"><label style="font-size: 0.8rem; color: var(--text-muted);">Nombre *</label><input type="text" id="user-name" class="form-control" placeholder="Tu nombre"></div>
+                <div class="form-group"><label style="font-size: 0.8rem; color: var(--text-muted);">Deporte Principal</label><input type="text" id="user-sports" class="form-control" placeholder="Ej: Rugby"></div>
                 <button class="btn btn-neon" onclick="validateAndGoStep4()">Siguiente →</button>
             </div>
-
             <div class="survey-step" id="step-4">
-                <div class="survey-title">Días y Alertas Push</div>
-                <p class="survey-desc" style="margin-bottom:10px;">Seleccioná tus días de actividad y la hora para recibir tu aviso al día siguiente:</p>
-
+                <div class="survey-title">Días Fijos y Aviso</div>
+                <p class="survey-desc" style="margin-bottom:10px;">Elegí tus días de entrenamiento y la hora del aviso en la tardecita:</p>
+                
                 <div class="form-group">
-                    <label style="font-size: 0.8rem; color: var(--neon-green); display: block; margin-bottom: 4px;">Hora de Notificación:</label>
-                    <input type="time" id="push-time-input" class="form-control" value="20:00">
+                    <label style="font-size: 0.8rem; color: var(--neon-green); display: block; margin-bottom: 4px;">Hora de notificación:</label>
+                    <input type="time" id="push-time-input" class="form-control" value="19:00">
                 </div>
 
                 <div class="days-checkbox-list">
                     <label class="day-checkbox-item"><input type="checkbox" value="1"> Lunes</label>
-                    <label class="day-checkbox-item"><input type="checkbox" value="2"> Martes</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="2" checked> Martes</label>
                     <label class="day-checkbox-item"><input type="checkbox" value="3"> Miércoles</label>
-                    <label class="day-checkbox-item"><input type="checkbox" value="4"> Jueves</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="4" checked> Jueves</label>
                     <label class="day-checkbox-item"><input type="checkbox" value="5"> Viernes</label>
-                    <label class="day-checkbox-item"><input type="checkbox" value="6"> Sábado</label>
+                    <label class="day-checkbox-item"><input type="checkbox" value="6" checked> Sábado</label>
                     <label class="day-checkbox-item"><input type="checkbox" value="0"> Domingo</label>
                 </div>
-
                 <button class="btn btn-neon" onclick="finishSurvey()">¡Comenzar Marea Grande!</button>
             </div>
-
         </div>
     </div>
 
-    <!-- HEADER -->
-    <header>
-        MAREA 🌊 GRANDE
-    </header>
+    <header>MAREA 🌊 GRANDE</header>
 
-    <!-- MAIN -->
     <main>
         <section id="tab-inicio" class="tab-content active">
-            <!-- WIDGET DE RACHA -->
+            <div class="card" style="padding:12px 16px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:bold;">
+                    <span>⚡ Nivel de Atleta: <strong id="user-level" style="color:var(--neon-green);">1</strong></span>
+                    <span style="color:var(--text-muted);"><span id="user-exp">0</span> / 100 EXP</span>
+                </div>
+                <div class="exp-bar-bg"><div class="exp-bar-fill" id="exp-bar"></div></div>
+            </div>
+
             <div class="streak-badge" id="streak-widget">
                 <span>🔥 Racha de Disciplina:</span>
                 <strong id="streak-count">0 días seguidos</strong>
-            </div>
-
-            <div class="push-banner-home" id="push-home-banner">
-                <div>
-                    <strong style="font-size: 0.85rem; display:block;">Notificaciones Inteligentes 🔔</strong>
-                    <span id="push-time-label" style="font-size: 0.75rem; opacity: 0.9;">Aviso post-actividad programado</span>
-                </div>
-                <button onclick="requestPushPermissionReal()">Permitir</button>
             </div>
 
             <div class="card">
@@ -588,121 +367,75 @@
                 </div>
 
                 <div class="calendar-grid">
-                    <div class="day-name">L</div>
-                    <div class="day-name">M</div>
-                    <div class="day-name">M</div>
-                    <div class="day-name">J</div>
-                    <div class="day-name">V</div>
-                    <div class="day-name">S</div>
-                    <div class="day-name">D</div>
+                    <div class="day-name">L</div><div class="day-name">M</div><div class="day-name">M</div><div class="day-name">J</div><div class="day-name">V</div><div class="day-name">S</div><div class="day-name">D</div>
                 </div>
                 <div class="calendar-grid" id="calendar-days"></div>
 
                 <div class="calendar-legend">
                     <div class="legend-item"><div class="legend-dot" style="background:var(--neon-green);"></div> Entrenó</div>
                     <div class="legend-item"><div class="legend-dot" style="background:var(--absent-red);"></div> No fue</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue);"></div> Act. Cumplida</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:var(--activity-purple);"></div> Act. No Cumplida</div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="progress-container">
                     <div class="circle-outer" id="progress-circle">
-                        <div class="circle-inner">
-                            <div class="circle-percentage" id="progress-percentage">0%</div>
-                        </div>
+                        <div class="circle-inner"><div class="circle-percentage" id="progress-percentage">0%</div></div>
                     </div>
-                    <p class="circle-desc" id="profile-welcome-desc">
-                        ESTADÍSTICAS GLOBALES (ESCALA 0%)
-                    </p>
-
+                    <p class="circle-desc" id="profile-welcome-desc">ESTADÍSTICAS GLOBALES</p>
                     <div class="progress-breakdown">
-                        <div class="breakdown-row">
-                            <span style="color:var(--neon-green);">🟢 Asistencias a Entreno:</span>
-                            <strong id="pct-attended">0%</strong>
-                        </div>
-                        <div class="breakdown-row">
-                            <span style="color:var(--absent-red);">🔴 Faltas a Entreno:</span>
-                            <strong id="pct-absent">0%</strong>
-                        </div>
-                        <div class="breakdown-row">
-                            <span style="color:var(--accent-blue);">🔵 Actividades Cumplidas:</span>
-                            <strong id="pct-fulfilled">0%</strong>
-                        </div>
-                        <div class="breakdown-row">
-                            <span style="color:var(--activity-purple);">🟣 Act. No Cumplidas:</span>
-                            <strong id="pct-unfulfilled">0%</strong>
-                        </div>
+                        <div class="breakdown-row"><span style="color:var(--neon-green);">🟢 Asistencias Confirmadas:</span><strong id="pct-attended">0%</strong></div>
+                        <div class="breakdown-row"><span style="color:var(--absent-red);">🔴 Faltas Confirmadas:</span><strong id="pct-absent">0%</strong></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- TAB 2: BALANCE CICLO Y SEMANAS -->
         <section id="tab-historial" class="tab-content">
-            <h2 style="text-align:center; font-size:1.1rem; color:var(--neon-green); margin-bottom:14px;">BALANCE POR CICLOS Y SEMANAS</h2>
-            
+            <h2 style="text-align:center; font-size:1.1rem; color:var(--neon-green); margin-bottom:14px;">HISTORIAL Y REPORTES PRO</h2>
             <div class="card">
                 <div class="calendar-header" style="border-bottom: 1px solid var(--card-border); padding-bottom: 10px; margin-bottom: 14px;">
                     <button class="nav-arrow-btn" onclick="changeMonth(-1)">‹</button>
                     <span id="history-month-year-title">OCTUBRE 2026</span>
                     <button class="nav-arrow-btn" onclick="changeMonth(1)">›</button>
                 </div>
-                
                 <div id="monthly-view-container"></div>
             </div>
         </section>
 
-        <!-- TAB 3: PUSH -->
-        <section id="tab-push" class="tab-content">
-            <h2 style="text-align:center; font-size:1.1rem; color:var(--neon-green); margin-bottom:14px;">GESTIÓN DE PUSH</h2>
+        <section id="tab-pdf-demanda" class="tab-content">
+            <h2 style="text-align:center; font-size:1.1rem; color:var(--gold-pro); margin-bottom:14px;">👑 REPORTE DEPORTIVO PRO (PDF)</h2>
             <div class="card" style="text-align: center;">
-                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">
-                    Tus avisos están programados para el día posterior a tu actividad.
-                </p>
-                <button class="btn btn-neon" onclick="requestPushPermissionReal()">Activar Permisos Push</button>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4;">Generá tu Ficha Deportiva Pro y descargala de forma local y sólida en PDF.</p>
+                <button class="btn btn-gold" onclick="generateProPDFReport()">📄 Descargar Reporte Pro (PDF Local)</button>
             </div>
         </section>
 
-        <!-- TAB 4: ESTADÍSTICAS Y AJUSTES -->
         <section id="tab-estadisticas" class="tab-content">
             <h2 style="text-align:center; font-size:1.1rem; color:var(--neon-green); margin-bottom:14px;">PERFIL Y AJUSTES</h2>
             <div class="card">
-                <p style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:10px;">CUENTA VINCULADA</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--card-border);">
-                    <span id="user-display-email" style="font-weight: 700; color: var(--neon-green);">usuario@gmail.com</span>
-                </div>
+                <p style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:10px;">CUENTA VINCULADA (GMAIL)</p>
+                <span id="user-display-email" style="font-weight: 700; color: var(--neon-green);">usuario@gmail.com</span>
                 <p id="user-display-name" style="font-size: 0.85rem; font-weight: bold; margin-top: 8px;"></p>
                 <p id="user-display-sports" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;"></p>
-                
-                <button class="btn btn-secondary-action" style="margin-top: 20px;" onclick="resetSurvey()">
-                    🔄 Volver a hacer la encuesta inicial
-                </button>
+                <button class="btn btn-secondary-action" style="margin-top: 20px;" onclick="resetSurvey()">🔄 Volver a hacer la encuesta inicial</button>
             </div>
         </section>
     </main>
 
-    <!-- NAVBAR -->
     <nav>
-        <div class="nav-item active" onclick="switchTab('tab-inicio', this)">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        </div>
-        <div class="nav-item" onclick="switchTab('tab-historial', this)">
-            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
-        </div>
-        <div class="nav-item" onclick="switchTab('tab-push', this)">
-            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        </div>
-        <div class="nav-item" onclick="switchTab('tab-estadisticas', this)">
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        </div>
+        <div class="nav-item active" onclick="switchTab('tab-inicio', this)"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+        <div class="nav-item" onclick="switchTab('tab-historial', this)"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg></div>
+        <div class="nav-item" onclick="switchTab('tab-pdf-demanda', this)"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <div class="nav-item" onclick="switchTab('tab-estadisticas', this)"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
     </nav>
 
     <script>
         let currentDate = new Date(2026, 9, 1);
         let attendanceData = JSON.parse(localStorage.getItem('marea_attendance')) || {};
-        let scheduledDays = JSON.parse(localStorage.getItem('marea_scheduled_days')) || [];
+        let scheduledDays = JSON.parse(localStorage.getItem('marea_scheduled_days')) || [2, 4, 6];
+        let userExp = parseInt(localStorage.getItem('marea_user_exp')) || 0;
+        let userLevel = parseInt(localStorage.getItem('marea_user_level')) || 1;
         let selectedMonthForWeeks = null;
 
         window.onload = function() {
@@ -710,9 +443,14 @@
                 document.getElementById('survey-modal').style.display = 'none';
                 applyUserProfile();
             }
+            let savedSched = localStorage.getItem('marea_scheduled_days');
+            if(savedSched) scheduledDays = JSON.parse(savedSched);
+
+            updateExpUI();
             renderCalendar();
             renderMonthlyHistory();
             calculateStreak();
+            checkTiktokPopupTrigger();
         };
 
         function nextStep(stepNumber) {
@@ -722,28 +460,22 @@
 
         function linkUserGoogleAccount() {
             const emailInput = document.getElementById('user-email').value.trim();
-            if (!emailInput || !emailInput.includes('@')) {
-                alert("Por favor ingresá un correo de Google válido.");
-                return;
-            }
+            if (!emailInput || !emailInput.includes('@')) { alert("Ingresá un correo de Gmail válido."); return; }
             localStorage.setItem('marea_user_email', emailInput);
-            alert("¡Cuenta " + emailInput + " vinculada con éxito!");
+            alert("¡Cuenta de Gmail vinculada con éxito!");
             nextStep(3);
         }
 
         function validateAndGoStep4() {
             const name = document.getElementById('user-name').value.trim();
-            if (!name) {
-                alert("Ingresar datos: por favor ingresá tu nombre para continuar.");
-                return;
-            }
+            if (!name) { alert("Ingresá tu nombre."); return; }
             nextStep(4);
         }
 
         function finishSurvey() {
             const name = document.getElementById('user-name').value.trim();
-            const sports = document.getElementById('user-sports').value.trim() || 'Entrenamiento General';
-            const pushTime = document.getElementById('push-time-input').value || '20:00';
+            const sports = document.getElementById('user-sports').value.trim() || 'Rugby';
+            const pushTime = document.getElementById('push-time-input').value || '19:00';
 
             const checkedBoxes = document.querySelectorAll('.days-checkbox-list input[type="checkbox"]:checked');
             scheduledDays = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
@@ -758,54 +490,32 @@
             localStorage.setItem('marea_survey_completed', 'true');
 
             document.getElementById('survey-modal').style.display = 'none';
-            document.getElementById('push-time-label').innerText = `Aviso post-actividad a las ${pushTime} hs`;
-
             applyUserProfile();
             renderCalendar();
             renderMonthlyHistory();
             calculateStreak();
-            requestPushPermissionReal();
         }
 
         function resetSurvey() {
-            if (confirm("¿Querés reiniciar la encuesta para volver a configurar tus datos?")) {
+            if (confirm("¿Querés reiniciar la encuesta?")) {
                 localStorage.removeItem('marea_survey_completed');
                 location.reload();
             }
         }
 
-        function requestPushPermissionReal() {
-            if (!("Notification" in window)) {
-                alert("Este navegador no soporta notificaciones push.");
-                return;
-            }
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    const time = localStorage.getItem('marea_push_time') || '20:00';
-                    alert(`¡Notificaciones activadas! Te avisaremos al día siguiente de tu actividad a las ${time} hs.`);
-                    localStorage.setItem('marea_push_allowed', 'true');
-                    document.getElementById('push-home-banner').style.display = 'none';
-                } else {
-                    alert("Permisos de notificación denegados.");
-                }
-            });
-        }
-
         function applyUserProfile() {
             const name = localStorage.getItem('marea_user_name') || 'Usuario';
             const email = localStorage.getItem('marea_user_email') || 'usuario@gmail.com';
-            const sports = localStorage.getItem('marea_user_sports') || '';
-            
+            const sports = localStorage.getItem('marea_user_sports') || 'Rugby';
             document.getElementById('user-display-name').innerText = name;
             document.getElementById('user-display-email').innerText = email;
-            document.getElementById('user-display-sports').innerText = sports ? `Deportes: ${sports}` : '';
+            document.getElementById('user-display-sports').innerText = sports ? `Deporte Principal: ${sports}` : '';
             document.getElementById('profile-welcome-desc').innerText = `ESTADÍSTICAS GLOBALES - ${name.toUpperCase()}`;
         }
 
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
             el.classList.add('active');
             if(tabId === 'tab-historial') {
@@ -814,28 +524,99 @@
             }
         }
 
+        function checkTiktokPopupTrigger() {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const todayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+
+            if (scheduledDays.includes(dayOfWeek) && !attendanceData[todayKey]) {
+                setTimeout(() => {
+                    document.getElementById('tiktok-popup').style.display = 'flex';
+                }, 800);
+            }
+        }
+
+        function answerTraining(didAttend) {
+            const now = new Date();
+            const todayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+
+            if (didAttend) {
+                attendanceData[todayKey] = 'attended';
+                addExp(15);
+                alert("¡Excelente! Asistencia registrada 🟢 (+15 EXP).");
+            } else {
+                attendanceData[todayKey] = 'absent';
+                alert("Asistencia marcada como no realizada 🔴.");
+            }
+
+            localStorage.setItem('marea_attendance', JSON.stringify(attendanceData));
+            document.getElementById('tiktok-popup').style.display = 'none';
+            renderCalendar();
+            renderMonthlyHistory();
+            calculateStreak();
+        }
+
+        function handleDayClick(cellDate, dayOfWeek, dateKey) {
+            const sports = localStorage.getItem('marea_user_sports') || 'Rugby';
+            const status = attendanceData[dateKey];
+            
+            let title = "Detalle del Día";
+            let msg = "";
+            let icon = "📅";
+
+            if (scheduledDays.includes(dayOfWeek)) {
+                icon = "🏉";
+                title = `Día de Entrenamiento: ${sports}`;
+                if (status === 'attended') {
+                    msg = "¡Entrenamiento completado y confirmado! 🟢";
+                } else if (status === 'absent') {
+                    msg = "Registrado: No pudiste asistir a este entrenamiento 🔴.";
+                } else {
+                    msg = `Tenés entrenamientos de ${sports} programados este día. El estado se confirma respondiendo a la notificación diaria.`;
+                }
+            } else {
+                icon = "💤";
+                title = "Día de Descanso";
+                msg = "No hay entrenamientos programados para hoy. Día libre / Sin actividades.";
+            }
+
+            document.getElementById('info-popup-icon').innerText = icon;
+            document.getElementById('info-popup-title').innerText = title;
+            document.getElementById('info-popup-msg').innerText = msg;
+            document.getElementById('info-popup').style.display = 'flex';
+        }
+
+        function closeInfoPopup() {
+            document.getElementById('info-popup').style.display = 'none';
+        }
+
+        function addExp(amount) {
+            userExp += amount;
+            if (userExp >= 100) { userLevel += 1; userExp -= 100; alert(`¡Nivel ${userLevel} de disciplina alcanzado! 🎉`); }
+            localStorage.setItem('marea_user_exp', userExp);
+            localStorage.setItem('marea_user_level', userLevel);
+            updateExpUI();
+        }
+
+        function updateExpUI() {
+            document.getElementById('user-level').innerText = userLevel;
+            document.getElementById('user-exp').innerText = userExp;
+            document.getElementById('exp-bar').style.width = `${userExp}%`;
+        }
+
         function calculateStreak() {
             let streak = 0;
             let today = new Date();
-            let year = today.getFullYear();
-            let month = today.getMonth();
-            let day = today.getDate();
-
+            let year = today.getFullYear(), month = today.getMonth(), day = today.getDate();
             let startIndex = 0;
-            let todayKey = `${year}-${month}-${day}`;
-            if (!attendanceData[todayKey]) {
-                startIndex = 1;
-            }
+            if (!attendanceData[`${year}-${month}-${day}`]) startIndex = 1;
 
             for (let i = startIndex; i < 30; i++) {
                 let checkDate = new Date(year, month, day - i);
                 let key = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
                 let st = attendanceData[key];
-                if (st === 'attended' || st === 'fulfilled') {
-                    streak++;
-                } else if (i > startIndex) {
-                    break;
-                }
+                if (st === 'attended') streak++;
+                else if (i > startIndex) break;
             }
             document.getElementById('streak-count').innerText = `${streak} días seguidos`;
         }
@@ -852,12 +633,7 @@
             const regDateStr = localStorage.getItem('marea_reg_date') || '2026-10-26';
             const regDate = new Date(regDateStr);
 
-            let countAttended = 0;
-            let countAbsent = 0;
-            let countFulfilled = 0;
-            let countUnfulfilled = 0;
-            let validDaysCount = 0;
-
+            let countAttended = 0, countAbsent = 0;
             const grid = document.getElementById('calendar-days');
             grid.innerHTML = '';
 
@@ -867,69 +643,41 @@
                 cell.innerText = day;
                 
                 const cellDate = new Date(year, month, day);
+                const dayOfWeek = cellDate.getDay();
                 const dateKey = `${year}-${month}-${day}`;
                 const status = attendanceData[dateKey];
 
                 if (cellDate < regDate) {
                     cell.classList.add('null-day');
                 } else {
-                    validDaysCount++;
-                    if (status === 'attended') {
-                        cell.classList.add('attended');
-                        countAttended++;
-                    } else if (status === 'absent') {
-                        cell.classList.add('absent');
-                        countAbsent++;
-                    } else if (status === 'fulfilled') {
-                        cell.classList.add('fulfilled');
-                        countFulfilled++;
-                    } else if (status === 'unfulfilled') {
-                        cell.classList.add('unfulfilled');
-                        countUnfulfilled++;
+                    if (scheduledDays.includes(dayOfWeek)) {
+                        cell.classList.add('scheduled-training');
                     }
 
+                    if (status === 'attended') { cell.classList.add('attended'); countAttended++; }
+                    else if (status === 'absent') { cell.classList.add('absent'); countAbsent++; }
+
                     cell.onclick = function() {
-                        if (!attendanceData[dateKey]) attendanceData[dateKey] = 'attended';
-                        else if (attendanceData[dateKey] === 'attended') attendanceData[dateKey] = 'absent';
-                        else if (attendanceData[dateKey] === 'absent') attendanceData[dateKey] = 'fulfilled';
-                        else if (attendanceData[dateKey] === 'fulfilled') attendanceData[dateKey] = 'unfulfilled';
-                        else delete attendanceData[dateKey];
-                        
-                        localStorage.setItem('marea_attendance', JSON.stringify(attendanceData));
-                        renderCalendar();
-                        renderMonthlyHistory();
-                        calculateStreak();
+                        handleDayClick(cellDate, dayOfWeek, dateKey);
                     };
                 }
-
                 grid.appendChild(cell);
             }
 
-            let pAttended = 0, pAbsent = 0, pFulfilled = 0, pUnfulfilled = 0;
-            if (validDaysCount > 0) {
-                pAttended = Math.round((countAttended / validDaysCount) * 100);
-                pAbsent = Math.round((countAbsent / validDaysCount) * 100);
-                pFulfilled = Math.round((countFulfilled / validDaysCount) * 100);
-                pUnfulfilled = Math.round((countUnfulfilled / validDaysCount) * 100);
+            let pAttended = 0, pAbsent = 0;
+            const totalRecorded = countAttended + countAbsent;
+            if (totalRecorded > 0) {
+                pAttended = Math.round((countAttended / totalRecorded) * 100);
+                pAbsent = Math.round((countAbsent / totalRecorded) * 100);
             }
 
             document.getElementById('pct-attended').innerText = `${pAttended}%`;
             document.getElementById('pct-absent').innerText = `${pAbsent}%`;
-            document.getElementById('pct-fulfilled').innerText = `${pFulfilled}%`;
-            document.getElementById('pct-unfulfilled').innerText = `${pUnfulfilled}%`;
-
-            const totalRecorded = countAttended + countAbsent + countFulfilled + countUnfulfilled;
-            const globalPct = pAttended + pFulfilled;
-            document.getElementById('progress-percentage').innerText = `${globalPct}%`;
-            document.getElementById('stat-current-pct').innerText = `${globalPct}%`;
+            document.getElementById('progress-percentage').innerText = `${pAttended}%`;
 
             let degAttended = (pAttended / 100) * 360;
-            let degAbsent = degAttended + (pAbsent / 100) * 360;
-            let degFulfilled = degAbsent + (pFulfilled / 100) * 360;
-            let degUnfulfilled = degFulfilled + (pUnfulfilled / 100) * 360;
-
             const conicGrad = totalRecorded > 0 ? 
-                `conic-gradient(var(--neon-green) 0deg ${degAttended}deg, var(--absent-red) ${degAttended}deg ${degAbsent}deg, var(--accent-blue) ${degAbsent}deg ${degFulfilled}deg, var(--activity-purple) ${degFulfilled}deg ${degUnfulfilled}deg, rgba(255,255,255,0.1) ${degUnfulfilled}deg 360deg)` :
+                `conic-gradient(var(--neon-green) 0deg ${degAttended}deg, var(--absent-red) ${degAttended}deg 360deg)` :
                 `conic-gradient(rgba(255,255,255,0.1) 0deg 360deg)`;
 
             document.getElementById('progress-circle').style.background = conicGrad;
@@ -939,86 +687,114 @@
             const container = document.getElementById('monthly-view-container');
             container.innerHTML = '';
 
-            const regDateStr = localStorage.getItem('marea_reg_date') || '2026-10-26';
-            const regDate = new Date(regDateStr);
-            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "OCTUBRE", "Noviembre", "Diciembre"];
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             const year = currentDate.getFullYear();
             const currentMonthIdx = currentDate.getMonth();
 
             if (selectedMonthForWeeks !== null) {
                 const m = selectedMonthForWeeks;
                 const daysInM = new Date(year, m + 1, 0).getDate();
+                let posCount = 0, totRec = 0;
+                for (let d = 1; d <= daysInM; d++) {
+                    const st = attendanceData[`${year}-${m}-${d}`];
+                    if (st === 'attended') posCount++;
+                    if (st) totRec++;
+                }
+                const mPct = totRec > 0 ? Math.round((posCount / totRec) * 100) : 0;
 
                 container.innerHTML = `
-                    <button class="btn btn-secondary-action" style="margin-bottom:12px;" onclick="selectedMonthForWeeks = null; renderMonthlyHistory();">← Volver a ciclos</button>
+                    <button class="btn btn-secondary-action" style="margin-bottom:12px;" onclick="selectedMonthForWeeks = null; renderMonthlyHistory();">← Volver a meses</button>
                     <h3 style="color:var(--neon-green); text-align:center; margin-bottom:12px;">Semanas de ${monthNames[m]} ${year}</h3>
+                    <div class="pdf-preview-card">
+                        <span style="color:var(--gold-pro); font-weight:900; font-size:0.85rem;">👑 FICHA PRO - ${monthNames[m].toUpperCase()} ${year}</span>
+                        <div class="pdf-thumbnail">
+                            <strong>📄 REPORTE DEPORTIVO DE ${monthNames[m].toUpperCase()}</strong><br>
+                            • Rendimiento Confirmado: ${mPct}%<br>
+                            • Estado: Ficha Oficial Lista
+                        </div>
+                        <button class="btn btn-gold" onclick="downloadLocalPDF('${monthNames[m]} ${year}', ${mPct})">📥 Descargar PDF Local</button>
+                    </div>
                 `;
-
-                const weeksRanges = [
-                    { name: "Semana 1", start: 1, end: 7 },
-                    { name: "Semana 2", start: 8, end: 14 },
-                    { name: "Semana 3", start: 15, end: 21 },
-                    { name: "Semana 4", start: 22, end: daysInM }
-                ];
-
-                weeksRanges.forEach(w => {
-                    let pos = 0;
-                    let tot = (w.end - w.start) + 1;
-                    for (let d = w.start; d <= w.end; d++) {
-                        const st = attendanceData[`${year}-${m}-${d}`];
-                        if (st === 'attended' || st === 'fulfilled') pos++;
-                    }
-                    const wPct = Math.round((pos / tot) * 100);
-
-                    const card = document.createElement('div');
-                    card.className = 'week-card-view';
-                    card.innerHTML = `<span><strong>${w.name}</strong> (Días ${w.start}-${w.end})</span><strong style="color:var(--neon-green);">${wPct}%</strong>`;
-                    container.appendChild(card);
-                });
                 return;
             }
 
             for (let m = 0; m < 12; m++) {
                 const daysInM = new Date(year, m + 1, 0).getDate();
-                let posCount = 0;
-                let totRecorded = 0;
-
-                let cycleStart = 1;
-                let cycleEnd = daysInM;
-                let cycleLabelSuffix = `(${daysInM} días)`;
-
-                if (m === regDate.getMonth() && year === regDate.getFullYear()) {
-                    cycleStart = regDate.getDate();
-                    let endDateObj = new Date(regDate);
-                    endDateObj.setDate(endDateObj.getDate() + 29);
-                    cycleEnd = endDateObj.getDate();
-                    cycleLabelSuffix = `(Ciclo 30 días)`;
-                }
-
-                for (let d = cycleStart; d <= cycleEnd; d++) {
+                let posCount = 0, totRecorded = 0;
+                for (let d = 1; d <= daysInM; d++) {
                     const st = attendanceData[`${year}-${m}-${d}`];
-                    if (st === 'attended' || st === 'fulfilled') posCount++;
+                    if (st === 'attended') posCount++;
                     if (st) totRecorded++;
                 }
-
-                const cycleDaysTotal = (cycleEnd - cycleStart) + 1;
-                const cyclePct = Math.round((posCount / cycleDaysTotal) * 100);
+                const cyclePct = totRecorded > 0 ? Math.round((posCount / totRecorded) * 100) : 0;
 
                 const div = document.createElement('div');
                 div.className = 'month-pill' + (m === currentMonthIdx ? ' current' : '');
-
-                div.innerHTML = `
-                    <span>${monthNames[m]} ${cycleLabelSuffix}</span>
-                    <strong style="color:var(--neon-green);">${totRecorded > 0 ? cyclePct + '%' : '0% (Por Definirse)'}</strong>
-                `;
-
-                div.onclick = function() {
-                    selectedMonthForWeeks = m;
-                    renderMonthlyHistory();
-                };
-
+                div.innerHTML = `<span>${monthNames[m]} (${daysInM} días)</span><strong style="color:var(--neon-green);">${totRecorded > 0 ? cyclePct + '%' : '0% (Sin registros)'}</strong>`;
+                div.onclick = function() { selectedMonthForWeeks = m; renderMonthlyHistory(); };
                 container.appendChild(div);
             }
+        }
+
+        /* GENERACIÓN SÓLIDA DE PDF LOCAL USANDO JSDF */
+        function downloadLocalPDF(periodoTitle, performancePct) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const athleteName = localStorage.getItem('marea_user_name') || 'Atleta';
+            const athleteSport = localStorage.getItem('marea_user_sports') || 'Rugby';
+            const athleteEmail = localStorage.getItem('marea_user_email') || 'usuario@gmail.com';
+
+            // Encabezado del PDF
+            doc.setFillColor(4, 28, 20);
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            doc.setTextColor(0, 230, 118);
+            doc.setFontSize(20);
+            doc.text("MAREA GRANDE - PRO", 15, 25);
+
+            // Título
+            doc.setTextColor(20, 20, 20);
+            doc.setFontSize(16);
+            doc.text("FICHA DE SEGUIMIENTO DEPORTIVO OFICIAL", 15, 55);
+
+            // Datos del Atleta
+            doc.setFontSize(11);
+            doc.text(`Atleta: ${athleteName}`, 15, 70);
+            doc.text(`Deporte: ${athleteSport}`, 15, 78);
+            doc.text(`Correo Gmail: ${athleteEmail}`, 15, 86);
+            doc.text(`Período: ${periodoTitle}`, 15, 94);
+
+            // Línea divisoria
+            doc.setDrawColor(0, 230, 118);
+            doc.setLineWidth(1);
+            doc.line(15, 102, 195, 102);
+
+            // Rendimiento
+            doc.setFontSize(14);
+            doc.text("Métricas de Disciplina y Rendimiento", 15, 115);
+            
+            doc.setFontSize(12);
+            doc.text(`• Porcentaje de Asistencia Confirmada: ${performancePct}%`, 15, 130);
+            doc.text(`• Nivel de Disciplina Actual: Nivel ${userLevel} (${userExp} EXP)`, 15, 140);
+            doc.text(`• Estado del Ciclo: Consolidado y Verificado`, 15, 150);
+
+            // Pie de página
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Generado de forma local y sólida mediante Marea Grande PWA.", 15, 280);
+
+            // Descarga directa en el dispositivo
+            doc.save(`MareaGrande_Ficha_${athleteName.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        function generateProPDFReport() {
+            let total = 0, attended = 0;
+            for (let key in attendanceData) {
+                total++;
+                if (attendanceData[key] === 'attended') attended++;
+            }
+            let currentPct = total > 0 ? Math.round((attended / total) * 100) : 0;
+            downloadLocalPDF("Reporte General Actual", currentPct);
         }
 
         function changeMonth(delta) {
