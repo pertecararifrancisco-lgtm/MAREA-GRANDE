@@ -339,6 +339,11 @@
     </main>
 
     <script>
+        // -------------------------------------------------------------------
+        // URL DE GOOGLE APPS SCRIPT CONFIGURADA
+        // -------------------------------------------------------------------
+        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzn73AwMmUw17IBDmFH0ZZUa7MTBat9VfzeFzTBw2UjuupOrr4egjotgcxZKtsK08SEGw/exec";
+
         let puntos = 0;
         let racha = 0;
         let nombreAtleta = "Atleta";
@@ -346,7 +351,7 @@
         let asistenciasConfirmadas = 0;
         let faltasConfirmadas = 0;
         let habitosCumplidosCount = 0;
-        let diasEntrenadosSet = new Set([1, 2, 4]); // Ejemplo visual inicial en calendario
+        let diasEntrenadosSet = new Set([1, 2, 4]);
 
         const mis10Habitos = [
             "Hacer 10 flexiones de brazos (+10 pts)",
@@ -377,7 +382,34 @@
             document.getElementById(`step-${paso}`).classList.add('active');
         }
 
+        function enviarSuscriptorAGoogleSheets(nombre, correo, deporte) {
+            if (!URL_APPS_SCRIPT) return;
+
+            fetch(URL_APPS_SCRIPT, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nombre_atleta: nombre,
+                    correo: correo,
+                    deporte: deporte,
+                    estado: "Nuevo Suscriptor"
+                })
+            }).then(() => {
+                console.log("¡Suscriptor registrado con éxito en Google Sheets!");
+            }).catch(err => {
+                console.error("Error al registrar suscriptor:", err);
+            });
+        }
+
         function finalizarOnboarding() {
+            const correo = document.getElementById('input-correo').value.trim();
+            const nombre = document.getElementById('input-nombre').value.trim();
+            const deporte = document.getElementById('input-deporte').value || "Rugby";
+
+            // Enviar a Google Sheets
+            enviarSuscriptorAGoogleSheets(nombre, correo, deporte);
+
             document.getElementById('step-4').classList.remove('active');
             actualizarRanking();
             alert("¡Bienvenido a Marea Grande!");
@@ -527,4 +559,3 @@
     </script>
 </body>
 </html>
-
