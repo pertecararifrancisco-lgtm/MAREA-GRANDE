@@ -3,561 +3,1350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAREA 🌊 GRANDE - Seguimiento Deportivo</title>
-    <!-- OneSignal SDK Placeholder -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      window.OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "TU_APP_ID_DE_ONESIGNAL",
-        });
-      });
-    </script>
+    <title>Marea Grande App</title>
     <style>
         :root {
-            --bg-dark: #061a12;
-            --card-dark: #0b291d;
-            --primary-green: #10b981;
-            --accent-gold: #fbbf24;
-            --text-light: #e2e8f0;
-            --text-muted: #94a3b8;
-            --danger: #ef4444;
+            --bg-dark: #0a140f;
+            --card-bg: #12221a;
+            --card-border: #1e382b;
+            --accent: #2ee583;
+            --accent-hover: #24c46e;
+            --text-main: #ffffff;
+            --text-muted: #8fa89b;
+            --day-empty: #1b2e24;
+            --rest-day: #151f1a;
+            --missed-day: #3a181c;
+            --missed-border: #e54858;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
             background-color: var(--bg-dark);
-            color: var(--text-light);
-            padding-bottom: 70px;
-        }
-
-        header {
-            background: linear-gradient(135deg, #064e3b, #061a12);
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            font-weight: 800;
-            font-size: 1.2rem;
-            border-bottom: 2px solid #047857;
-        }
-
-        .onboarding-step {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(6, 26, 18, 0.98);
+            color: var(--text-main);
             display: flex;
-            align-items: center;
             justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-            display: none;
+            padding: 16px;
+            min-height: 100vh;
         }
-        .onboarding-step.active { display: flex; }
 
-        .top-nav-bar {
+        .app-container {
+            width: 100%;
+            max-width: 420px;
             display: flex;
-            overflow-x: auto;
-            background: #061a12;
-            padding: 0.6rem 0.5rem;
-            gap: 8px;
-            border-bottom: 1px solid #047857;
-            white-space: nowrap;
-            scrollbar-width: none;
-        }
-        .top-nav-bar::-webkit-scrollbar { display: none; }
-        .top-tab-btn {
-            background: #0b291d;
-            border: 1px solid #047857;
-            color: var(--text-muted);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .top-tab-btn.active {
-            background: var(--primary-green);
-            color: #061a12;
-            border-color: var(--primary-green);
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
         }
 
-        main {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 1rem;
+        /* ================= PANTALLA DE ENCUESTA PASO A PASO ================= */
+        .onboarding-screen {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 26px 22px;
+            margin-top: 20px;
         }
+        .onboarding-screen.active { display: flex; }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .card {
-            background: var(--card-dark);
-            border-radius: 14px;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            border: 1px solid #047857;
-        }
-
-        .flex-between {
+        .step-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .input-text, .select-box {
+        .brand-pill {
+            background-color: #1a3829;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .step-indicator {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .progress-track {
             width: 100%;
-            padding: 0.8rem;
-            border-radius: 8px;
-            border: 1px solid #047857;
-            background: #062c1e;
-            color: white;
-            font-size: 1rem;
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #062c1e;
-            padding: 0.7rem;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            border: 1px solid #047857;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-        .checkbox-group input { width: 18px; height: 18px; accent-color: var(--primary-green); }
-
-        .progress-bar-container {
-            background: #064e3b;
-            border-radius: 999px;
-            height: 10px;
+            height: 6px;
+            background-color: var(--bg-dark);
+            border-radius: 10px;
             overflow: hidden;
-            margin: 0.6rem 0;
         }
-        .progress-bar {
-            background: linear-gradient(90deg, #10b981, #34d399);
+
+        .progress-fill {
             height: 100%;
-            width: 0%;
+            background-color: var(--accent);
+            width: 25%;
             transition: width 0.3s ease;
         }
 
-        .btn {
-            background-color: var(--primary-green);
-            color: #061a12;
-            border: none;
-            padding: 0.85rem 1rem;
+        .step-panel {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            animation: fadeIn 0.25s ease;
+        }
+        .step-panel.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .onboarding-title {
+            font-size: 23px;
+            font-weight: 800;
+            line-height: 1.25;
+        }
+
+        .onboarding-chamuyo {
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--text-muted);
+            background-color: var(--bg-dark);
+            padding: 15px;
+            border-radius: 14px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .survey-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .survey-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .survey-input {
+            width: 100%;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+        }
+        .survey-input:focus { border-color: var(--accent); }
+
+        .days-select-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .day-checkbox-label {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--card-border);
             border-radius: 10px;
+            padding: 10px 6px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        .day-checkbox-label input { display: none; }
+        .day-checkbox-label.selected {
+            background-color: #1a3829;
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .btn-back {
+            background-color: var(--bg-dark);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+            padding: 15px 18px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-next {
+            flex: 1;
+            background-color: var(--accent);
+            color: #05140c;
+            border: none;
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 16px;
             font-weight: 800;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(46, 229, 131, 0.25);
+        }
+
+        /* ================= PANTALLA PRINCIPAL ================= */
+        .main-screen {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .main-screen.active { display: flex; }
+
+        .print-official-header { display: none; }
+
+        .header-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .greeting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .greeting-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .greeting-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .active-sport-badge {
+            background-color: #1a3829;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Calendario */
+        .calendar-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 18px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .month-title {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            background-color: var(--day-empty);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .day.empty { background-color: transparent; cursor: default; }
+        .day.today { border: 2px solid var(--accent); color: var(--text-main); }
+        .day.trained {
+            background-color: var(--accent) !important;
+            color: #05140c !important;
+            font-weight: 900 !important;
+            box-shadow: 0 0 14px rgba(46, 229, 131, 0.45);
+        }
+        .day.rest {
+            background-color: var(--rest-day);
+            color: #536e60;
+            border: 1px dashed var(--card-border);
+        }
+        .day-emoji { font-size: 12px; margin-top: 2px; }
+
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--card-border);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .dot-trained { width: 8px; height: 8px; border-radius: 50%; background-color: var(--accent); }
+        .dot-rest { width: 8px; height: 8px; border-radius: 50%; background-color: var(--rest-day); border: 1px dashed var(--card-border); }
+        .dot-today { width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--accent); }
+
+        /* Registro Directo de Entrenamiento */
+        .checkin-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-left: 4px solid var(--accent);
+            border-radius: 18px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkin-title { font-size: 18px; font-weight: 700; }
+        .checkin-sub { font-size: 13px; color: var(--text-muted); margin-top: -6px; }
+
+        .btn-confirm {
             width: 100%;
-            margin-top: 0.8rem;
+            background-color: var(--accent);
+            color: #05140c;
+            border: none;
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .btn-confirm:active { transform: scale(0.98); }
+        .btn-confirm.done {
+            background-color: #1a3b2b;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            cursor: default;
         }
 
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
-        .calendar-day-header { font-size: 0.75rem; font-weight: bold; color: var(--text-muted); }
-        .calendar-day { padding: 0.5rem 0; background: #062c1e; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
-        .calendar-day.today { border: 1px solid var(--accent-gold); color: white; }
-        .calendar-day.trained { background: #10b981; color: #061a12; font-weight: bold; }
-        .calendar-day.missed { background: var(--danger); color: white; }
-
-        .habits-container {
-            max-height: 220px;
-            overflow-y: auto;
-            padding-right: 6px;
-            margin: 10px 0;
-            border: 1px solid #047857;
-            border-radius: 8px;
-            padding: 8px;
-            background: #061a12;
+        /* Sección de Hábitos y Asistencia */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-        .habit-item {
+
+        .stat-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .stat-box:hover { border-color: var(--accent); }
+
+        .stat-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            background-color: #1a3829; color: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 13px;
+        }
+
+        .stat-label { font-size: 14px; font-weight: 700; }
+        .stat-value { font-size: 20px; font-weight: 800; color: var(--accent); }
+        .stat-note { font-size: 11px; color: var(--text-muted); }
+
+        .btn-pdf { background: none; border: none; color: var(--accent); font-weight: 700; font-size: 14px; text-align: left; cursor: pointer; padding: 4px 0; }
+
+        /* Botón WhatsApp */
+        .btn-whatsapp {
+            background-color: #128c7e;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(18, 140, 126, 0.3);
+            text-decoration: none;
+            text-align: center;
+        }
+
+        /* Barra de Deporte */
+        .sport-drawer-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .sport-drawer-toggle {
+            width: 100%; background: none; border: none; color: var(--text-main);
+            padding: 15px 18px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; font-size: 15px; font-weight: 700;
+        }
+        .toggle-left { display: flex; align-items: center; gap: 10px; }
+        .toggle-arrow { color: var(--accent); font-size: 14px; transition: transform 0.25s ease; }
+        .sport-drawer-container.open .toggle-arrow { transform: rotate(180deg); }
+
+        .sport-drawer-content {
+            display: none; padding: 14px 18px 18px 18px; border-top: 1px solid var(--card-border);
+            flex-direction: column; gap: 12px;
+        }
+        .sport-drawer-container.open .sport-drawer-content { display: flex; }
+
+        .drawer-heading { font-size: 14px; font-weight: 700; color: var(--accent); }
+        .input-row { display: flex; flex-direction: column; gap: 6px; }
+        .input-row label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+        .drawer-input {
+            width: 100%; background-color: var(--bg-dark); border: 1px solid var(--card-border);
+            color: var(--text-main); padding: 11px 12px; border-radius: 10px; font-size: 15px; outline: none;
+        }
+        .btn-save-sport {
+            width: 100%; background-color: var(--accent); color: #05140c; border: none;
+            padding: 12px; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 4px;
+        }
+        .btn-reset-survey { background: none; border: none; color: var(--text-muted); font-size: 12px; text-decoration: underline; cursor: pointer; align-self: center; margin-top: 4px; }
+
+
+        /* ================= PANTALLA COMPLETA: MÓDULO DE HÁBITOS (VISTA CELULAR) ================= */
+        .screen-view {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-dark);
+            z-index: 200;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            animation: fadeInView 0.2s ease;
+        }
+        .screen-view.active { display: flex; }
+
+        @keyframes fadeInView {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .screen-title { font-size: 20px; font-weight: 800; }
+        .btn-close-screen {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; cursor: pointer;
+        }
+
+        .habits-info-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .habits-badge-rest {
+            background-color: #241c12;
+            color: #e5a32e;
+            border: 1px solid #e5a32e;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+            align-self: flex-start;
+            text-transform: uppercase;
+        }
+
+        /* Botón para abrir el Creador de Hábitos */
+        .btn-open-creator {
+            background-color: #1a3829;
+            color: var(--accent);
+            border: 1px dashed var(--accent);
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+        }
+        .btn-open-creator:hover { background-color: #244b36; }
+
+        /* Formulario flotante para crear hábito */
+        .creator-modal-box {
+            display: none;
+            background-color: var(--card-bg);
+            border: 1px solid var(--accent);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 16px;
+            flex-direction: column;
             gap: 12px;
-            padding: 0.6rem;
-            background: #062c1e;
-            border-radius: 8px;
-            margin-bottom: 0.4rem;
-            font-size: 0.85rem;
+            animation: slideDownHabits 0.25s ease;
+        }
+        .creator-modal-box.active { display: flex; }
+
+        /* Tarjeta de Hábito Desplegable Individual */
+        .habit-accordion-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .habit-accordion-toggle {
+            width: 100%; background: none; border: none; color: var(--text-main);
+            padding: 16px 18px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; font-size: 15px; font-weight: 800; text-align: left;
+        }
+        .habit-accordion-content {
+            display: none; padding: 0 18px 18px 18px; border-top: 1px solid var(--card-border);
+            flex-direction: column; gap: 12px; background-color: #0a140f;
+        }
+        .habit-accordion-card.open .habit-accordion-content { display: flex; }
+        .habit-accordion-card.open .toggle-arrow { transform: rotate(180deg); }
+
+        .benefit-tag {
+            font-size: 10px; font-weight: 800; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 10px;
+        }
+        .benefit-text {
+            font-size: 13px; color: var(--text-main); line-height: 1.4; display: flex; justify-content: space-between; align-items: center;
         }
 
-        .info-box {
-            background: #062c1e;
-            border-left: 4px solid var(--accent-gold);
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 0.8rem;
-            font-size: 0.85rem;
-            color: var(--accent-gold);
-            line-height: 1.4;
+        .logrado-row {
+            display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--card-border);
         }
+        .logrado-label { font-size: 12px; font-weight: 800; color: var(--text-main); }
+        .logrado-buttons { display: flex; gap: 8px; }
+        .btn-check-yn {
+            padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; cursor: pointer;
+            border: 1px solid var(--card-border); background-color: var(--card-bg); color: var(--text-muted);
+        }
+        .btn-check-yn.active-yes { background-color: var(--accent); color: #05140c; border-color: var(--accent); }
+        .btn-check-yn.active-no { background-color: var(--missed-day); color: var(--missed-border); border-color: var(--missed-border); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
-        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #047857; font-size: 0.9rem; }
-        th { color: var(--text-muted); }
+
+        /* ================= MODAL ASISTENCIA ================= */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(5, 12, 9, 0.88);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            z-index: 100;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            width: 100%;
+            max-width: 390px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 18px; font-weight: 800; }
+        .btn-close-modal { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
+
+        .reliability-banner {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .circular-chart-box { width: 65px; height: 65px; flex-shrink: 0; position: relative; }
+        .circular-chart { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: var(--card-border); stroke-width: 3.8; }
+        .circle-fill { fill: none; stroke: var(--accent); stroke-width: 3.8; stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
+        .circle-text-center {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: var(--text-main);
+        }
+        .rel-info { display: flex; flex-direction: column; gap: 2px; }
+        .rel-title-label { font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+        .rel-score-text { font-size: 20px; font-weight: 900; color: var(--accent); }
+        .rel-detail-text { font-size: 12px; color: var(--text-muted); }
+
+        .density-chart-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .density-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .density-cell { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .density-bar {
+            width: 100%; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800;
+        }
+        .bar-done { background-color: var(--accent); color: #05140c; box-shadow: 0 0 10px rgba(46, 229, 131, 0.25); }
+        .bar-rest { background-color: var(--rest-day); border: 1px dashed var(--card-border); color: var(--text-muted); }
+        .bar-missed { background-color: var(--missed-day); border: 1px solid var(--missed-border); color: var(--missed-border); }
+        .bar-upcoming { background-color: var(--bg-dark); border: 1px solid var(--card-border); color: var(--text-muted); }
+        .density-day-label { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+
+        .density-legend {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background-color: var(--bg-dark); padding: 12px; border-radius: 12px; font-size: 11px; color: var(--text-muted);
+        }
+        .d-leg-item { display: flex; align-items: center; gap: 6px; }
+        .d-box { width: 10px; height: 10px; border-radius: 3px; }
+        .d-box.done { background-color: var(--accent); }
+        .d-box.rest { background-color: var(--rest-day); border: 1px dashed var(--card-border); }
+        .d-box.missed { background-color: var(--missed-day); border: 1px solid var(--missed-border); }
+        .d-box.upcoming { background-color: var(--bg-dark); border: 1px solid var(--card-border); }
+
+        /* Estilos Impresión PDF */
+        @media print {
+            body { background-color: #ffffff !important; color: #000000 !important; padding: 0 !important; }
+            .checkin-card, .sport-drawer-container, .btn-pdf, .onboarding-screen, .modal-overlay, .screen-view, .btn-whatsapp { display: none !important; }
+            .main-screen { display: flex !important; gap: 12px !important; }
+            .print-official-header {
+                display: flex !important; justify-content: space-between; align-items: center; border: 2px solid #000000; border-radius: 12px; padding: 16px; background-color: #f4f7f5 !important;
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
+            }
+            .print-seal { border: 2px solid #137a43; color: #137a43; padding: 8px 14px; border-radius: 8px; font-weight: 900; font-size: 12px; text-transform: uppercase; text-align: center; }
+            .calendar-card, .header-card, .stat-box { border: 1px solid #cccccc !important; background-color: #ffffff !important; color: #000000 !important; }
+            .day.trained { background-color: #2ee583 !important; color: #05140c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .day.rest { background-color: #eeeeee !important; color: #555555 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- ONBOARDING PASO 1 -->
-    <div id="step-1" class="onboarding-step active">
-        <div class="card" style="width: 100%; max-width: 400px; margin: 0; text-align: center;">
-            <h3>MAREA 🌊 GRANDE</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 12px 0;">Seguimiento deportivo proactivo y microhábitos.</p>
-            <button class="btn" onclick="irPaso(2)">CONTINUAR</button>
+<div class="app-container">
+
+    <!-- ================= 1. ENCUESTA PASO A PASO ================= -->
+    <div class="onboarding-screen" id="onboardingScreen">
+        <div class="step-header">
+            <span class="brand-pill">Marea Grande App</span>
+            <span class="step-indicator" id="stepIndicator">Inicio</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+        <!-- PASO 0 -->
+        <div class="step-panel active" id="step0">
+            <h1 class="onboarding-title">Tu guía de rendimiento y disciplina</h1>
+            <p class="onboarding-chamuyo">Organizador deportivo profesional con control de asistencia y hábitos de descanso obligatorios.</p>
+            <div class="step-actions"><button class="btn-next" onclick="irAPaso(1)">Empezar →</button></div>
+        </div>
+
+        <!-- PASO 1: Nombre -->
+        <div class="step-panel" id="step1">
+            <h2 class="onboarding-title">¿Cómo te llamás?</h2>
+            <div class="survey-group">
+                <label class="survey-label" for="initName">Tu nombre o apodo</label>
+                <input type="text" id="initName" class="survey-input" placeholder="Ej: Francisco">
+            </div>
+            <div class="step-actions">
+                <button class="btn-back" onclick="irAPaso(0)">←</button>
+                <button class="btn-next" onclick="irAPaso(2)">Siguiente →</button>
+            </div>
+        </div>
+
+        <!-- PASO 2: Deporte -->
+        <div class="step-panel" id="step2">
+            <h2 class="onboarding-title">Agendá Tu Deporte</h2>
+            <div class="survey-group">
+                <label class="survey-label" for="initEmoji">Emoji de tu deporte</label>
+                <input type="text" id="initEmoji" class="survey-input" placeholder="Ej: 🏉" maxlength="4">
+            </div>
+            <div class="survey-group">
+                <label class="survey-label" for="initSport">Nombre del deporte</label>
+                <input type="text" id="initSport" class="survey-input" placeholder="Ej: Rugby">
+            </div>
+            <div class="step-actions">
+                <button class="btn-back" onclick="irAPaso(1)">←</button>
+                <button class="btn-next" onclick="irAPaso(3)">Siguiente →</button>
+            </div>
+        </div>
+
+        <!-- PASO 3: Días de entreno -->
+        <div class="step-panel" id="step3">
+            <h2 class="onboarding-title">¿Qué días entrenás?</h2>
+            <p class="survey-label">Los días no seleccionados se considerarán automáticamente días de descanso y hábitos obligatorios.</p>
+            <div class="days-select-grid" id="daysSelectGrid">
+                <label class="day-checkbox-label"><input type="checkbox" value="1">Lunes</label>
+                <label class="day-checkbox-label"><input type="checkbox" value="2">Martes</label>
+                <label class="day-checkbox-label"><input type="checkbox" value="3">Miércoles</label>
+                <label class="day-checkbox-label"><input type="checkbox" value="4">Jueves</label>
+                <label class="day-checkbox-label"><input type="checkbox" value="5">Viernes</label>
+                <label class="day-checkbox-label"><input type="checkbox" value="6">Sábado</label>
+                <label class="day-checkbox-label"><input type="checkbox" value="0">Domingo</label>
+            </div>
+            <div class="step-actions">
+                <button class="btn-back" onclick="irAPaso(2)">←</button>
+                <button class="btn-next" onclick="completarEncuesta()">Comenzar mi guía 🔥</button>
+            </div>
         </div>
     </div>
 
-    <!-- ONBOARDING PASO 2 -->
-    <div id="step-2" class="onboarding-step">
-        <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
-            <h3>VINCULAR CUENTA GMAIL</h3>
-            <input type="email" id="input-correo" class="input-text" placeholder="tucorreo@gmail.com">
-            <button class="btn" onclick="irPaso(3)">VINCULAR CON GMAIL</button>
+
+    <!-- ================= 2. PANTALLA PRINCIPAL ================= -->
+    <div class="main-screen" id="mainScreen">
+
+        <!-- Sello PDF -->
+        <div class="print-official-header">
+            <div>
+                <div style="font-size: 11px; font-weight: 800; color: #555;">MAREA GRANDE APP • REPORTE OFICIAL</div>
+                <div style="font-size: 18px; font-weight: 900; margin: 4px 0;" id="printUserSport">Francisco • 🏉 Rugby</div>
+                <div style="font-size: 13px; font-weight: 700;" id="printAttendanceText">Índice de Asistencia: 100%</div>
+            </div>
+            <div class="print-seal">DISCIPLINA<br>VERIFICADA</div>
         </div>
+
+        <div class="header-card">
+            <div class="greeting-group">
+                <div class="greeting-title" id="greetingTitle">Hola, Francisco</div>
+                <div class="greeting-sub">Guía de rendimiento activo</div>
+            </div>
+            <div class="active-sport-badge" id="headerSportBadge">🏉 Rugby</div>
+        </div>
+
+        <!-- Calendario -->
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <span class="month-title" id="monthTitle">Noviembre 2026</span>
+            </div>
+            <div class="weekdays">
+                <div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div><div>D</div>
+            </div>
+            <div class="days-grid" id="daysGrid"></div>
+            <div class="legend">
+                <div class="legend-item"><span class="dot-trained"></span> Entrenado</div>
+                <div class="legend-item"><span class="dot-rest"></span> Descanso</div>
+                <div class="legend-item"><span class="dot-today"></span> Hoy</div>
+            </div>
+        </div>
+
+        <!-- Registro de Hoy -->
+        <div class="checkin-card">
+            <div class="checkin-title" id="questionTitle">¿Fuiste a entrenar hoy?</div>
+            <div class="checkin-sub" id="questionSub">Confirmá tu asistencia exclusiva de hoy.</div>
+            <button id="btnConfirm" class="btn-confirm" onclick="marcarEntrenamientoHoy()">¡Sí, fui a entrenar! 🔥</button>
+        </div>
+
+        <!-- Tarjetas: Asistencia y Hábitos -->
+        <div class="stats-row">
+            <div class="stat-box" onclick="abrirModalAsistencia()">
+                <div class="stat-icon">%</div>
+                <div class="stat-label">Asistencia</div>
+                <div class="stat-value" id="attendanceValue">100%</div>
+                <div class="stat-note">Ver gráfico circular →</div>
+            </div>
+            <div class="stat-box" onclick="abrirPantallaHabitos()">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-label">Hábitos</div>
+                <div class="stat-value" id="habitsStatusPreview">Ver lista</div>
+                <div class="stat-note">Abrir apartado →</div>
+            </div>
+        </div>
+
+        <!-- Botón WhatsApp (Envía reporte o estado al chat) -->
+        <a id="btnWhatsApp" class="btn-whatsapp" href="#" target="_blank" onclick="enviarWhatsApp(event)">
+            💬 Enviar Estado a WhatsApp
+        </a>
+
+        <!-- Reporte PDF -->
+        <div class="stat-box" onclick="generarReportePDF()">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div class="stat-label">Reporte Oficial en PDF</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" id="pdfSportTag">🏉 Rugby • Verificado</div>
+                </div>
+                <button class="btn-pdf">Exportar PDF →</button>
+            </div>
+        </div>
+
+        <!-- Barra Desplegable: Tu Deporte -->
+        <div class="sport-drawer-container" id="sportDrawer">
+            <button class="sport-drawer-toggle" onclick="toggleSportDrawer()">
+                <div class="toggle-left">
+                    <span id="drawerBarIcon">🏉</span>
+                    <span>Tu Deporte</span>
+                </div>
+                <span class="toggle-arrow">▼</span>
+            </button>
+            <div class="sport-drawer-content">
+                <div class="drawer-heading">Agendá Tu Deporte</div>
+                <div class="input-row">
+                    <label>Emoji de tu deporte</label>
+                    <input type="text" id="sportEmojiInput" class="drawer-input" maxlength="4">
+                </div>
+                <div class="input-row">
+                    <label>Nombre del deporte</label>
+                    <input type="text" id="sportNameInput" class="drawer-input">
+                </div>
+                <button class="btn-save-sport" onclick="guardarDeporte()">Guardar Cambios</button>
+                <button class="btn-reset-survey" onclick="volverAEncuesta()">Volver a hacer la encuesta</button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- ONBOARDING PASO 3 -->
-    <div id="step-3" class="onboarding-step">
-        <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
-            <h3>PERFIL DEPORTIVO</h3>
-            <input type="text" id="input-nombre" class="input-text" placeholder="Tu nombre o apodo">
-            <input type="text" id="input-deporte" class="input-text" value="Rugby">
-            <button class="btn" onclick="irPaso(4)">SIGUIENTE →</button>
-        </div>
+</div>
+
+
+<!-- ================= 3. VISTA APARTADO DE HÁBITOS (PANTALLA COMPLETA) ================= -->
+<div class="screen-view" id="habitsScreenView">
+    <div class="screen-header">
+        <span class="screen-title">⚡ Hábitos</span>
+        <button class="btn-close-screen" onclick="cerrarPantallaHabitos()">✕</button>
     </div>
 
-    <!-- ONBOARDING PASO 4 -->
-    <div id="step-4" class="onboarding-step">
-        <div class="card" style="width: 100%; max-width: 400px; margin: 0; max-height: 90vh; overflow-y: auto;">
-            <h3>DÍAS DE ENTRENAMIENTO Y PUSH</h3>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Marcá los días que entrenás para recibir la notificación:</p>
-            
-            <label class="checkbox-group"><input type="checkbox" value="Lunes"> Lunes</label>
-            <label class="checkbox-group"><input type="checkbox" value="Martes"> Martes</label>
-            <label class="checkbox-group"><input type="checkbox" value="Miércoles"> Miércoles</label>
-            <label class="checkbox-group"><input type="checkbox" value="Jueves"> Jueves</label>
-            <label class="checkbox-group"><input type="checkbox" value="Viernes"> Viernes</label>
-            <label class="checkbox-group"><input type="checkbox" value="Sábado"> Sábado</label>
-            <label class="checkbox-group"><input type="checkbox" value="Domingo"> Domingo</label>
-
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 10px 0 6px 0;">Hora de notificación push:</p>
-            <select id="select-hora" class="select-box">
-                <option value="19:00" selected>7:00 p.m.</option>
-                <option value="20:00">8:00 p.m.</option>
-            </select>
-            <button class="btn" onclick="finalizarOnboarding()">¡COMENZAR MAREA GRANDE!</button>
-        </div>
+    <div class="habits-info-card">
+        <div id="habitDayTypeBadge" class="habits-badge-rest">DÍA DE DESCANSO</div>
+        <div style="font-size: 14px; font-weight: 700;">Panel de Microhábitos Obligatorios</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Elegí y cumplí tus hábitos en los días sin actividad física para mantener el motor activo.</div>
     </div>
 
-    <header>MAREA 🌊 GRANDE</header>
+    <!-- Botón para crear hábito nuevo -->
+    <button class="btn-open-creator" onclick="toggleFormCrearHabito()">+ Crear Hábito Personalizado</button>
 
-    <nav class="top-nav-bar">
-        <button class="top-tab-btn active" onclick="cambiarTab('tab-inicio', this)">🏉 Jugador</button>
-        <button class="top-tab-btn" onclick="cambiarTab('tab-habitos', this)">💪 Hábitos</button>
-        <button class="top-tab-btn" onclick="cambiarTab('tab-ranking', this)">🏆 Ranking</button>
-        <button class="top-tab-btn" onclick="cambiarTab('tab-reportes', this)">👑 Reportes Pro</button>
-    </nav>
+    <!-- Creador de Hábitos (Cuadro para rellenar) -->
+    <div class="creator-modal-box" id="creatorModalBox">
+        <div style="font-size: 15px; font-weight: 800; color: var(--accent);">Nuevo Hábito Personalizado</div>
+        <div class="survey-group">
+            <label class="survey-label">Nombre del hábito</label>
+            <input type="text" id="nuevoHabitoNombre" class="survey-input" placeholder="Ej: Meditación o Elongación extra">
+        </div>
+        <div class="survey-group">
+            <label class="survey-label">Beneficio que aporta</label>
+            <input type="text" id="nuevoHabitoBeneficio" class="survey-input" placeholder="Ej: Reduce la ansiedad y relaja la mente">
+        </div>
+        <button class="btn-save-sport" onclick="guardarNuevoHabito()">Guardar y Agregar a la Lista</button>
+    </div>
 
-    <main>
-        <!-- PESTAÑA 1: JUGADOR -->
-        <div id="tab-inicio" class="tab-content active">
-            <section class="card">
-                <div class="flex-between">
-                    <span>👤 Atleta: <strong id="perfil-nombre" style="color: var(--accent-gold);">Atleta</strong></span>
-                    <span>⚡ Nivel: <strong id="nivel-txt">1</strong></span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="barra-exp"></div>
-                </div>
-                <div class="flex-between" style="margin-top: 0.5rem;">
-                    <span>🔥 Racha: <strong id="racha-txt">0</strong> días</span>
-                    <span>🏆 Puntos: <strong id="puntos-txt">0</strong></span>
-                </div>
-            </section>
+    <!-- Contenedor dinámico de la lista de hábitos (Desplegables individuales) -->
+    <div id="listaHabitosContenedor"></div>
+</div>
 
-            <section class="card">
-                <div class="calendar-header">
-                    <h3>📅 Calendario Deportivo</h3>
-                    <span id="label-deporte-principal" style="font-size: 0.8rem; color: var(--primary-green);">Rugby</span>
-                </div>
-                <div class="calendar-grid" id="grilla-calendario"></div>
-            </section>
+
+<!-- ================= 4. MODAL ASISTENCIA ================= -->
+<div class="modal-overlay" id="attendanceModal" onclick="cerrarModalAfuera(event)">
+    <div class="modal-card">
+        <div class="modal-header">
+            <span class="modal-title">Índice de Asistencia</span>
+            <button class="btn-close-modal" onclick="cerrarModalAsistencia()">✕</button>
         </div>
 
-        <!-- PESTAÑA 2: MICROHÁBITOS -->
-        <div id="tab-habitos" class="tab-content">
-            <section class="card">
-                <h3>💪 Tus Microhábitos</h3>
-                <div id="vista-seleccion">
-                    <div class="info-box">
-                        "Elegí mínimo 3 microhábitos. Se te mandarán los días que no hagas nada para que los cumplas y mantengas la disciplina."
-                    </div>
-                    <div class="habits-container" id="lista-10-habitos"></div>
-                    <button class="btn" onclick="confirmarHabitos()">Confirmar hábitos elegidos</button>
-                </div>
-                <div id="vista-confirmados" style="display: none;">
-                    <div class="info-box" style="border-left-color: var(--primary-green); color: var(--text-light);">
-                        ✅ Hábitos confirmados. Se enviarán por push los días sin actividad:
-                    </div>
-                    <div id="lista-mis-habitos-fijos"></div>
-                    <button class="btn" style="background: #047857; color: white;" onclick="editarHabitos()">Cambiar selección</button>
-                </div>
-            </section>
+        <div class="reliability-banner">
+            <div class="circular-chart-box">
+                <svg class="circular-chart" viewBox="0 0 36 36">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle-fill" id="circleProgressPath" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="circle-text-center" id="circlePercentText">100%</div>
+            </div>
+            <div class="rel-info">
+                <span class="rel-title-label">CUMPLIMIENTO MENSUAL</span>
+                <span class="rel-score-text" id="modalAttendanceScore">100%</span>
+                <span class="rel-detail-text" id="modalAttendanceDetail">0 de 0 sesiones pautadas</span>
+            </div>
         </div>
 
-        <!-- PESTAÑA 3: RANKING GENERAL -->
-        <div id="tab-ranking" class="tab-content">
-            <section class="card">
-                <h3>🏆 Tabla General de Atletas</h3>
-                <table>
-                    <thead><tr><th>#</th><th>Atleta</th><th>Puntos Totales</th></tr></thead>
-                    <tbody id="cuerpo-tabla-ranking"></tbody>
-                </table>
-            </section>
+        <div class="density-chart-wrapper">
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-muted);">RADIOGRAFÍA DE ESTA SEMANA</div>
+            <div class="density-grid" id="densityGrid"></div>
         </div>
 
-        <!-- PESTAÑA 4: REPORTES LOCALES -->
-        <div id="tab-reportes" class="tab-content">
-            <section class="card">
-                <h3>👑 REPORTE DEPORTIVO LOCAL (Cada 7 días)</h3>
-                <div id="resumen-reporte-local" style="font-size: 0.9rem; color: var(--text-light); margin: 10px 0; line-height: 1.5;"></div>
-            </section>
+        <div class="density-legend">
+            <div class="d-leg-item"><span class="d-box done"></span> Cumplido</div>
+            <div class="d-leg-item"><span class="d-box rest"></span> Descanso</div>
+            <div class="d-leg-item"><span class="d-box missed"></span> Sin registro</div>
+            <div class="d-leg-item"><span class="d-box upcoming"></span> Próximo</div>
         </div>
-    </main>
+    </div>
+</div>
 
-    <script>
-        // -------------------------------------------------------------------
-        // URL DE GOOGLE APPS SCRIPT CONFIGURADA
-        // -------------------------------------------------------------------
-        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbzn73AwMmUw17IBDmFH0ZZUa7MTBat9VfzeFzTBw2UjuupOrr4egjotgcxZKtsK08SEGw/exec";
+<script>
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = hoy.getMonth();
+    const diaActual = hoy.getDate();
+    const diaSemanaHoy = hoy.getDay();
 
-        let puntos = 0;
-        let racha = 0;
-        let nombreAtleta = "Atleta";
-        let diasTotalesApp = 1;
-        let asistenciasConfirmadas = 0;
-        let faltasConfirmadas = 0;
-        let habitosCumplidosCount = 0;
-        let diasEntrenadosSet = new Set([1, 2, 4]);
+    const diasSemanaNombres = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const diasCortos = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    const mesesNombres = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-        const mis10Habitos = [
-            "Hacer 10 flexiones de brazos (+10 pts)",
-            "Tomar 2 vasos de agua al despertar (+5 pts)",
-            "2 minutos de estiramiento de piernas (+5 pts)",
-            "Hacer 15 sentadillas en casa (+10 pts)",
-            "30 segundos de plancha abdominal (+10 pts)",
-            "Caminar 10 minutos al aire libre (+10 pts)",
-            "Subir y bajar escaleras 2 veces (+10 pts)",
-            "Caminar 2000 pasos extra en el día (+10 pts)",
-            "Hacer movilidad de hombros y cuello (+5 pts)",
-            "10 estocadas por pierna caminadas (+10 pts)"
-        ];
+    const nombreDiaHoy = diasSemanaNombres[diaSemanaHoy];
+    const claveHoy = `${anio}-${mes + 1}-${diaActual}`;
 
-        let rankingUsuarios = [];
+    let entrenamientos = JSON.parse(localStorage.getItem('marea_entrenamientos')) || [];
+    let diasEntrenoConfig = JSON.parse(localStorage.getItem('marea_dias_config')) || [2, 4];
+    let encuestaHecha = localStorage.getItem('marea_encuesta_hecha') === 'true';
+    let usuarioNombre = localStorage.getItem('marea_usuario') || '';
+    let deporteEmoji = localStorage.getItem('marea_deporte_emoji') || '🏉';
+    let deporteNombre = localStorage.getItem('marea_deporte_nombre') || 'Rugby';
 
-        function irPaso(paso) {
-            document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
-            if(paso === 3 && !document.getElementById('input-correo').value) {
-                alert("Ingresá tu correo."); document.getElementById('step-2').classList.add('active'); return;
-            }
-            if(paso === 4) {
-                const nombre = document.getElementById('input-nombre').value.trim();
-                if(!nombre) { alert("Ingresá tu nombre."); document.getElementById('step-3').classList.add('active'); return; }
-                nombreAtleta = nombre;
-                document.getElementById('perfil-nombre').innerText = nombreAtleta;
-            }
-            document.getElementById(`step-${paso}`).classList.add('active');
+    // Lista por defecto de los 5 hábitos oficiales especificados
+    let habitosBaseIniciales = [
+        { id: 1, nombre: "🚶‍♂️ Caminata Mínima (1,000 Pasos)", beneficio: "Reduce el estrés y activa el cuerpo." },
+        { id: 2, nombre: "💧 Hidratación Óptima (2L)", beneficio: "Mejora la recuperación muscular y previene la fatiga." },
+        { id: 3, nombre: "🧘‍♂️ Movilidad (Lumbar e Isquios)", beneficio: "Reduce la tensión y previene lesiones deportivas." },
+        { id: 4, nombre: "🔥 Abdominales (4 series x 8 reps)", beneficio: "Fortalece el centro del cuerpo y mejora la postura." },
+        { id: 5, nombre: "💪 Fuerza de Brazos", beneficio: "Aumenta la tonicidad muscular y la resistencia superior." }
+    ];
+
+    let habitosGuardadosUsuario = JSON.parse(localStorage.getItem('marea_habitos_lista')) || habitosBaseIniciales;
+    let estadosHabitosHoy = JSON.parse(localStorage.getItem(`marea_estados_${claveHoy}`)) || {};
+
+    document.querySelectorAll('.day-checkbox-label').forEach(label => {
+        const checkbox = label.querySelector('input');
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) label.classList.add('selected');
+            else label.classList.remove('selected');
+        });
+    });
+
+    function inicializarApp() {
+        if (!encuestaHecha) {
+            document.getElementById('onboardingScreen').classList.add('active');
+            document.getElementById('mainScreen').classList.remove('active');
+            irAPaso(0);
+        } else {
+            mostrarPantallaPrincipal();
         }
+    }
 
-        function enviarSuscriptorAGoogleSheets(nombre, correo, deporte) {
-            if (!URL_APPS_SCRIPT) return;
-
-            fetch(URL_APPS_SCRIPT, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    nombre_atleta: nombre,
-                    correo: correo,
-                    deporte: deporte,
-                    estado: "Nuevo Suscriptor"
-                })
-            }).then(() => {
-                console.log("¡Suscriptor registrado con éxito en Google Sheets!");
-            }).catch(err => {
-                console.error("Error al registrar suscriptor:", err);
-            });
+    function irAPaso(numPaso) {
+        for (let i = 0; i <= 3; i++) {
+            document.getElementById(`step${i}`).classList.remove('active');
         }
+        document.getElementById(`step${numPaso}`).classList.add('active');
+        const porcentajes = ['25%', '50%', '75%', '100%'];
+        const etiquetas = ['Inicio', 'Paso 1 de 3', 'Paso 2 de 3', 'Paso 3 de 3'];
+        document.getElementById('progressFill').style.width = porcentajes[numPaso];
+        document.getElementById('stepIndicator').innerText = etiquetas[numPaso];
+    }
 
-        function finalizarOnboarding() {
-            const correo = document.getElementById('input-correo').value.trim();
-            const nombre = document.getElementById('input-nombre').value.trim();
-            const deporte = document.getElementById('input-deporte').value || "Rugby";
+    function completarEncuesta() {
+        const nombreInput = document.getElementById('initName').value.trim();
+        const emojiInput = document.getElementById('initEmoji').value.trim();
+        const deporteInput = document.getElementById('initSport').value.trim();
+        
+        const diasSeleccionados = [];
+        document.querySelectorAll('.day-checkbox-label input:checked').forEach(cb => {
+            diasSeleccionados.push(parseInt(cb.value));
+        });
 
-            // Enviar a Google Sheets
-            enviarSuscriptorAGoogleSheets(nombre, correo, deporte);
+        usuarioNombre = nombreInput || 'Deportista';
+        deporteEmoji = emojiInput || '🏅';
+        deporteNombre = deporteInput || 'Entrenamiento';
+        diasEntrenoConfig = diasSeleccionados.length > 0 ? diasSeleccionados : [1, 3, 5];
+        encuestaHecha = true;
 
-            document.getElementById('step-4').classList.remove('active');
-            actualizarRanking();
-            alert("¡Bienvenido a Marea Grande!");
-        }
+        localStorage.setItem('marea_usuario', usuarioNombre);
+        localStorage.setItem('marea_deporte_emoji', deporteEmoji);
+        localStorage.setItem('marea_deporte_nombre', deporteNombre);
+        localStorage.setItem('marea_dias_config', JSON.stringify(diasEntrenoConfig));
+        localStorage.setItem('marea_encuesta_hecha', 'true');
 
-        function renderizarCalendario() {
-            const grilla = document.getElementById('grilla-calendario');
-            grilla.innerHTML = `
-                <div class="calendar-day-header">L</div><div class="calendar-day-header">M</div>
-                <div class="calendar-day-header">M</div><div class="calendar-day-header">J</div>
-                <div class="calendar-day-header">V</div><div class="calendar-day-header">S</div>
-                <div class="calendar-day-header">D</div>
-            `;
-            for (let d = 1; d <= 30; d++) {
-                let clase = "";
-                if (d === 7) clase = "today";
-                if (diasEntrenadosSet.has(d)) clase = "trained";
-                grilla.innerHTML += `<div class="calendar-day ${clase}">${d}</div>`;
-            }
-        }
+        mostrarPantallaPrincipal();
+    }
 
-        function renderizarSelector() {
-            const contenedor = document.getElementById('lista-10-habitos');
-            contenedor.innerHTML = "";
-            mis10Habitos.forEach((h, index) => {
-                contenedor.innerHTML += `
-                    <div class="habit-item">
-                        <input type="checkbox" id="sel_${index}" value="${h}">
-                        <label for="sel_${index}">${h}</label>
-                    </div>
-                `;
-            });
-        }
+    function volverAEncuesta() {
+        document.getElementById('initName').value = usuarioNombre;
+        document.getElementById('initEmoji').value = deporteEmoji;
+        document.getElementById('initSport').value = deporteNombre;
+        document.getElementById('mainScreen').classList.remove('active');
+        document.getElementById('onboardingScreen').classList.add('active');
+        irAPaso(0);
+    }
 
-        function confirmarHabitos() {
-            let seleccionados = 0;
-            mis10Habitos.forEach((_, index) => {
-                if(document.getElementById(`sel_${index}`).checked) seleccionados++;
-            });
-            if(seleccionados < 3) { alert("⚠️ Seleccioná mínimo 3 microhábitos."); return; }
+    function mostrarPantallaPrincipal() {
+        document.getElementById('onboardingScreen').classList.remove('active');
+        document.getElementById('mainScreen').classList.add('active');
 
-            document.getElementById('vista-seleccion').style.display = 'none';
-            document.getElementById('vista-confirmados').style.display = 'block';
+        document.getElementById('greetingTitle').innerText = `Hola, ${usuarioNombre}`;
+        actualizarVisualDeporte();
 
-            const contenedorFijos = document.getElementById('lista-mis-habitos-fijos');
-            contenedorFijos.innerHTML = "";
-            mis10Habitos.forEach((h, index) => {
-                if(document.getElementById(`sel_${index}`).checked) {
-                    contenedorFijos.innerHTML += `
-                        <div class="habit-item" style="border-color: var(--primary-green);">
-                            <input type="checkbox" onchange="marcarHabitoPush(this)">
-                            <label><strong>${h}</strong> <span style="display:block; font-size:0.75rem; color:var(--text-muted);">Cumplir hábito (+10 pts)</span></label>
-                        </div>
-                    `;
-                }
-            });
-        }
+        document.getElementById('questionTitle').innerText = `¿Fuiste a entrenar el ${nombreDiaHoy}?`;
+        document.getElementById('monthTitle').innerText = `${mesesNombres[mes]} ${anio}`;
 
-        function editarHabitos() {
-            document.getElementById('vista-confirmados').style.display = 'none';
-            document.getElementById('vista-seleccion').style.display = 'block';
-        }
-
-        function marcarHabitoPush(cb) {
-            if(cb.checked) {
-                puntos += 10;
-                habitosCumplidosCount++;
-                alert("¡Microhábito cumplido! +10 pts 💪");
-            } else {
-                puntos = Math.max(0, puntos - 10);
-                habitosCumplidosCount = Math.max(0, habitosCumplidosCount - 1);
-            }
-            actualizarUI();
-        }
-
-        function actualizarRanking() {
-            let usuarioEncontrado = rankingUsuarios.find(u => u.nombre === nombreAtleta);
-            if (usuarioEncontrado) {
-                usuarioEncontrado.puntos = puntos;
-            } else {
-                rankingUsuarios.push({ nombre: nombreAtleta, puntos: puntos });
-            }
-            rankingUsuarios.sort((a, b) => b.puntos - a.puntos);
-
-            const tbody = document.getElementById('cuerpo-tabla-ranking');
-            if(rankingUsuarios.length === 0 || (rankingUsuarios.length === 1 && rankingUsuarios[0].puntos === 0)) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Nadie se ha registrado todavía.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = "";
-            rankingUsuarios.forEach((u, index) => {
-                let esVos = u.nombre === nombreAtleta;
-                tbody.innerHTML += `
-                    <tr style="${esVos ? 'background: #062c1e;' : ''}">
-                        <td>#${index + 1}</td>
-                        <td>${u.nombre} ${esVos ? '(Vos)' : ''}</td>
-                        <td><strong>${u.puntos} pts</strong></td>
-                    </tr>
-                `;
-            });
-        }
-
-        function actualizarReporteLocal() {
-            const diasFaltantesReporte = 7 - (diasTotalesApp % 7);
-            let reporteHTML = "";
-
-            if (diasTotalesApp < 7) {
-                reporteHTML = `
-                    ⏳ <strong>Reporte en proceso...</strong><br>
-                    Te faltan <strong>${diasFaltantesReporte} días</strong> para destrabar tu primer Reporte Local Pro de los 7 días.<br><br>
-                    📊 <em>Progreso actual:</em><br>
-                    - Asistencias: ${asistenciasConfirmadas}<br>
-                    - Faltas: ${faltasConfirmadas}<br>
-                    - Hábitos cumplidos: ${habitosCumplidosCount}
-                `;
-            } else {
-                reporteHTML = `
-                    👑 <strong>Reporte de la Semana (${nombreAtleta})</strong><br><br>
-                    ✅ <strong>Lo que hiciste bien:</strong> Sumaste ${asistenciasConfirmadas} asistencias y mantuviste constancia con ${habitosCumplidosCount} microhábitos.<br>
-                    ❌ <strong>Lo que hiciste mal:</strong> Tuviste ${faltasConfirmadas} faltas que bajaron tu puntaje.<br>
-                    🎯 <strong>Qué reforzar:</strong> Sostener los días libres con los hábitos elegidos para no perder la racha.<br>
-                    📈 <strong>Próximos pasos:</strong> Apuntar a la siguiente semana limpia sin faltas.
-                `;
-            }
-            document.getElementById('resumen-reporte-local').innerHTML = reporteHTML;
-        }
-
-        function actualizarUI() {
-            document.getElementById('puntos-txt').innerText = puntos;
-            document.getElementById('racha-txt').innerText = racha;
-            let porcentajeBarra = Math.min(100, (puntos % 100));
-            document.getElementById('barra-exp').style.width = porcentajeBarra + '%';
-            actualizarRanking();
-            actualizarReporteLocal();
-        }
-
-        function cambiarTab(tabId, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.top-tab-btn').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            el.classList.add('active');
-        }
-
-        renderizarSelector();
         renderizarCalendario();
-        actualizarUI();
-    </script>
+        actualizarEstadoBoton();
+        calcularAsistencia();
+        actualizarEstadoHabitosPreview();
+    }
+
+    function toggleSportDrawer() {
+        document.getElementById('sportDrawer').classList.toggle('open');
+    }
+
+    function actualizarVisualDeporte() {
+        const textoCompleto = `${deporteEmoji} ${deporteNombre}`;
+        document.getElementById('headerSportBadge').innerText = textoCompleto;
+        document.getElementById('pdfSportTag').innerText = `${textoCompleto} • Verificado`;
+        document.getElementById('drawerBarIcon').innerText = deporteEmoji;
+        document.getElementById('sportEmojiInput').value = deporteEmoji;
+        document.getElementById('sportNameInput').value = deporteNombre;
+    }
+
+    function guardarDeporte() {
+        const nuevoEmoji = document.getElementById('sportEmojiInput').value.trim();
+        const nuevoNombre = document.getElementById('sportNameInput').value.trim();
+        if (nuevoNombre) {
+            deporteEmoji = nuevoEmoji || '🏅';
+            deporteNombre = nuevoNombre;
+            localStorage.setItem('marea_deporte_emoji', deporteEmoji);
+            localStorage.setItem('marea_deporte_nombre', deporteNombre);
+            actualizarVisualDeporte();
+            renderizarCalendario();
+            calcularAsistencia();
+            toggleSportDrawer();
+        }
+    }
+
+    function renderizarCalendario() {
+        const grid = document.getElementById('daysGrid');
+        grid.innerHTML = '';
+
+        let primerDia = new Date(anio, mes, 1).getDay();
+        primerDia = primerDia === 0 ? 6 : primerDia - 1;
+        const totalDiasMes = new Date(anio, mes + 1, 0).getDate();
+
+        for (let i = 0; i < primerDia; i++) {
+            const celdaVacia = document.createElement('div');
+            celdaVacia.className = 'day empty';
+            grid.appendChild(celdaVacia);
+        }
+
+        for (let d = 1; d <= totalDiasMes; d++) {
+            const celda = document.createElement('div');
+            celda.className = 'day';
+            
+            const fechaObj = new Date(anio, mes, d);
+            const numeroDiaSemana = fechaObj.getDay();
+            const fechaStr = `${anio}-${mes + 1}-${d}`;
+
+            const esDiaEntrenoProgramado = diasEntrenoConfig.includes(numeroDiaSemana);
+            const estaEntrenado = entrenamientos.includes(fechaStr);
+
+            let contenidoHtml = `<span>${d}</span>`;
+
+            if (estaEntrenado) {
+                celda.classList.add('trained');
+                contenidoHtml += `<span class="day-emoji">${deporteEmoji}</span>`;
+            } else if (!esDiaEntrenoProgramado) {
+                celda.classList.add('rest');
+                contenidoHtml += `<span class="day-emoji">💤</span>`;
+            }
+
+            if (d === diaActual) {
+                celda.classList.add('today');
+            }
+
+            celda.innerHTML = contenidoHtml;
+            grid.appendChild(celda);
+        }
+    }
+
+    function marcarEntrenamientoHoy() {
+        if (!entrenamientos.includes(claveHoy)) {
+            entrenamientos.push(claveHoy);
+            localStorage.setItem('marea_entrenamientos', JSON.stringify(entrenamientos));
+            renderizarCalendario();
+            actualizarEstadoBoton();
+            calcularAsistencia();
+        }
+    }
+
+    function actualizarEstadoBoton() {
+        const btn = document.getElementById('btnConfirm');
+        const sub = document.getElementById('questionSub');
+        if (entrenamientos.includes(claveHoy)) {
+            btn.innerText = '✓ ¡Día cumplido y marcado!';
+            btn.classList.add('done');
+            btn.disabled = true;
+            sub.innerText = `Asistencia del ${nombreDiaHoy} registrada con éxito.`;
+        }
+    }
+
+    function calcularAsistencia() {
+        let diasPautadosHastaHoy = 0;
+        let cumplidosEnElMes = 0;
+
+        for (let d = 1; d <= diaActual; d++) {
+            const fechaObj = new Date(anio, mes, d);
+            const fechaStr = `${anio}-${mes + 1}-${d}`;
+            
+            if (diasEntrenoConfig.includes(fechaObj.getDay())) {
+                diasPautadosHastaHoy++;
+            }
+            if (entrenamientos.includes(fechaStr)) {
+                cumplidosEnElMes++;
+            }
+        }
+
+        let porcentaje = 100;
+        if (diasPautadosHastaHoy > 0) {
+            porcentaje = Math.min(100, Math.round((cumplidosEnElMes / diasPautadosHastaHoy) * 100));
+        }
+
+        document.getElementById('attendanceValue').innerText = `${porcentaje}%`;
+        document.getElementById('modalAttendanceScore').innerText = `${porcentaje}%`;
+        document.getElementById('circlePercentText').innerText = `${porcentaje}%`;
+        document.getElementById('modalAttendanceDetail').innerText = `${cumplidosEnElMes} de ${diasPautadosHastaHoy} sesiones pautadas`;
+
+        const pathEl = document.getElementById('circleProgressPath');
+        if (pathEl) {
+            pathEl.setAttribute('stroke-dasharray', `${porcentaje}, 100`);
+        }
+
+        document.getElementById('printUserSport').innerText = `${usuarioNombre} • ${deporteEmoji} ${deporteNombre}`;
+        document.getElementById('printAttendanceText').innerText = `Índice de Asistencia: ${porcentaje}% (${cumplidosEnElMes}/${diasPautadosHastaHoy} sesiones)`;
+    }
+
+    // ================= PANTALLA HÁBITOS (PANTALLA COMPLETA Y ACORDEÓN) =================
+    function abrirPantallaHabitos() {
+        const esDiaDescanso = !diasEntrenoConfig.includes(diaSemanaHoy);
+        const badge = document.getElementById('habitDayTypeBadge');
+        
+        if (esDiaDescanso) {
+            badge.className = 'habits-badge-rest';
+            badge.innerText = 'DÍA DE DESCANSO (HÁBITOS ACTIVOS)';
+        } else {
+            badge.className = 'habits-badge-rest';
+            badge.style.backgroundColor = '#1a3829';
+            badge.style.color = 'var(--accent)';
+            badge.style.borderColor = 'var(--accent)';
+            badge.innerText = 'DÍA DE ENTRENAMIENTO (OPCIONAL)';
+        }
+
+        renderizarListaHabitos();
+        document.getElementById('habitsScreenView').classList.add('active');
+    }
+
+    function cerrarPantallaHabitos() {
+        document.getElementById('habitsScreenView').classList.remove('active');
+        actualizarEstadoHabitosPreview();
+    }
+
+    function toggleFormCrearHabito() {
+        document.getElementById('creatorModalBox').classList.toggle('active');
+    }
+
+    function guardarNuevoHabito() {
+        const nombreInput = document.getElementById('nuevoHabitoNombre').value.trim();
+        const beneficioInput = document.getElementById('nuevoHabitoBeneficio').value.trim();
+
+        if (nombreInput && beneficioInput) {
+            const nuevoHab = {
+                id: Date.now(),
+                nombre: nombreInput,
+                beneficio: beneficioInput
+            };
+            habitosGuardadosUsuario.push(nuevoHab);
+            localStorage.setItem('marea_habitos_lista', JSON.stringify(habitosGuardadosUsuario));
+
+            document.getElementById('nuevoHabitoNombre').value = '';
+            document.getElementById('nuevoHabitoBeneficio').value = '';
+            toggleFormCrearHabito();
+            renderizarListaHabitos();
+        }
+    }
+
+    function renderizarListaHabitos() {
+        const contenedor = document.getElementById('listaHabitosContenedor');
+        contenedor.innerHTML = '';
+
+        habitosGuardadosUsuario.forEach(hab => {
+            const estadoActual = estadosHabitosHoy[hab.id]; // true, false o undefined
+
+            const card = document.createElement('div');
+            card.className = 'habit-accordion-card';
+            card.id = `habitCard_${hab.id}`;
+
+            card.innerHTML = `
+                <button class="habit-accordion-toggle" onclick="toggleAcordeonHabito(${hab.id})">
+                    <span>${hab.nombre}</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                <div class="habit-accordion-content">
+                    <div class="benefit-tag">BENEFICIO QUE TIENE:</div>
+                    <div class="benefit-text">
+                        <span>${hab.beneficio}</span>
+                        <span style="font-size: 16px;">❤️</span>
+                    </div>
+                    <div class="logrado-row">
+                        <span class="logrado-label">LOGRADO:</span>
+                        <div class="logrado-buttons">
+                            <button class="btn-check-yn ${estadoActual === true ? 'active-yes' : ''}" onclick="marcarHabitoEstado(${hab.id}, true)">Sí ❤️</button>
+                            <button class="btn-check-yn ${estadoActual === false ? 'active-no' : ''}" onclick="marcarHabitoEstado(${hab.id}, false)">No</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            contenedor.appendChild(card);
+        });
+    }
+
+    function toggleAcordeonHabito(id) {
+        const card = document.getElementById(`habitCard_${id}`);
+        card.classList.toggle('open');
+    }
+
+    function marcarHabitoEstado(id, valor) {
+        estadosHabitosHoy[id] = valor;
+        localStorage.setItem(`marea_estados_${claveHoy}`, JSON.stringify(estadosHabitosHoy));
+        renderizarListaHabitos();
+        // Mantener abierto el acordeón actual
+        document.getElementById(`habitCard_${id}`).classList.add('open');
+    }
+
+    function actualizarEstadoHabitosPreview() {
+        const preview = document.getElementById('habitsStatusPreview');
+        const total = habitosGuardadosUsuario.length;
+        const cumplidos = Object.values(estadosHabitosHoy).filter(v => v === true).length;
+        
+        if (cumplidos > 0) {
+            preview.innerText = `${cumplidos} listos ⚡`;
+            preview.style.color = 'var(--accent)';
+        } else {
+            preview.innerText = 'Ver lista';
+            preview.style.color = 'var(--text-muted)';
+        }
+    }
+
+    // ================= INTEGRACIÓN WHATSAPP =================
+    function enviarWhatsApp(e) {
+        e.preventDefault();
+        const cumplidos = Object.values(estadosHabitosHoy).filter(v => v === true).length;
+        const mensaje = `Hola! Soy ${usuarioNombre}. Mi reporte de hoy en Marea Grande App (${deporteEmoji} ${deporteNombre}): Asistencia y ${cumplidos} hábitos cumplidos. ¡Disciplina verificada! 🔥`;
+        const urlWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+        window.open(urlWhatsApp, '_blank');
+    }
+
+    // Modal Asistencia
+    function abrirModalAsistencia() {
+        const grid = document.getElementById('densityGrid');
+        grid.innerHTML = '';
+        const diaSemanaActual = hoy.getDay();
+        const diffAlLunes = diaSemanaActual === 0 ? -6 : 1 - diaSemanaActual;
+        const lunesSemana = new Date(anio, mes, diaActual + diffAlLunes);
+
+        for (let i = 0; i < 7; i++) {
+            const fechaIter = new Date(lunesSemana);
+            fechaIter.setDate(lunesSemana.getDate() + i);
+
+            const fStr = `${fechaIter.getFullYear()}-${fechaIter.getMonth() + 1}-${fechaIter.getDate()}`;
+            const diaNum = fechaIter.getDay();
+            const esProgramado = diasEntrenoConfig.includes(diaNum);
+            const cumplio = entrenamientos.includes(fStr);
+
+            const hoySinHora = new Date(anio, mes, diaActual);
+            const iterSinHora = new Date(fechaIter.getFullYear(), fechaIter.getMonth(), fechaIter.getDate());
+
+            let claseBarra = 'bar-upcoming';
+            let iconoBarra = '•';
+
+            if (cumplio) {
+                claseBarra = 'bar-done';
+                iconoBarra = deporteEmoji;
+            } else if (!esProgramado) {
+                claseBarra = 'bar-rest';
+                iconoBarra = '💤';
+            } else if (iterSinHora < hoySinHora) {
+                claseBarra = 'bar-missed';
+                iconoBarra = '✕';
+            } else {
+                claseBarra = 'bar-upcoming';
+                iconoBarra = '○';
+            }
+
+            const celda = document.createElement('div');
+            celda.className = 'density-cell';
+            celda.innerHTML = `
+                <div class="density-bar ${claseBarra}">${iconoBarra}</div>
+                <div class="density-day-label">${diasCortos[i]} ${fechaIter.getDate()}</div>
+            `;
+            grid.appendChild(celda);
+        }
+        document.getElementById('attendanceModal').classList.add('active');
+    }
+
+    function cerrarModalAsistencia() {
+        document.getElementById('attendanceModal').classList.remove('active');
+    }
+
+    function cerrarModalAfuera(e) {
+        if (e.target.id === 'attendanceModal') cerrarModalAsistencia();
+    }
+
+    function generarReportePDF() {
+        calcularAsistencia();
+        window.print();
+    }
+
+    inicializarApp();
+</script>
+
 </body>
 </html>
-
-
